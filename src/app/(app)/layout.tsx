@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { SignOutButton } from "@/components/signout-button";
-import { ADMIN_EMAIL } from "@/lib/admin";
+import { isAdminIdentity } from "@/lib/admin";
 import { authOptions } from "@/lib/auth";
 import { ensureExerciseLibrarySeeded } from "@/lib/exercise-seed";
 import { trackUserIp } from "@/lib/user-ip";
@@ -19,7 +19,10 @@ export default async function AppLayout({
     redirect("/signin");
   }
 
-  const isAdmin = session.user.email?.toLowerCase() === ADMIN_EMAIL;
+  const isAdmin = await isAdminIdentity({
+    userId: session.user.id,
+    sessionEmail: session.user.email,
+  });
 
   await trackUserIp(session.user.id, await headers());
   await ensureExerciseLibrarySeeded();
