@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { SignOutButton } from "@/components/signout-button";
+import { ADMIN_EMAIL } from "@/lib/admin";
 import { authOptions } from "@/lib/auth";
 import { ensureExerciseLibrarySeeded } from "@/lib/exercise-seed";
+import { trackUserIp } from "@/lib/user-ip";
 
 export default async function AppLayout({
   children,
@@ -16,6 +19,9 @@ export default async function AppLayout({
     redirect("/signin");
   }
 
+  const isAdmin = session.user.email?.toLowerCase() === ADMIN_EMAIL;
+
+  await trackUserIp(session.user.id, await headers());
   await ensureExerciseLibrarySeeded();
 
   return (
@@ -41,10 +47,15 @@ export default async function AppLayout({
             <Link href="/progress" className="rounded-md px-2 py-1 hover:bg-slate-100">
               Progress
             </Link>
+            {isAdmin ? (
+              <Link href="/admin" className="rounded-md px-2 py-1 hover:bg-slate-100">
+                Admin
+              </Link>
+            ) : null}
           </nav>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500">{session.user.email}</span>
+          <span className="text-xs text-slate-500">{session.user.name ?? "Signed in"}</span>
           <SignOutButton />
         </div>
       </header>

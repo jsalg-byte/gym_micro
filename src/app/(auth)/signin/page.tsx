@@ -14,7 +14,7 @@ export default async function SignInPage({
       <main className="mx-auto w-full max-w-md space-y-5">
         <div className="space-y-1">
           <h1 className="text-3xl font-black text-slate-900">Sign in</h1>
-          <p className="text-sm text-slate-600">Use credentials or Google OAuth.</p>
+          <p className="text-sm text-slate-600">Sign in with your username and password.</p>
         </div>
         <SignInForm callbackUrl={callbackUrl} />
         <p className="text-sm text-slate-600">

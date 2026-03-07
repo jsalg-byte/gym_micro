@@ -14,7 +14,8 @@ export const users = pgTable(
   "users",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    email: text("email").notNull(),
+    username: text("username").notNull(),
+    email: text("email"),
     name: text("name"),
     passwordHash: text("password_hash"),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -24,7 +25,10 @@ export const users = pgTable(
       .notNull()
       .defaultNow(),
   },
-  (table) => [uniqueIndex("users_email_unique").on(table.email)],
+  (table) => [
+    uniqueIndex("users_username_unique").on(table.username),
+    uniqueIndex("users_email_unique").on(table.email),
+  ],
 );
 
 export const exercises = pgTable(
@@ -248,6 +252,29 @@ export const uploads = pgTable(
   (table) => [
     index("uploads_entity_idx").on(table.entityType, table.entityId),
     index("uploads_user_created_idx").on(table.userId, table.createdAt),
+  ],
+);
+
+export const userIpAddresses = pgTable(
+  "user_ip_addresses",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    ipAddress: text("ip_address").notNull(),
+    firstSeenAt: timestamp("first_seen_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    hitCount: integer("hit_count").notNull().default(1),
+    lastUserAgent: text("last_user_agent"),
+  },
+  (table) => [
+    uniqueIndex("user_ip_addresses_user_ip_unique").on(table.userId, table.ipAddress),
+    index("user_ip_addresses_user_last_seen_idx").on(table.userId, table.lastSeenAt),
   ],
 );
 

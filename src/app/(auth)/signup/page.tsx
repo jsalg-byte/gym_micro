@@ -7,9 +7,7 @@ export default function SignUpPage() {
       <main className="mx-auto w-full max-w-md space-y-5">
         <div className="space-y-1">
           <h1 className="text-3xl font-black text-slate-900">Create account</h1>
-          <p className="text-sm text-slate-600">
-            Credentials signup is enabled, and Google OAuth is available when configured.
-          </p>
+          <p className="text-sm text-slate-600">Pick a unique username and password to get started.</p>
         </div>
         <SignUpForm />
         <p className="text-sm text-slate-600">

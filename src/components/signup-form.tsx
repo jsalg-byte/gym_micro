@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 
 export function SignUpForm() {
   const router = useRouter();
+  const [username, setUsername] = useState("");
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ export function SignUpForm() {
     const response = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ username, name: name || undefined, password }),
     });
 
     if (!response.ok) {
@@ -31,7 +31,7 @@ export function SignUpForm() {
     }
 
     const authResult = await signIn("credentials", {
-      email,
+      username,
       password,
       redirect: false,
       callbackUrl: "/dashboard",
@@ -51,22 +51,23 @@ export function SignUpForm() {
   return (
     <form className="space-y-3 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" onSubmit={onSubmit}>
       <label className="block text-sm font-medium text-slate-700">
-        Name
+        Username
         <input
           type="text"
           required
-          value={name}
-          onChange={(event) => setName(event.target.value)}
+          minLength={3}
+          maxLength={32}
+          value={username}
+          onChange={(event) => setUsername(event.target.value)}
           className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
         />
       </label>
       <label className="block text-sm font-medium text-slate-700">
-        Email
+        Display Name (optional)
         <input
-          type="email"
-          required
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          type="text"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
           className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
         />
       </label>

@@ -15,6 +15,20 @@
       "when": 1772835944023,
       "tag": "0001_superb_aaron_stack",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1772908210013,
+      "tag": "0002_rainy_gravity",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1772908546372,
+      "tag": "0003_left_forge",
+      "breakpoints": true
     }
   ]
 }

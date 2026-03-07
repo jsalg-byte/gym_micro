@@ -27,8 +27,8 @@ export default async function DashboardPage() {
       <section className="panel p-4">
         <h1 className="text-2xl font-black text-slate-900">Dashboard</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Core MVP modules are active: credentials+OAuth auth, routines by day, sessions, nutrition with barcode
-          autofill, Redis, and progress photos.
+          Core MVP modules are active: username auth, routines by day, sessions, nutrition with barcode autofill,
+          Redis, and progress photos.
         </p>
       </section>
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">

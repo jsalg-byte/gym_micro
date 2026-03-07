@@ -6,8 +6,14 @@ import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
 
 const signupSchema = z.object({
-  email: z.string().email(),
-  name: z.string().min(2).max(80),
+  username: z
+    .string()
+    .trim()
+    .min(3)
+    .max(32)
+    .regex(/^[a-zA-Z0-9_]+$/)
+    .transform((value) => value.toLowerCase()),
+  name: z.string().trim().min(2).max(80).optional(),
   password: z.string().min(8).max(128),
 });
 
@@ -27,18 +33,18 @@ export async function POST(request: Request) {
     const [existing] = await db
       .select()
       .from(users)
-      .where(eq(users.email, parsed.data.email))
+      .where(eq(users.username, parsed.data.username))
       .limit(1);
 
     if (existing) {
-      return NextResponse.json({ error: "Email already registered" }, { status: 409 });
+      return NextResponse.json({ error: "Username already taken" }, { status: 409 });
     }
 
     const passwordHash = await hash(parsed.data.password, 12);
 
     await db.insert(users).values({
-      email: parsed.data.email,
-      name: parsed.data.name,
+      username: parsed.data.username,
+      name: parsed.data.name || parsed.data.username,
       passwordHash,
     });
 
