@@ -1,7 +1,9 @@
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { foods, mealLogs, uploads } from "@/db/schema";
+import { MealLogCalendar } from "@/components/meal-log-calendar";
 import { NutritionWorkflow } from "@/components/nutrition-workflow";
+import { createPresignedReadUrl } from "@/lib/storage";
 import { requireUserId } from "@/lib/session";
 
 export default async function NutritionPage() {
@@ -62,33 +64,40 @@ export default async function NutritionPage() {
     fatG: Number(food.fatG),
   }));
 
+  const mealLogCalendarEntries = await Promise.all(
+    logs.map(async (log) => {
+      const photoKey = mealPhotoByLogId.get(log.id);
+      return {
+        id: log.id,
+        consumedAt: log.consumedAt.toISOString(),
+        foodName: log.foodName ?? "Food",
+        quantity: Number(log.quantity),
+        mealType: log.mealType,
+        caloriesKcal: log.caloriesKcal ?? 0,
+        photoUrl: photoKey
+          ? await createPresignedReadUrl({
+              key: photoKey,
+              maxAgeSec: 900,
+            })
+          : null,
+      };
+    }),
+  );
+
   return (
     <main className="space-y-4">
+      <section className="panel p-4">
+        <h1 className="text-lg font-black text-slate-900">Nutrition</h1>
+        <p className="mt-1 text-sm text-slate-600">
+          Start by adding a food item to your library. Once saved, you can select it and log meals.
+        </p>
+      </section>
+
       <section>
         <NutritionWorkflow foods={foodOptions} />
       </section>
 
-      <section className="panel p-4">
-        <h2 className="text-lg font-black text-slate-900">Recent Meal Logs</h2>
-        <ul className="mt-3 space-y-2">
-          {logs.map((log) => (
-            <li key={log.id} className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
-              <p className="font-semibold text-slate-900">
-                {log.foodName ?? "Food"} x{Number(log.quantity)} ({log.mealType})
-              </p>
-              <p className="text-slate-600">
-                {new Date(log.consumedAt).toLocaleString()} · {log.caloriesKcal ?? 0} kcal each
-              </p>
-              {mealPhotoByLogId.has(log.id) ? (
-                <p className="mt-1 text-xs font-semibold text-emerald-700">
-                  Photo attached: {mealPhotoByLogId.get(log.id)}
-                </p>
-              ) : null}
-            </li>
-          ))}
-          {logs.length === 0 ? <li className="text-sm text-slate-500">No meal logs yet.</li> : null}
-        </ul>
-      </section>
+      <MealLogCalendar entries={mealLogCalendarEntries} />
     </main>
   );
 }

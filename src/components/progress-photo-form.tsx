@@ -116,21 +116,40 @@ export function ProgressPhotoForm() {
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
         />
       </label>
-      <label className="block text-sm text-slate-700">
-        Image File
+      <div>
+        <p className="text-sm text-slate-700">Image File</p>
+        <label
+          htmlFor="progress-photo-input"
+          className="mt-1 flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm text-slate-700 hover:bg-slate-100"
+        >
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            className="h-6 w-6 text-slate-500"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          >
+            <path d="M4 7a2 2 0 0 1 2-2h3l1.2 1.5a1 1 0 0 0 .8.4H18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z" />
+            <circle cx="9" cy="12" r="1.5" />
+            <path d="m20 16-4.5-4.5a1 1 0 0 0-1.4 0L8 17.6" />
+          </svg>
+          <span>{selectedFile ? selectedFile.name : "Click to choose an image"}</span>
+        </label>
         <input
+          id="progress-photo-input"
           type="file"
           accept="image/*"
           onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="sr-only"
         />
-      </label>
+      </div>
       <button
         type="submit"
         disabled={loading}
         className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {loading ? "Uploading..." : "Upload Progress Photo"}
+        {loading ? "Saving..." : "Save"}
       </button>
       {status ? (
         <p className={`text-sm ${status.ok ? "text-emerald-700" : "text-rose-600"}`}>{status.message}</p>
