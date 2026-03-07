@@ -45,6 +45,7 @@ export function NutritionWorkflow({ foods }: { foods: FoodOption[] }) {
   const [logFoodId, setLogFoodId] = useState(foods[0]?.id ?? "");
   const [quantity, setQuantity] = useState("1");
   const [mealType, setMealType] = useState("breakfast");
+  const [mealPhoto, setMealPhoto] = useState<File | null>(null);
 
   const [barcode, setBarcode] = useState("");
   const [name, setName] = useState("");
@@ -78,15 +79,81 @@ export function NutritionWorkflow({ foods }: { foods: FoodOption[] }) {
       }),
     });
 
-    setLoading(false);
-
     if (!response.ok) {
+      setLoading(false);
       const payload = (await response.json().catch(() => null)) as { error?: string } | null;
       setLogError(payload?.error ?? "Unable to log meal.");
       return;
     }
 
+    const payload = (await response.json().catch(() => null)) as { id?: string } | null;
+    const mealLogId = payload?.id;
+
+    if (mealPhoto && mealLogId) {
+      try {
+        const presignRes = await fetch("/api/uploads/presign", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            fileName: mealPhoto.name,
+            contentType: mealPhoto.type || "application/octet-stream",
+          }),
+        });
+
+        if (!presignRes.ok) {
+          const presignPayload = (await presignRes.json().catch(() => null)) as { error?: string } | null;
+          throw new Error(presignPayload?.error ?? "Unable to create meal photo upload URL.");
+        }
+
+        const presign = (await presignRes.json()) as {
+          url: string;
+          key: string;
+        };
+
+        const uploadRes = await fetch(presign.url, {
+          method: "PUT",
+          headers: {
+            "content-type": mealPhoto.type || "application/octet-stream",
+          },
+          body: mealPhoto,
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error("Meal photo upload to storage failed.");
+        }
+
+        const metadataRes = await fetch("/api/uploads", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            entityType: "meal_log_photo",
+            entityId: mealLogId,
+            objectKey: presign.key,
+            mimeType: mealPhoto.type || "application/octet-stream",
+            sizeBytes: mealPhoto.size,
+          }),
+        });
+
+        if (!metadataRes.ok) {
+          const metadataPayload = (await metadataRes.json().catch(() => null)) as { error?: string } | null;
+          throw new Error(metadataPayload?.error ?? "Unable to save meal photo metadata.");
+        }
+      } catch (uploadError) {
+        setLoading(false);
+        setLogError(
+          uploadError instanceof Error
+            ? `Meal logged, but photo failed: ${uploadError.message}`
+            : "Meal logged, but photo upload failed.",
+        );
+        setQuantity("1");
+        router.refresh();
+        return;
+      }
+    }
+
+    setLoading(false);
     setQuantity("1");
+    setMealPhoto(null);
     router.refresh();
   }
 
@@ -238,8 +305,17 @@ export function NutritionWorkflow({ foods }: { foods: FoodOption[] }) {
                 <option value="lunch">Lunch</option>
                 <option value="dinner">Dinner</option>
                 <option value="snack">Snack</option>
-              </select>
+                </select>
             </div>
+            <label className="block text-xs text-slate-600">
+              Meal Photo (optional)
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(event) => setMealPhoto(event.target.files?.[0] ?? null)}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+            </label>
             <button
               type="submit"
               disabled={loading}

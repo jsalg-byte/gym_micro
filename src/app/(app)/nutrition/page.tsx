@@ -1,6 +1,6 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db/client";
-import { foods, mealLogs } from "@/db/schema";
+import { foods, mealLogs, uploads } from "@/db/schema";
 import { NutritionWorkflow } from "@/components/nutrition-workflow";
 import { requireUserId } from "@/lib/session";
 
@@ -25,6 +25,31 @@ export default async function NutritionPage() {
       .orderBy(desc(mealLogs.consumedAt))
       .limit(30),
   ]);
+
+  const logIds = logs.map((log) => log.id);
+  const mealPhotoRows =
+    logIds.length > 0
+      ? await db
+          .select({
+            entityId: uploads.entityId,
+            objectKey: uploads.objectKey,
+          })
+          .from(uploads)
+          .where(
+            and(
+              eq(uploads.userId, userId),
+              eq(uploads.entityType, "meal_log_photo"),
+              inArray(uploads.entityId, logIds),
+            ),
+          )
+      : [];
+
+  const mealPhotoByLogId = new Map<string, string>();
+  for (const row of mealPhotoRows) {
+    if (!mealPhotoByLogId.has(row.entityId)) {
+      mealPhotoByLogId.set(row.entityId, row.objectKey);
+    }
+  }
 
   const foodOptions = foodItems.map((food) => ({
     id: food.id,
@@ -54,6 +79,11 @@ export default async function NutritionPage() {
               <p className="text-slate-600">
                 {new Date(log.consumedAt).toLocaleString()} · {log.caloriesKcal ?? 0} kcal each
               </p>
+              {mealPhotoByLogId.has(log.id) ? (
+                <p className="mt-1 text-xs font-semibold text-emerald-700">
+                  Photo attached: {mealPhotoByLogId.get(log.id)}
+                </p>
+              ) : null}
             </li>
           ))}
           {logs.length === 0 ? <li className="text-sm text-slate-500">No meal logs yet.</li> : null}

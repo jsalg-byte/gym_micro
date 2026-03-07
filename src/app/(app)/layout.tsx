@@ -26,9 +26,6 @@ export default async function AppLayout({
             Gym-Micro
           </Link>
           <nav className="flex flex-wrap items-center gap-2 text-sm text-slate-700">
-            <Link href="/dashboard" className="rounded-md px-2 py-1 hover:bg-slate-100">
-              Dashboard
-            </Link>
             <Link href="/routines" className="rounded-md px-2 py-1 hover:bg-slate-100">
               Routines
             </Link>

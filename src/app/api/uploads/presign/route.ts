@@ -32,6 +32,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
+  if (!parsed.data.contentType.startsWith("image/")) {
+    return NextResponse.json({ error: "Only image uploads are allowed." }, { status: 400 });
+  }
+
   const key = `${session.user.id}/${Date.now()}-${randomUUID()}.${extFromName(parsed.data.fileName)}`;
   const presigned = await createPresignedUploadUrl({
     key,

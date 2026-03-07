@@ -77,6 +77,15 @@ export function ProgressPhotoForm() {
       setSelectedFile(null);
       setNote("");
     } catch (error) {
+      if (error instanceof TypeError) {
+        setStatus({
+          ok: false,
+          message:
+            "Upload failed: browser could not reach storage URL. Check S3 endpoint/public URL and bucket CORS for PUT from this app domain.",
+        });
+        return;
+      }
+
       setStatus({
         ok: false,
         message: error instanceof Error ? error.message : "Upload failed.",
