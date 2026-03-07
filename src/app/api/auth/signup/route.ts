@@ -10,8 +10,8 @@ const signupSchema = z.object({
     .string()
     .trim()
     .min(3)
-    .max(32)
-    .regex(/^[a-zA-Z0-9_]+$/)
+    .max(64)
+    .regex(/^[^\s]+$/, "Username cannot contain spaces.")
     .transform((value) => value.toLowerCase()),
   name: z.string().trim().min(2).max(80).optional(),
   password: z.string().min(8).max(128),
@@ -22,8 +22,12 @@ export async function POST(request: Request) {
   const parsed = signupSchema.safeParse(body);
 
   if (!parsed.success) {
+    const firstIssue = parsed.error.issues[0]?.message;
     return NextResponse.json(
-      { error: "Invalid payload", details: parsed.error.flatten() },
+      {
+        error: firstIssue ? `Invalid payload: ${firstIssue}` : "Invalid payload",
+        details: parsed.error.flatten(),
+      },
       { status: 400 },
     );
   }

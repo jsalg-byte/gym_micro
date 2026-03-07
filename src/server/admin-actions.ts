@@ -12,8 +12,8 @@ const usernameSchema = z
   .string()
   .trim()
   .min(3)
-  .max(32)
-  .regex(/^[a-zA-Z0-9_]+$/)
+  .max(64)
+  .regex(/^[^\s]+$/)
   .transform((value) => value.toLowerCase());
 
 const createUserSchema = z.object({

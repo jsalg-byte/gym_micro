@@ -56,7 +56,7 @@ export function SignUpForm() {
           type="text"
           required
           minLength={3}
-          maxLength={32}
+          maxLength={64}
           value={username}
           onChange={(event) => setUsername(event.target.value)}
           className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
