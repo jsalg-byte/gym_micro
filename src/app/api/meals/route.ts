@@ -6,9 +6,17 @@ import { getDb } from "@/db/client";
 import { mealLogs } from "@/db/schema";
 
 const createMealLogSchema = z.object({
-  foodId: z.string().uuid(),
-  quantity: z.number().positive().max(100),
   mealType: z.enum(["breakfast", "lunch", "dinner", "snack"]),
+  consumedAt: z.string().datetime().optional(),
+  items: z
+    .array(
+      z.object({
+        foodId: z.string().uuid(),
+        grams: z.number().positive().max(5000),
+      }),
+    )
+    .min(1)
+    .max(20),
 });
 
 export async function POST(request: Request) {
@@ -25,16 +33,26 @@ export async function POST(request: Request) {
   }
 
   const db = getDb();
-  const [inserted] = await db
+  const consumedAt = parsed.data.consumedAt ? new Date(parsed.data.consumedAt) : new Date();
+  const inserted = await db
     .insert(mealLogs)
-    .values({
-      userId: session.user.id,
-      foodId: parsed.data.foodId,
-      quantity: parsed.data.quantity.toString(),
-      mealType: parsed.data.mealType,
-      consumedAt: new Date(),
-    })
+    .values(
+      parsed.data.items.map((item) => ({
+        userId: session.user.id,
+        foodId: item.foodId,
+        quantity: item.grams.toString(),
+        mealType: parsed.data.mealType,
+        consumedAt,
+      })),
+    )
     .returning({ id: mealLogs.id });
 
-  return NextResponse.json({ ok: true, id: inserted.id }, { status: 201 });
+  return NextResponse.json(
+    {
+      ok: true,
+      id: inserted[0]?.id ?? null,
+      ids: inserted.map((row) => row.id),
+    },
+    { status: 201 },
+  );
 }

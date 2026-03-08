@@ -5,14 +5,25 @@ import { authOptions } from "@/lib/auth";
 import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
 
-export const ADMIN_EMAIL = "mzootfb@gmail.com";
+const DEFAULT_ADMIN_IDENTIFIERS = ["mzootfb@gmail.com", "mzootfb"];
+const CONFIGURED_ADMIN_IDENTIFIERS = (process.env.ADMIN_IDENTIFIERS ?? "")
+  .split(",")
+  .map((value) => value.trim().toLowerCase())
+  .filter(Boolean);
+const ADMIN_IDENTIFIERS = new Set([...DEFAULT_ADMIN_IDENTIFIERS, ...CONFIGURED_ADMIN_IDENTIFIERS]);
+
+function isAdminValue(value?: string | null) {
+  if (!value) {
+    return false;
+  }
+  return ADMIN_IDENTIFIERS.has(value.trim().toLowerCase());
+}
 
 export async function isAdminIdentity(params: {
   userId: string;
   sessionEmail?: string | null;
 }) {
-  const sessionEmail = params.sessionEmail?.toLowerCase();
-  if (sessionEmail === ADMIN_EMAIL) {
+  if (isAdminValue(params.sessionEmail)) {
     return true;
   }
 
@@ -30,10 +41,7 @@ export async function isAdminIdentity(params: {
     return false;
   }
 
-  return (
-    dbUser.email?.toLowerCase() === ADMIN_EMAIL ||
-    dbUser.username.toLowerCase() === ADMIN_EMAIL
-  );
+  return isAdminValue(dbUser.email) || isAdminValue(dbUser.username);
 }
 
 export async function requireAdminUserId() {

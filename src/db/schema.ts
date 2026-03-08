@@ -2,6 +2,7 @@ import {
   boolean,
   index,
   integer,
+  jsonb,
   numeric,
   pgTable,
   text,
@@ -196,6 +197,26 @@ export const foods = pgTable(
     carbsG: numeric("carbs_g", { precision: 8, scale: 2 }).notNull().default("0"),
     fatG: numeric("fat_g", { precision: 8, scale: 2 }).notNull().default("0"),
     servingSizeG: numeric("serving_size_g", { precision: 8, scale: 2 }),
+    servingSizeText: text("serving_size_text"),
+    servingsPerContainer: numeric("servings_per_container", { precision: 8, scale: 2 }),
+    saturatedFatG: numeric("saturated_fat_g", { precision: 8, scale: 2 }),
+    transFatG: numeric("trans_fat_g", { precision: 8, scale: 2 }),
+    cholesterolMg: numeric("cholesterol_mg", { precision: 8, scale: 2 }),
+    sodiumMg: numeric("sodium_mg", { precision: 8, scale: 2 }),
+    fiberG: numeric("fiber_g", { precision: 8, scale: 2 }),
+    sugarsG: numeric("sugars_g", { precision: 8, scale: 2 }),
+    addedSugarsG: numeric("added_sugars_g", { precision: 8, scale: 2 }),
+    micronutrientsJson: jsonb("micronutrients_json").$type<
+      Array<{
+        name: string;
+        value: number;
+        unit: string;
+        confidence?: number;
+      }>
+    >(),
+    nutritionSource: text("nutrition_source").notNull().default("manual"),
+    nutritionConfidence: numeric("nutrition_confidence", { precision: 4, scale: 3 }),
+    labelRawText: text("label_raw_text"),
     createdByUserId: uuid("created_by_user_id").references(() => users.id, {
       onDelete: "set null",
     }),

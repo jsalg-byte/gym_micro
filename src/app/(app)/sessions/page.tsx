@@ -47,17 +47,17 @@ export default async function SessionsPage() {
         <article className="panel p-4">
           <h1 className="text-xl font-black text-slate-900">Sessions</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Sessions are started from your active routine. Select the day and the app will auto-link that plan.
+            Sessions are started from your active workout plan. Pick a plan day and the session auto-links to it.
           </p>
         </article>
 
         <article className="panel p-4">
-          <h2 className="text-sm font-black uppercase tracking-wide text-slate-700">Active Routine</h2>
+          <h2 className="text-sm font-black uppercase tracking-wide text-slate-700">Active Workout Plan</h2>
           {userRoutines.length === 0 ? (
             <p className="mt-2 text-sm text-slate-600">
-              No routines yet. Create one in{" "}
+              No workout plans yet. Create one in{" "}
               <Link href="/routines" className="font-semibold text-teal-700 hover:text-teal-800">
-                routines
+                workout plans
               </Link>
               .
             </p>
@@ -89,9 +89,9 @@ export default async function SessionsPage() {
         <article className="panel p-4">
           <h2 className="text-sm font-black uppercase tracking-wide text-slate-700">Start Session</h2>
           {!activeRoutine ? (
-            <p className="mt-2 text-sm text-slate-600">Set an active routine first.</p>
+            <p className="mt-2 text-sm text-slate-600">Set an active workout plan first.</p>
           ) : activeRoutineDays.length === 0 ? (
-            <p className="mt-2 text-sm text-slate-600">This routine has no days yet. Add days in routines.</p>
+            <p className="mt-2 text-sm text-slate-600">This workout plan has no days yet. Add days in workout plans.</p>
           ) : (
             <form action={startWorkoutSessionAction} className="mt-2 space-y-2">
               <select
@@ -123,7 +123,7 @@ export default async function SessionsPage() {
             >
               <div>
                 <p className="text-sm font-semibold text-slate-900">
-                  {session.routineName ?? "Routine"} - {session.dayName ?? "Day"}
+                  {session.routineName ?? "Workout Plan"} - {session.dayName ?? "Day"}
                 </p>
                 <p className="text-xs text-slate-600">
                   {new Date(session.startedAt).toLocaleString()} · {session.status}

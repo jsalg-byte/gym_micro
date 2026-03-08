@@ -13,7 +13,7 @@ export default async function Home() {
           Gym-Micro MVP
         </p>
         <h1 className="text-4xl font-black leading-tight text-slate-900">
-          Session tracking + meal logging with routine days, barcode macros, and progress photos.
+          Session tracking + meal logging with workout plan days, barcode macros, and progress photos.
         </h1>
         <p className="max-w-2xl text-slate-600">
           Gym-Micro helps you track workouts, nutrition, and progress photos in one place, so you can stay
