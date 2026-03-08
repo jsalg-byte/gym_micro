@@ -1,57 +1,44 @@
-# Gym-Micro MVP TODO (With Human-in-Loop Checks)
+# Gym-Micro Feedback Execution TODO (Human-in-Loop)
 
-## Current Status
-- [x] Research consolidated
-- [x] Plan rechecked and aligned
-- [x] Execution checklist prepared
-- [x] Implementation started
+## Current Snapshot (2026-03-08)
+- [x] Branch created: `codex/feedback-workout-nutrition-ux`
+- [x] Multi-ingredient meal builder (grams-based) is implemented
+- [x] Nutrition calendar opens daily modal with foods, macros, formulas, and images
+- [x] Barcode camera scan flow added in Add Food
+- [x] Routine UX wording updated to Workout Plans + onboarding explainer
+- [x] Lint + production build pass locally
 
-## Priority Queue
+## Remaining Human-In-Loop Checks
 
-1. Lock v1 decisions
-- [x] Confirm auth mode for v1 (chosen: credentials + OAuth)
- - [x] Confirm strict v1 scope includes Redis + barcode + uploads/object storage
-- [x] Confirm Node version for local/Coolify parity (Node 22 LTS)
-- Human check: your explicit "approved" before we scaffold
+1. Workout Plan clarity check
+- [ ] You review `/routines` and `/sessions` wording and confirm “Workout Plan” is clearer than “Routine”
+- [ ] You confirm onboarding blurb is enough (or request tighter copy)
 
-2. Bootstrap project
-- [ ] Initialize Next.js 15 + Tailwind + TypeScript
-- [ ] Add Drizzle + Postgres wiring
-- [ ] Add migration scripts and baseline config
-- Human check: review generated structure before data model work
+2. Nutrition flow acceptance check
+- [ ] You test: add food -> build meal with multiple ingredients -> save
+- [ ] You confirm per-item and total macro math looks correct
+- [ ] You confirm the calendar modal layout is understandable on mobile
 
-3. Ship schema foundation
-- [x] Add minimal tables and relationships
-- [x] Generate/apply migration
-- [ ] Validate basic read/write paths
-- Human check: schema sign-off by you before auth + features
+3. Barcode camera check (device/browser specific)
+- [ ] You test camera scan on your primary phone browser
+- [ ] You test Firefox desktop fallback (manual barcode entry still works)
+- [ ] You confirm whether auto-lookup after scan feels right
 
-4. Implement auth baseline
-- [ ] Add Auth.js config and auth routes
-- [ ] Protect app/private API surfaces
-- [ ] Verify login/logout/session behavior
-- Human check: you test sign-in flow and approve UX
+4. Storage/photo check for meals
+- [ ] You upload meal photos and verify they render in the day modal
+- [ ] You confirm no CORS/network errors in browser console
 
-5. Add Redis + Barcode + Upload infrastructure
-- [ ] Configure Redis integration and minimal cache/rate-limit utility
-- [ ] Add barcode scanning path (camera + manual barcode entry fallback)
-- [ ] Add S3-compatible uploads flow (presigned URL + metadata persistence)
-- Human check: you validate barcode scan and upload in local environment
+5. Admin access check
+- [ ] You sign in with your admin identity and confirm `Admin` nav link is visible
+- [ ] You verify user CRUD + IP visibility in `/admin`
 
-6. Build MVP flows
-- [ ] Workout: exercises, routines, sessions, sets
-- [ ] Nutrition: foods, meal logs, history
-- [ ] Mobile-first UI pass for core pages
-- Human check: you run all 3 core user journeys end to end
+## Next Build Targets (after your checks)
+- [ ] Add OCR nutrition label scanner fallback (photo -> OCR -> macro parse)
+- [ ] Add rest timer UI on session detail
+- [ ] Add progression/PR widgets (weight trends + personal records)
+- [ ] Tighten fast-log UX to “scan -> grams -> save” in minimum taps
 
-7. Deploy and validate
-- [ ] Connect repo app in Coolify
-- [ ] Attach PostgreSQL + Redis + storage environment vars
-- [ ] Configure deploy-time migrations
-- [ ] Smoke test in deployed environment
-- Human check: go-live approval from you
-
-## Definition of Wrapped Up
-- [ ] Production deploy is live from Git on Coolify
-- [ ] Core flows validated (workouts + meals + barcode + uploads)
-- [ ] v2 backlog explicitly deferred and documented (excluding in-scope features)
+## Wrap-Up Criteria
+- [ ] Feedback branch accepted after your manual QA on key flows
+- [ ] Deploy to Coolify and confirm production parity
+- [ ] Create merge PR to main with release notes

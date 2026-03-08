@@ -12,6 +12,7 @@ import {
 } from "@/db/schema";
 import { requireUserId } from "@/lib/session";
 import { addWorkoutSetAction, completeWorkoutSessionAction } from "@/server/actions";
+import { RestTimer } from "@/components/rest-timer";
 
 export default async function SessionDetailPage({
   params,
@@ -74,7 +75,7 @@ export default async function SessionDetailPage({
         <div className="flex items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-black text-slate-900">
-              Session: {session.routineName ?? "Routine"} / {session.dayName ?? "Day"}
+              Session: {session.routineName ?? "Workout Plan"} / {session.dayName ?? "Day"}
             </h1>
             <p className="mt-1 text-xs text-slate-600">
               Started {new Date(session.startedAt).toLocaleString()} · Status {session.status}
@@ -134,6 +135,9 @@ export default async function SessionDetailPage({
               Add Set
             </button>
           </form>
+          <div className="mt-3">
+            <RestTimer />
+          </div>
         </article>
 
         <article className="panel p-4">

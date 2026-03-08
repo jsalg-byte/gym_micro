@@ -6,6 +6,10 @@ import { NutritionWorkflow } from "@/components/nutrition-workflow";
 import { createPresignedReadUrl } from "@/lib/storage";
 import { requireUserId } from "@/lib/session";
 
+function round1(value: number) {
+  return Math.round(value * 10) / 10;
+}
+
 export default async function NutritionPage() {
   const userId = await requireUserId();
   const db = getDb();
@@ -20,6 +24,10 @@ export default async function NutritionPage() {
         consumedAt: mealLogs.consumedAt,
         foodName: foods.name,
         caloriesKcal: foods.caloriesKcal,
+        servingSizeG: foods.servingSizeG,
+        proteinG: foods.proteinG,
+        carbsG: foods.carbsG,
+        fatG: foods.fatG,
       })
       .from(mealLogs)
       .leftJoin(foods, eq(mealLogs.foodId, foods.id))
@@ -58,22 +66,46 @@ export default async function NutritionPage() {
     name: food.name,
     barcodeUpc: food.barcodeUpc,
     servingSizeG: food.servingSizeG ? Number(food.servingSizeG) : null,
+    servingSizeText: food.servingSizeText ?? null,
+    servingsPerContainer: food.servingsPerContainer ? Number(food.servingsPerContainer) : null,
     caloriesKcal: food.caloriesKcal,
     proteinG: Number(food.proteinG),
     carbsG: Number(food.carbsG),
     fatG: Number(food.fatG),
+    saturatedFatG: food.saturatedFatG ? Number(food.saturatedFatG) : null,
+    transFatG: food.transFatG ? Number(food.transFatG) : null,
+    cholesterolMg: food.cholesterolMg ? Number(food.cholesterolMg) : null,
+    sodiumMg: food.sodiumMg ? Number(food.sodiumMg) : null,
+    fiberG: food.fiberG ? Number(food.fiberG) : null,
+    sugarsG: food.sugarsG ? Number(food.sugarsG) : null,
+    addedSugarsG: food.addedSugarsG ? Number(food.addedSugarsG) : null,
+    micronutrients: Array.isArray(food.micronutrientsJson) ? food.micronutrientsJson : [],
   }));
 
   const mealLogCalendarEntries = await Promise.all(
     logs.map(async (log) => {
+      const grams = Number(log.quantity);
+      const servingSizeGRaw = Number(log.servingSizeG ?? 100);
+      const servingSizeG = servingSizeGRaw > 0 ? servingSizeGRaw : 100;
+      const factor = grams / servingSizeG;
+      const caloriesKcal = Math.round((log.caloriesKcal ?? 0) * factor);
+      const proteinG = round1(Number(log.proteinG ?? 0) * factor);
+      const carbsG = round1(Number(log.carbsG ?? 0) * factor);
+      const fatG = round1(Number(log.fatG ?? 0) * factor);
       const photoKey = mealPhotoByLogId.get(log.id);
+
       return {
         id: log.id,
         consumedAt: log.consumedAt.toISOString(),
         foodName: log.foodName ?? "Food",
-        quantity: Number(log.quantity),
+        grams,
         mealType: log.mealType,
-        caloriesKcal: log.caloriesKcal ?? 0,
+        servingSizeG,
+        caloriesKcal,
+        proteinG,
+        carbsG,
+        fatG,
+        formula: `(${log.caloriesKcal ?? 0} kcal / ${servingSizeG}g) x ${grams}g = ${caloriesKcal} kcal`,
         photoUrl: photoKey
           ? await createPresignedReadUrl({
               key: photoKey,

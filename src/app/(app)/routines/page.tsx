@@ -83,8 +83,16 @@ export default async function RoutinesPage() {
     <main className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
       <aside className="space-y-4">
         <section className="panel p-4">
-          <h1 className="text-xl font-black text-slate-900">Create Routine</h1>
-          <p className="mt-1 text-xs text-slate-600">Every new routine starts with Day 1 automatically.</p>
+          <h2 className="text-sm font-black uppercase tracking-wide text-slate-700">How Workout Plans Work</h2>
+          <p className="mt-2 text-sm text-slate-600">
+            A workout plan is your weekly structure. Add one or more plan days, attach exercises to each day, then set
+            a plan as active on Sessions to start logging.
+          </p>
+        </section>
+
+        <section className="panel p-4">
+          <h1 className="text-xl font-black text-slate-900">Create Workout Plan</h1>
+          <p className="mt-1 text-xs text-slate-600">Every new workout plan starts with Day 1 automatically.</p>
           <form action={createRoutineAction} className="mt-3 space-y-3">
             <label className="block text-sm text-slate-700">
               Name
@@ -105,15 +113,15 @@ export default async function RoutinesPage() {
               />
             </label>
             <button className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">
-              Save Routine
+              Save Workout Plan
             </button>
           </form>
         </section>
       </aside>
 
       <section className="space-y-3">
-        <h2 className="text-xl font-black text-slate-900">Your Routines</h2>
-        {routineItems.length === 0 ? <p className="text-sm text-slate-500">No routines yet.</p> : null}
+        <h2 className="text-xl font-black text-slate-900">Your Workout Plans</h2>
+        {routineItems.length === 0 ? <p className="text-sm text-slate-500">No workout plans yet.</p> : null}
         {routineItems.map((routine) => {
           const days = daysByRoutine.get(routine.id) ?? [];
           const isActive = activePref?.activeRoutineId === routine.id;
@@ -135,13 +143,13 @@ export default async function RoutinesPage() {
                           : "border border-slate-300 text-slate-700 hover:bg-slate-100"
                       }`}
                     >
-                      {isActive ? "Active Routine" : "Set Active"}
+                      {isActive ? "Active Plan" : "Set Active"}
                     </button>
                   </form>
                   <form action={deleteRoutineAction}>
                     <input type="hidden" name="routineId" value={routine.id} />
                     <button className="rounded-lg border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50">
-                      Delete Routine
+                      Delete Plan
                     </button>
                   </form>
                 </div>
@@ -227,7 +235,9 @@ export default async function RoutinesPage() {
                     </section>
                   );
                 })}
-                {days.length === 0 ? <p className="text-xs text-slate-500">Add days to structure this routine.</p> : null}
+                {days.length === 0 ? (
+                  <p className="text-xs text-slate-500">Add days to structure this workout plan.</p>
+                ) : null}
               </div>
             </article>
           );
