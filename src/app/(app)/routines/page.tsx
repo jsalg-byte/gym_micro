@@ -7,13 +7,12 @@ import {
   routines,
   userPreferences,
 } from "@/db/schema";
+import { RoutineDayFlyover } from "@/components/routine-day-flyover";
 import { requireUserId } from "@/lib/session";
 import {
-  addExerciseToRoutineDayAction,
   createRoutineAction,
   createRoutineDayAction,
   deleteRoutineAction,
-  removeExerciseFromRoutineDayAction,
   setActiveRoutineAction,
 } from "@/server/actions";
 
@@ -175,64 +174,24 @@ export default async function RoutinesPage() {
                 {days.map((day) => {
                   const dayExercises = exercisesByDay.get(day.id) ?? [];
                   return (
-                    <section key={day.id} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                      <p className="text-sm font-bold text-slate-900">{day.dayName}</p>
-                      <ul className="mt-2 space-y-1">
-                        {dayExercises.map((entry) => (
-                          <li key={entry.id} className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-700">
-                            <span>
-                              {entry.exerciseName} - {entry.targetSets} sets
-                              {entry.targetReps ? ` x ${entry.targetReps}` : ""}
-                              {entry.targetWeight ? ` @ ${entry.targetWeight}kg` : ""}
-                            </span>
-                            <form action={removeExerciseFromRoutineDayAction}>
-                              <input type="hidden" name="routineDayExerciseId" value={entry.id} />
-                              <button className="rounded border border-rose-300 px-2 py-1 text-[11px] font-semibold text-rose-700 hover:bg-rose-50">
-                                Remove
-                              </button>
-                            </form>
-                          </li>
-                        ))}
-                        {dayExercises.length === 0 ? (
-                          <li className="text-xs text-slate-500">No exercises yet for this day.</li>
-                        ) : null}
-                      </ul>
-
-                      <form action={addExerciseToRoutineDayAction} className="mt-2 grid gap-2 sm:grid-cols-5">
-                        <input type="hidden" name="routineDayId" value={day.id} />
-                        <select
-                          name="exerciseId"
-                          required
-                          className="sm:col-span-2 rounded-lg border border-slate-300 px-2 py-1.5 text-xs outline-none focus:border-slate-500"
-                        >
-                          {allExercises.map((exercise) => (
-                            <option key={exercise.id} value={exercise.id}>
-                              {exercise.name}
-                            </option>
-                          ))}
-                        </select>
-                        <input
-                          type="number"
-                          name="targetSets"
-                          min={1}
-                          max={20}
-                          defaultValue={3}
-                          placeholder="Sets"
-                          className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs outline-none focus:border-slate-500"
-                        />
-                        <input
-                          type="number"
-                          name="targetReps"
-                          min={1}
-                          max={50}
-                          placeholder="Reps"
-                          className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs outline-none focus:border-slate-500"
-                        />
-                        <button className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100">
-                          Add Exercise
-                        </button>
-                      </form>
-                    </section>
+                    <RoutineDayFlyover
+                      key={day.id}
+                      day={{
+                        id: day.id,
+                        dayName: day.dayName,
+                      }}
+                      dayExercises={dayExercises.map((entry) => ({
+                        id: entry.id,
+                        exerciseName: entry.exerciseName,
+                        targetSets: entry.targetSets,
+                        targetReps: entry.targetReps,
+                        targetWeight: entry.targetWeight ? String(entry.targetWeight) : null,
+                      }))}
+                      allExercises={allExercises.map((exercise) => ({
+                        id: exercise.id,
+                        name: exercise.name,
+                      }))}
+                    />
                   );
                 })}
                 {days.length === 0 ? (

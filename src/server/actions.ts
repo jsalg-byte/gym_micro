@@ -27,6 +27,15 @@ const routineDaySchema = z.object({
   dayName: z.string().trim().min(2).max(32),
 });
 
+const updateRoutineDaySchema = z.object({
+  routineDayId: z.string().uuid(),
+  dayName: z.string().trim().min(2).max(32),
+});
+
+const deleteRoutineDaySchema = z.object({
+  routineDayId: z.string().uuid(),
+});
+
 const routineDayExerciseSchema = z.object({
   routineDayId: z.string().uuid(),
   exerciseId: z.string().uuid(),
@@ -51,6 +60,16 @@ const exerciseSchema = z.object({
   name: z.string().trim().min(2).max(120),
   category: z.enum(["strength", "cardio", "mobility"]).default("strength"),
   muscleGroup: z.string().trim().max(80).optional(),
+});
+
+const createAndAttachExerciseSchema = z.object({
+  routineDayId: z.string().uuid(),
+  name: z.string().trim().min(2).max(120),
+  category: z.enum(["strength", "cardio", "mobility"]).default("strength"),
+  muscleGroup: z.string().trim().max(80).optional(),
+  targetSets: z.number().int().positive().max(20).optional(),
+  targetReps: z.number().int().positive().max(50).optional(),
+  targetWeight: z.number().nonnegative().max(2000).optional(),
 });
 
 const startSessionSchema = z.object({
@@ -161,6 +180,78 @@ export async function createRoutineDayAction(formData: FormData) {
   revalidatePath("/sessions");
 }
 
+export async function updateRoutineDayAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = updateRoutineDaySchema.safeParse({
+    routineDayId: formData.get("routineDayId"),
+    dayName: formData.get("dayName"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid routine day update payload");
+  }
+
+  const db = getDb();
+  const [day] = await db
+    .select({
+      id: routineDays.id,
+    })
+    .from(routineDays)
+    .innerJoin(routines, eq(routineDays.routineId, routines.id))
+    .where(and(eq(routineDays.id, parsed.data.routineDayId), eq(routines.userId, userId)))
+    .limit(1);
+
+  if (!day) {
+    throw new Error("Routine day not found");
+  }
+
+  await db
+    .update(routineDays)
+    .set({
+      dayName: parsed.data.dayName,
+    })
+    .where(eq(routineDays.id, day.id));
+
+  revalidatePath("/routines");
+  revalidatePath("/sessions");
+}
+
+export async function deleteRoutineDayAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = deleteRoutineDaySchema.safeParse({
+    routineDayId: formData.get("routineDayId"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid delete routine day payload");
+  }
+
+  const db = getDb();
+  const [day] = await db
+    .select({
+      id: routineDays.id,
+      routineId: routineDays.routineId,
+    })
+    .from(routineDays)
+    .innerJoin(routines, eq(routineDays.routineId, routines.id))
+    .where(and(eq(routineDays.id, parsed.data.routineDayId), eq(routines.userId, userId)))
+    .limit(1);
+
+  if (!day) {
+    throw new Error("Routine day not found");
+  }
+
+  const routineDayCount = await db.$count(routineDays, eq(routineDays.routineId, day.routineId));
+  if (routineDayCount <= 1) {
+    throw new Error("A workout plan must keep at least one day");
+  }
+
+  await db.delete(routineDays).where(eq(routineDays.id, day.id));
+
+  revalidatePath("/routines");
+  revalidatePath("/sessions");
+}
+
 export async function addExerciseToRoutineDayAction(formData: FormData) {
   const userId = await requireUserId();
   const parsed = routineDayExerciseSchema.safeParse({
@@ -204,6 +295,69 @@ export async function addExerciseToRoutineDayAction(formData: FormData) {
   });
 
   revalidatePath("/routines");
+  revalidatePath("/sessions");
+}
+
+export async function createAndAttachExerciseToRoutineDayAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = createAndAttachExerciseSchema.safeParse({
+    routineDayId: formData.get("routineDayId"),
+    name: formData.get("name"),
+    category: formData.get("category") || "strength",
+    muscleGroup: formData.get("muscleGroup") || undefined,
+    targetSets: formData.get("targetSets") ? Number(formData.get("targetSets")) : undefined,
+    targetReps: formData.get("targetReps") ? Number(formData.get("targetReps")) : undefined,
+    targetWeight: formData.get("targetWeight") ? Number(formData.get("targetWeight")) : undefined,
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid create-and-attach exercise payload");
+  }
+
+  const db = getDb();
+  const [day] = await db
+    .select({
+      id: routineDays.id,
+    })
+    .from(routineDays)
+    .innerJoin(routines, eq(routineDays.routineId, routines.id))
+    .where(and(eq(routineDays.id, parsed.data.routineDayId), eq(routines.userId, userId)))
+    .limit(1);
+
+  if (!day) {
+    throw new Error("Routine day not found");
+  }
+
+  const [insertedExercise] = await db
+    .insert(exercises)
+    .values({
+      name: parsed.data.name,
+      category: parsed.data.category,
+      muscleGroup: parsed.data.muscleGroup,
+      createdByUserId: userId,
+    })
+    .returning({
+      id: exercises.id,
+    });
+
+  const [lastExercise] = await db
+    .select({ sortOrder: routineDayExercises.sortOrder })
+    .from(routineDayExercises)
+    .where(eq(routineDayExercises.routineDayId, parsed.data.routineDayId))
+    .orderBy(desc(routineDayExercises.sortOrder))
+    .limit(1);
+
+  await db.insert(routineDayExercises).values({
+    routineDayId: parsed.data.routineDayId,
+    exerciseId: insertedExercise.id,
+    sortOrder: (lastExercise?.sortOrder ?? -1) + 1,
+    targetSets: parsed.data.targetSets ?? 3,
+    targetReps: parsed.data.targetReps,
+    targetWeight: parsed.data.targetWeight?.toString(),
+  });
+
+  revalidatePath("/routines");
+  revalidatePath("/exercises");
   revalidatePath("/sessions");
 }
 
@@ -319,6 +473,7 @@ export async function createExerciseAction(formData: FormData) {
   });
 
   revalidatePath("/exercises");
+  revalidatePath("/routines");
   revalidatePath("/sessions");
 }
 

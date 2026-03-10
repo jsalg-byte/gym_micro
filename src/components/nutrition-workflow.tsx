@@ -254,7 +254,7 @@ export function NutritionWorkflow({ foods }: { foods: FoodOption[] }) {
   const [mode, setMode] = useState<Mode>(initialMode);
 
   const [ingredientRows, setIngredientRows] = useState<IngredientRow[]>([
-    { foodId: foods[0]?.id ?? "", amount: "100", unit: "g" },
+    { foodId: "", amount: "", unit: "g" },
   ]);
   const [mealType, setMealType] = useState("breakfast");
   const [mealPhoto, setMealPhoto] = useState<File | null>(null);
@@ -386,7 +386,7 @@ export function NutritionWorkflow({ foods }: { foods: FoodOption[] }) {
   }
 
   function addIngredientRow() {
-    setIngredientRows((prev) => [...prev, { foodId: foods[0]?.id ?? "", amount: "100", unit: "g" }]);
+    setIngredientRows((prev) => [...prev, { foodId: "", amount: "", unit: "g" }]);
   }
 
   function removeIngredientRow(index: number) {
@@ -681,7 +681,7 @@ export function NutritionWorkflow({ foods }: { foods: FoodOption[] }) {
 
     setLoading(false);
     setMealPhoto(null);
-    setIngredientRows([{ foodId: foods[0]?.id ?? "", amount: "100", unit: "g" }]);
+    setIngredientRows([{ foodId: "", amount: "", unit: "g" }]);
     router.refresh();
   }
 
@@ -808,6 +808,7 @@ export function NutritionWorkflow({ foods }: { foods: FoodOption[] }) {
                       required
                       className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
                     >
+                      <option value="">Select food</option>
                       {foods.map((food) => (
                         <option key={food.id} value={food.id}>
                           {food.name}
@@ -888,15 +889,34 @@ export function NutritionWorkflow({ foods }: { foods: FoodOption[] }) {
                 <option value="dinner">Dinner</option>
                 <option value="snack">Snack</option>
               </select>
-              <label className="block text-xs text-slate-600">
-                Meal Photo (optional)
+              <div>
+                <p className="text-xs text-slate-600">Meal Photo (optional)</p>
+                <label
+                  htmlFor="meal-photo-input"
+                  className="mt-1 flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm text-slate-700 hover:bg-slate-100"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-6 w-6 text-slate-500"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  >
+                    <path d="M4 7a2 2 0 0 1 2-2h3l1.2 1.5a1 1 0 0 0 .8.4H18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z" />
+                    <circle cx="9" cy="12" r="1.5" />
+                    <path d="m20 16-4.5-4.5a1 1 0 0 0-1.4 0L8 17.6" />
+                  </svg>
+                  <span>{mealPhoto ? mealPhoto.name : "Click to choose an image"}</span>
+                </label>
                 <input
+                  id="meal-photo-input"
                   type="file"
                   accept="image/*"
                   onChange={(event) => setMealPhoto(event.target.files?.[0] ?? null)}
-                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  className="sr-only"
                 />
-              </label>
+              </div>
             </div>
 
             <button
