@@ -2,6 +2,7 @@
 
 import { and, desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getDb } from "@/db/client";
 import {
@@ -617,8 +618,8 @@ export async function cancelWorkoutSessionAction(formData: FormData) {
   await db.delete(workoutSessions).where(eq(workoutSessions.id, session.id));
 
   revalidatePath("/sessions");
-  revalidatePath(`/sessions/${session.id}`);
   revalidatePath("/dashboard");
+  redirect("/sessions");
 }
 
 export async function createFoodAction(formData: FormData) {
