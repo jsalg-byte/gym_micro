@@ -11,7 +11,11 @@ import {
   workoutSets,
 } from "@/db/schema";
 import { requireUserId } from "@/lib/session";
-import { addWorkoutSetAction, completeWorkoutSessionAction } from "@/server/actions";
+import {
+  addWorkoutSetAction,
+  cancelWorkoutSessionAction,
+  completeWorkoutSessionAction,
+} from "@/server/actions";
 import { RestTimer } from "@/components/rest-timer";
 
 export default async function SessionDetailPage({
@@ -81,7 +85,10 @@ export default async function SessionDetailPage({
               Started {new Date(session.startedAt).toLocaleString()} · Status {session.status}
             </p>
           </div>
-          <Link href="/sessions" className="text-sm font-semibold text-teal-700 hover:text-teal-800">
+          <Link
+            href="/sessions"
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+          >
             Back to sessions
           </Link>
         </div>
@@ -155,13 +162,21 @@ export default async function SessionDetailPage({
             ))}
             {sets.length === 0 ? <li className="text-sm text-slate-500">No sets logged yet.</li> : null}
           </ul>
-          {session.status !== "completed" ? (
-            <form action={completeWorkoutSessionAction} className="mt-3">
-              <input type="hidden" name="sessionId" value={session.id} />
-              <button className="rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100">
-                Complete Session
-              </button>
-            </form>
+          {session.status === "active" ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              <form action={completeWorkoutSessionAction}>
+                <input type="hidden" name="sessionId" value={session.id} />
+                <button className="rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100">
+                  Complete Session
+                </button>
+              </form>
+              <form action={cancelWorkoutSessionAction}>
+                <input type="hidden" name="sessionId" value={session.id} />
+                <button className="rounded-lg border border-rose-300 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-100">
+                  Cancel Session
+                </button>
+              </form>
+            </div>
           ) : null}
         </article>
       </section>
