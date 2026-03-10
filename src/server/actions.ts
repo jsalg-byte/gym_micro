@@ -84,6 +84,10 @@ const setSchema = z.object({
   isWarmup: z.boolean().optional(),
 });
 
+const cancelSessionSchema = z.object({
+  sessionId: z.string().uuid(),
+});
+
 const foodSchema = z.object({
   name: z.string().trim().min(2).max(120),
   barcodeUpc: z
@@ -579,6 +583,42 @@ export async function completeWorkoutSessionAction(formData: FormData) {
 
   revalidatePath("/sessions");
   revalidatePath(`/sessions/${sessionId}`);
+}
+
+export async function cancelWorkoutSessionAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = cancelSessionSchema.safeParse({
+    sessionId: formData.get("sessionId"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid cancel session payload");
+  }
+
+  const db = getDb();
+  const [session] = await db
+    .select({
+      id: workoutSessions.id,
+      status: workoutSessions.status,
+    })
+    .from(workoutSessions)
+    .where(and(eq(workoutSessions.id, parsed.data.sessionId), eq(workoutSessions.userId, userId)))
+    .limit(1);
+
+  if (!session) {
+    throw new Error("Workout session not found");
+  }
+
+  if (session.status !== "active") {
+    throw new Error("Only active sessions can be cancelled");
+  }
+
+  // Cancel is destructive by product decision: remove accidental sessions entirely.
+  await db.delete(workoutSessions).where(eq(workoutSessions.id, session.id));
+
+  revalidatePath("/sessions");
+  revalidatePath(`/sessions/${session.id}`);
+  revalidatePath("/dashboard");
 }
 
 export async function createFoodAction(formData: FormData) {
