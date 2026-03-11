@@ -136,17 +136,19 @@ export default async function SessionDetailPage({
     });
   }
 
-  const exerciseOptions = dayPlannedExercises.map((exercise) => {
-    const recent = recentByExercise.get(exercise.id);
-    return {
-      id: exercise.id,
-      name: exercise.name,
-      gifUrl: resolveExerciseGifUrl(exercise.name),
-      prefillReps: recent?.reps ?? exercise.targetReps ?? null,
-      prefillWeight:
-        recent?.weight ?? (exercise.targetWeight !== null ? String(exercise.targetWeight) : null),
-    };
-  });
+  const exerciseOptions = await Promise.all(
+    dayPlannedExercises.map(async (exercise) => {
+      const recent = recentByExercise.get(exercise.id);
+      return {
+        id: exercise.id,
+        name: exercise.name,
+        gifUrl: await resolveExerciseGifUrl(exercise.name),
+        prefillReps: recent?.reps ?? exercise.targetReps ?? null,
+        prefillWeight:
+          recent?.weight ?? (exercise.targetWeight !== null ? String(exercise.targetWeight) : null),
+      };
+    }),
+  );
 
   const initialExerciseId = sets[sets.length - 1]?.exerciseId ?? exerciseOptions[0]?.id ?? "";
   const groupedSets = new Map<

@@ -1,38 +1,51 @@
-const FALLBACK_GIF = "https://media.giphy.com/media/3o7TKOQ6Nf6k2lA5nG/giphy.gif";
+import { cache } from "react";
 
-const KEYWORD_GIFS: Array<{ keywords: string[]; url: string }> = [
-  {
-    keywords: ["squat", "leg press", "lunge"],
-    url: "https://media.giphy.com/media/xT9IgG50Fb7Mi0prBC/giphy.gif",
-  },
-  {
-    keywords: ["bench", "push", "chest", "dip"],
-    url: "https://media.giphy.com/media/l3q2K5jinAlChoCLS/giphy.gif",
-  },
-  {
-    keywords: ["deadlift", "row", "pull", "back"],
-    url: "https://media.giphy.com/media/3o6fJ1BM7R2EBRDnxK/giphy.gif",
-  },
-  {
-    keywords: ["curl", "bicep", "tricep", "shoulder", "press"],
-    url: "https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif",
-  },
-  {
-    keywords: ["plank", "crunch", "core", "abs"],
-    url: "https://media.giphy.com/media/xUPGcguWZHRC2HyBRS/giphy.gif",
-  },
-  {
-    keywords: ["run", "bike", "cardio", "jump"],
-    url: "https://media.giphy.com/media/26gsspfbt1HfVQ9va/giphy.gif",
-  },
-];
+const FALLBACK_GIF = "https://cdn.exercisedb.dev/exercise.gif";
+const EXERCISE_DB_BASE_URL = "https://www.exercisedb.dev";
 
-export function resolveExerciseGifUrl(exerciseName: string) {
-  const normalized = exerciseName.toLowerCase();
+type ExerciseDbSearchResponse = {
+  success?: boolean;
+  data?: Array<{
+    name?: string;
+    gifUrl?: string;
+  }>;
+};
 
-  const match = KEYWORD_GIFS.find((entry) =>
-    entry.keywords.some((keyword) => normalized.includes(keyword)),
-  );
+const lookupGifByExerciseName = cache(async (exerciseName: string) => {
+  const query = exerciseName.trim();
+  if (!query) {
+    return FALLBACK_GIF;
+  }
 
-  return match?.url ?? FALLBACK_GIF;
+  const url = new URL("/api/v1/exercises/search", EXERCISE_DB_BASE_URL);
+  url.searchParams.set("q", query);
+  url.searchParams.set("limit", "1");
+  url.searchParams.set("offset", "0");
+  url.searchParams.set("threshold", "0.15");
+
+  try {
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      next: { revalidate: 60 * 60 * 24 * 7 },
+    });
+
+    if (!response.ok) {
+      return FALLBACK_GIF;
+    }
+
+    const payload = (await response.json()) as ExerciseDbSearchResponse;
+    const gifUrl = payload.data?.[0]?.gifUrl;
+
+    if (!gifUrl || typeof gifUrl !== "string") {
+      return FALLBACK_GIF;
+    }
+
+    return gifUrl;
+  } catch {
+    return FALLBACK_GIF;
+  }
+});
+
+export async function resolveExerciseGifUrl(exerciseName: string) {
+  return lookupGifByExerciseName(exerciseName.toLowerCase());
 }
