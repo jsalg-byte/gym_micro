@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type PhotoEntry = {
   id: string;
@@ -57,11 +58,15 @@ export function ProgressCalendar({
   entries: PhotoEntry[];
   sessionEntries: SessionEntry[];
 }) {
+  const router = useRouter();
   const latestDate = entries[0]?.capturedAt ?? sessionEntries[0]?.startedAt ?? new Date().toISOString();
   const initialMonth = startOfMonth(new Date(latestDate));
   const [month, setMonth] = useState(initialMonth);
   const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+  const [editCapturedAt, setEditCapturedAt] = useState("");
+  const [photoActionLoading, setPhotoActionLoading] = useState(false);
+  const [photoActionStatus, setPhotoActionStatus] = useState<string | null>(null);
 
   const photosByDay = useMemo(() => {
     const map = new Map<string, PhotoEntry[]>();
@@ -112,7 +117,16 @@ export function ProgressCalendar({
 
   useEffect(() => {
     setSelectedPhotoIndex(0);
+    setPhotoActionStatus(null);
   }, [selectedDayKey]);
+
+  useEffect(() => {
+    if (!activePhoto) {
+      setEditCapturedAt("");
+      return;
+    }
+    setEditCapturedAt(activePhoto.capturedAt.slice(0, 10));
+  }, [activePhoto]);
 
   function goToNextPhoto() {
     if (selectedPhotos.length <= 1) {
@@ -126,6 +140,63 @@ export function ProgressCalendar({
       return;
     }
     setSelectedPhotoIndex((prev) => (prev - 1 + selectedPhotos.length) % selectedPhotos.length);
+  }
+
+  async function savePhotoDate() {
+    if (!activePhoto || !editCapturedAt) {
+      return;
+    }
+    setPhotoActionLoading(true);
+    setPhotoActionStatus(null);
+    try {
+      const response = await fetch("/api/progress", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          id: activePhoto.id,
+          capturedAt: editCapturedAt,
+        }),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(payload?.error ?? "Failed to update photo date.");
+      }
+
+      setPhotoActionStatus("Photo date saved.");
+      router.refresh();
+    } catch (error) {
+      setPhotoActionStatus(error instanceof Error ? error.message : "Failed to update photo date.");
+    } finally {
+      setPhotoActionLoading(false);
+    }
+  }
+
+  async function deletePhoto() {
+    if (!activePhoto) {
+      return;
+    }
+    setPhotoActionLoading(true);
+    setPhotoActionStatus(null);
+    try {
+      const response = await fetch("/api/progress", {
+        method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id: activePhoto.id }),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(payload?.error ?? "Failed to delete photo.");
+      }
+
+      setPhotoActionStatus("Photo deleted.");
+      router.refresh();
+    } catch (error) {
+      setPhotoActionStatus(error instanceof Error ? error.message : "Failed to delete photo.");
+    } finally {
+      setPhotoActionLoading(false);
+    }
   }
 
   return (
@@ -255,6 +326,38 @@ export function ProgressCalendar({
                           </button>
                         </div>
                       ) : null}
+                    </div>
+
+                    <div className="rounded-md border border-slate-200 bg-white p-2">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">Photo Actions</p>
+                      <div className="mt-2 flex flex-wrap items-end gap-2">
+                        <label className="text-xs text-slate-600">
+                          Edit Date
+                          <input
+                            type="date"
+                            value={editCapturedAt}
+                            onChange={(event) => setEditCapturedAt(event.target.value)}
+                            className="mt-1 rounded-md border border-slate-300 px-2 py-1 text-sm outline-none focus:border-slate-500"
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          disabled={photoActionLoading || !editCapturedAt}
+                          onClick={savePhotoDate}
+                          className="rounded-md border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
+                        >
+                          Save Date
+                        </button>
+                        <button
+                          type="button"
+                          disabled={photoActionLoading}
+                          onClick={deletePhoto}
+                          className="rounded-md border border-rose-300 px-2 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50"
+                        >
+                          Delete Photo
+                        </button>
+                      </div>
+                      {photoActionStatus ? <p className="mt-2 text-xs text-slate-600">{photoActionStatus}</p> : null}
                     </div>
 
                     {selectedPhotos.length > 1 ? (

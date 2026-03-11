@@ -1,4 +1,4 @@
-import { GetObjectCommand, S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, GetObjectCommand, S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "@/lib/env";
 
@@ -62,4 +62,16 @@ export async function createPresignedReadUrl(params: {
   return getSignedUrl(client, command, {
     expiresIn: params.maxAgeSec ?? 1800,
   });
+}
+
+export async function deleteObject(params: { key: string }) {
+  const bucket = required(env.S3_BUCKET, "S3_BUCKET");
+  const client = createS3Client();
+
+  await client.send(
+    new DeleteObjectCommand({
+      Bucket: bucket,
+      Key: params.key,
+    }),
+  );
 }
