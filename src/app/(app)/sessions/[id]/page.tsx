@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { getDb } from "@/db/client";
 import {
@@ -7,16 +7,19 @@ import {
   routineDayExercises,
   routineDays,
   routines,
+  userPreferences,
   workoutSessions,
   workoutSets,
 } from "@/db/schema";
+import { resolveExerciseGifUrl } from "@/lib/exercise-gifs";
 import { requireUserId } from "@/lib/session";
+import { normalizeWeightUnit } from "@/lib/weight-unit";
 import {
-  addWorkoutSetAction,
   cancelWorkoutSessionAction,
   completeWorkoutSessionAction,
 } from "@/server/actions";
 import { RestTimer } from "@/components/rest-timer";
+import { SessionSetLogger } from "@/components/session-set-logger";
 
 export default async function SessionDetailPage({
   params,
@@ -46,21 +49,33 @@ export default async function SessionDetailPage({
     notFound();
   }
 
-  const [dayPlannedExercises, sets] = await Promise.all([
+  const [dayPlannedExercises, sets, prefs] = await Promise.all([
     session.routineDayId
       ? db
           .select({
             id: exercises.id,
             name: exercises.name,
+            targetReps: routineDayExercises.targetReps,
+            targetWeight: routineDayExercises.targetWeight,
           })
           .from(routineDayExercises)
           .innerJoin(exercises, eq(routineDayExercises.exerciseId, exercises.id))
           .where(eq(routineDayExercises.routineDayId, session.routineDayId))
           .orderBy(asc(routineDayExercises.sortOrder))
-      : db.select({ id: exercises.id, name: exercises.name }).from(exercises).orderBy(asc(exercises.name)),
+      : db
+          .select({
+            id: exercises.id,
+            name: exercises.name,
+            targetReps: routineDayExercises.targetReps,
+            targetWeight: routineDayExercises.targetWeight,
+          })
+          .from(exercises)
+          .leftJoin(routineDayExercises, eq(routineDayExercises.exerciseId, exercises.id))
+          .orderBy(asc(exercises.name)),
     db
       .select({
         id: workoutSets.id,
+        exerciseId: workoutSets.exerciseId,
         setOrder: workoutSets.setOrder,
         reps: workoutSets.reps,
         weight: workoutSets.weight,
@@ -71,7 +86,66 @@ export default async function SessionDetailPage({
       .leftJoin(exercises, eq(workoutSets.exerciseId, exercises.id))
       .where(eq(workoutSets.sessionId, session.id))
       .orderBy(asc(workoutSets.setOrder)),
+    db
+      .select()
+      .from(userPreferences)
+      .where(eq(userPreferences.userId, userId))
+      .limit(1)
+      .then((rows) => rows[0] ?? null),
   ]);
+  const weightUnit = normalizeWeightUnit(prefs?.weightUnit);
+
+  const exerciseIds = dayPlannedExercises.map((exercise) => exercise.id);
+  const recentExerciseSets =
+    exerciseIds.length > 0
+      ? await db
+          .select({
+            exerciseId: workoutSets.exerciseId,
+            reps: workoutSets.reps,
+            weight: workoutSets.weight,
+            createdAt: workoutSets.createdAt,
+          })
+          .from(workoutSets)
+          .innerJoin(workoutSessions, eq(workoutSets.sessionId, workoutSessions.id))
+          .where(
+            and(
+              eq(workoutSessions.userId, userId),
+              inArray(workoutSets.exerciseId, exerciseIds),
+            ),
+          )
+          .orderBy(desc(workoutSets.createdAt))
+      : [];
+
+  const recentByExercise = new Map<
+    string,
+    {
+      reps: number;
+      weight: string | null;
+    }
+  >();
+  for (const row of recentExerciseSets) {
+    if (recentByExercise.has(row.exerciseId)) {
+      continue;
+    }
+    recentByExercise.set(row.exerciseId, {
+      reps: row.reps,
+      weight: row.weight !== null ? String(row.weight) : null,
+    });
+  }
+
+  const exerciseOptions = dayPlannedExercises.map((exercise) => {
+    const recent = recentByExercise.get(exercise.id);
+    return {
+      id: exercise.id,
+      name: exercise.name,
+      gifUrl: resolveExerciseGifUrl(exercise.name),
+      prefillReps: recent?.reps ?? exercise.targetReps ?? null,
+      prefillWeight:
+        recent?.weight ?? (exercise.targetWeight !== null ? String(exercise.targetWeight) : null),
+    };
+  });
+
+  const initialExerciseId = sets[sets.length - 1]?.exerciseId ?? exerciseOptions[0]?.id ?? "";
 
   return (
     <main className="space-y-4">
@@ -97,53 +171,18 @@ export default async function SessionDetailPage({
       <section className="grid gap-4 md:grid-cols-[320px_minmax(0,1fr)]">
         <article className="panel p-4">
           <h2 className="text-lg font-black text-slate-900">Log Set</h2>
-          <form action={addWorkoutSetAction} className="mt-3 space-y-3">
-            <input type="hidden" name="sessionId" value={session.id} />
-            <label className="block text-sm text-slate-700">
-              Exercise
-              <select
-                name="exerciseId"
-                required
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
-              >
-                {dayPlannedExercises.map((exercise) => (
-                  <option key={exercise.id} value={exercise.id}>
-                    {exercise.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="block text-sm text-slate-700">
-              Reps
-              <input
-                type="number"
-                name="reps"
-                min={1}
-                max={100}
-                required
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
-              />
-            </label>
-            <label className="block text-sm text-slate-700">
-              Weight
-              <input
-                type="number"
-                name="weight"
-                min={0}
-                step="0.5"
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
-              />
-            </label>
-            <label className="flex items-center gap-2 text-sm text-slate-700">
-              <input type="checkbox" name="isWarmup" />
-              Warmup set
-            </label>
-            <button className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">
-              Add Set
-            </button>
-          </form>
+          {session.status === "active" && exerciseOptions.length > 0 ? (
+            <SessionSetLogger
+              sessionId={session.id}
+              weightUnit={weightUnit}
+              exerciseOptions={exerciseOptions}
+              initialExerciseId={initialExerciseId}
+            />
+          ) : (
+            <p className="mt-3 text-sm text-slate-600">Session is not active or has no exercises to log.</p>
+          )}
           <div className="mt-3">
-            <RestTimer />
+            <RestTimer storageKey={`session:${session.id}`} />
           </div>
         </article>
 
@@ -156,7 +195,7 @@ export default async function SessionDetailPage({
                   #{set.setOrder} {set.exerciseName ?? "Exercise"}
                 </p>
                 <p className="text-slate-600">
-                  {set.reps} reps @ {set.weight ?? "0"} kg {set.isWarmup ? "(warmup)" : ""}
+                  {set.reps} reps @ {set.weight ?? "0"} {weightUnit} {set.isWarmup ? "(warmup)" : ""}
                 </p>
               </li>
             ))}

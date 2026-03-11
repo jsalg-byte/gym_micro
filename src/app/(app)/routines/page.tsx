@@ -9,6 +9,7 @@ import {
 } from "@/db/schema";
 import { RoutineDayFlyover } from "@/components/routine-day-flyover";
 import { requireUserId } from "@/lib/session";
+import { normalizeWeightUnit } from "@/lib/weight-unit";
 import {
   createRoutineAction,
   createRoutineDayAction,
@@ -63,6 +64,7 @@ export default async function RoutinesPage() {
       .limit(1)
       .then((rows) => rows[0] ?? null),
   ]);
+  const weightUnit = normalizeWeightUnit(activePref?.weightUnit);
 
   const daysByRoutine = new Map<string, typeof dayItems>();
   for (const day of dayItems) {
@@ -180,6 +182,7 @@ export default async function RoutinesPage() {
                         id: day.id,
                         dayName: day.dayName,
                       }}
+                      weightUnit={weightUnit}
                       dayExercises={dayExercises.map((entry) => ({
                         id: entry.id,
                         exerciseName: entry.exerciseName,

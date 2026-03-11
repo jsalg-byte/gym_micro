@@ -80,6 +80,7 @@ export const userPreferences = pgTable(
     activeRoutineId: uuid("active_routine_id").references(() => routines.id, {
       onDelete: "set null",
     }),
+    weightUnit: text("weight_unit").notNull().default("lbs"),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -296,6 +297,31 @@ export const userIpAddresses = pgTable(
   (table) => [
     uniqueIndex("user_ip_addresses_user_ip_unique").on(table.userId, table.ipAddress),
     index("user_ip_addresses_user_last_seen_idx").on(table.userId, table.lastSeenAt),
+  ],
+);
+
+export const friendRequests = pgTable(
+  "friend_requests",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    requesterId: uuid("requester_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    addresseeId: uuid("addressee_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    status: text("status").notNull().default("pending"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("friend_requests_addressee_status_idx").on(table.addresseeId, table.status),
+    index("friend_requests_requester_status_idx").on(table.requesterId, table.status),
+    uniqueIndex("friend_requests_pair_unique").on(table.requesterId, table.addresseeId),
   ],
 );
 

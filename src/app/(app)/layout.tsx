@@ -50,6 +50,12 @@ export default async function AppLayout({
             <Link href="/progress" className="rounded-md px-2 py-1 hover:bg-slate-100">
               Progress
             </Link>
+            <Link href="/friends" className="rounded-md px-2 py-1 hover:bg-slate-100">
+              Friends
+            </Link>
+            <Link href="/settings" className="rounded-md px-2 py-1 hover:bg-slate-100">
+              Settings
+            </Link>
             {isAdmin ? (
               <Link href="/admin" className="rounded-md px-2 py-1 hover:bg-slate-100">
                 Admin
