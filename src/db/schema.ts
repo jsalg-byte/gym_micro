@@ -251,6 +251,46 @@ export const mealLogs = pgTable(
   (table) => [index("meal_logs_user_consumed_idx").on(table.userId, table.consumedAt)],
 );
 
+export const fastingLogs = pgTable(
+  "fasting_logs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    startedAt: timestamp("started_at", { withTimezone: true }).notNull(),
+    endedAt: timestamp("ended_at", { withTimezone: true }).notNull(),
+    durationMinutes: integer("duration_minutes").notNull(),
+    note: text("note"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [index("fasting_logs_user_ended_idx").on(table.userId, table.endedAt)],
+);
+
+export const activeFasts = pgTable(
+  "active_fasts",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    startedAt: timestamp("started_at", { withTimezone: true }).notNull(),
+    note: text("note"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("active_fasts_user_unique").on(table.userId),
+    index("active_fasts_started_idx").on(table.startedAt),
+  ],
+);
+
 export const uploads = pgTable(
   "uploads",
   {
