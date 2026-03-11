@@ -50,6 +50,20 @@
       "when": 1773200250379,
       "tag": "0006_strange_scarlet_spider",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1773237766409,
+      "tag": "0007_tricky_chameleon",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1773237982646,
+      "tag": "0008_complex_wallflower",
+      "breakpoints": true
     }
   ]
 }
