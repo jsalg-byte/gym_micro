@@ -17,6 +17,9 @@ import { normalizeWeightUnit } from "@/lib/weight-unit";
 import {
   cancelWorkoutSessionAction,
   completeWorkoutSessionAction,
+  deleteWorkoutSessionAction,
+  deleteWorkoutSetAction,
+  updateWorkoutSetAction,
 } from "@/server/actions";
 import { RestTimer } from "@/components/rest-timer";
 import { SessionSetLogger } from "@/components/session-set-logger";
@@ -146,6 +149,25 @@ export default async function SessionDetailPage({
   });
 
   const initialExerciseId = sets[sets.length - 1]?.exerciseId ?? exerciseOptions[0]?.id ?? "";
+  const groupedSets = new Map<
+    string,
+    {
+      exerciseName: string;
+      sets: typeof sets;
+    }
+  >();
+  for (const set of sets) {
+    const key = set.exerciseId;
+    const group = groupedSets.get(key);
+    if (!group) {
+      groupedSets.set(key, {
+        exerciseName: set.exerciseName ?? "Exercise",
+        sets: [set],
+      });
+      continue;
+    }
+    group.sets.push(set);
+  }
 
   return (
     <main className="space-y-4">
@@ -188,19 +210,69 @@ export default async function SessionDetailPage({
 
         <article className="panel p-4">
           <h2 className="text-lg font-black text-slate-900">Logged Sets</h2>
-          <ul className="mt-3 space-y-2">
-            {sets.map((set) => (
-              <li key={set.id} className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
-                <p className="font-semibold text-slate-900">
-                  #{set.setOrder} {set.exerciseName ?? "Exercise"}
-                </p>
-                <p className="text-slate-600">
-                  {set.reps} reps @ {set.weight ?? "0"} {weightUnit} {set.isWarmup ? "(warmup)" : ""}
-                </p>
-              </li>
+          <div className="mt-3 space-y-3">
+            {Array.from(groupedSets.entries()).map(([exerciseId, group]) => (
+              <section key={exerciseId} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-bold text-slate-900">{group.exerciseName}</p>
+                  <span className="rounded-full border border-cyan-300 bg-cyan-100 px-2 py-0.5 text-[11px] font-semibold text-cyan-900">
+                    {group.sets.length} set{group.sets.length === 1 ? "" : "s"}
+                  </span>
+                </div>
+                <ul className="mt-2 space-y-2">
+                  {group.sets.map((set, index) => (
+                    <li key={set.id} className="rounded-md border border-slate-200 bg-white p-2 text-sm">
+                      <p className="font-semibold text-slate-900">
+                        Set {index + 1} (overall #{set.setOrder})
+                      </p>
+                      <form action={updateWorkoutSetAction} className="mt-2 grid gap-2 sm:grid-cols-4">
+                        <input type="hidden" name="setId" value={set.id} />
+                        <label className="text-xs text-slate-600">
+                          Reps
+                          <input
+                            type="number"
+                            name="reps"
+                            min={1}
+                            max={100}
+                            required
+                            defaultValue={set.reps}
+                            className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-500"
+                          />
+                        </label>
+                        <label className="text-xs text-slate-600">
+                          Weight ({weightUnit})
+                          <input
+                            type="number"
+                            name="weight"
+                            min={0}
+                            step="0.5"
+                            defaultValue={set.weight !== null ? String(set.weight) : ""}
+                            className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-500"
+                          />
+                        </label>
+                        <label className="flex items-center gap-2 text-xs text-slate-600 sm:mt-6">
+                          <input type="checkbox" name="isWarmup" defaultChecked={set.isWarmup} />
+                          Warmup
+                        </label>
+                        <div className="flex items-center gap-2 sm:mt-5">
+                          <button className="rounded-md border border-slate-300 px-2 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100">
+                            Save
+                          </button>
+                        </div>
+                      </form>
+                      <form action={deleteWorkoutSetAction} className="mt-2">
+                        <input type="hidden" name="setId" value={set.id} />
+                        <button className="rounded-md border border-rose-300 px-2 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50">
+                          Delete Set
+                        </button>
+                      </form>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             ))}
-            {sets.length === 0 ? <li className="text-sm text-slate-500">No sets logged yet.</li> : null}
-          </ul>
+            {sets.length === 0 ? <p className="text-sm text-slate-500">No sets logged yet.</p> : null}
+          </div>
           {session.status === "active" ? (
             <div className="mt-3 flex flex-wrap gap-2">
               <form action={completeWorkoutSessionAction}>
@@ -216,7 +288,16 @@ export default async function SessionDetailPage({
                 </button>
               </form>
             </div>
-          ) : null}
+          ) : (
+            <div className="mt-3">
+              <form action={deleteWorkoutSessionAction}>
+                <input type="hidden" name="sessionId" value={session.id} />
+                <button className="rounded-lg border border-rose-300 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-100">
+                  Delete Session
+                </button>
+              </form>
+            </div>
+          )}
         </article>
       </section>
     </main>
