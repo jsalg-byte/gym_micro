@@ -325,4 +325,30 @@ export const friendRequests = pgTable(
   ],
 );
 
+export const exerciseGifOverrides = pgTable(
+  "exercise_gif_overrides",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    exerciseId: uuid("exercise_id")
+      .notNull()
+      .references(() => exercises.id, { onDelete: "cascade" }),
+    gifUrl: text("gif_url").notNull(),
+    sourceExerciseId: text("source_exercise_id"),
+    sourceName: text("source_name"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("exercise_gif_overrides_user_exercise_unique").on(table.userId, table.exerciseId),
+    index("exercise_gif_overrides_user_idx").on(table.userId),
+  ],
+);
+
 export type User = typeof users.$inferSelect;
