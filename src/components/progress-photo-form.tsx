@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type UploadState = {
   message: string;
@@ -8,6 +9,7 @@ type UploadState = {
 };
 
 export function ProgressPhotoForm() {
+  const router = useRouter();
   const [capturedAt, setCapturedAt] = useState(() => new Date().toISOString().slice(0, 10));
   const [note, setNote] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -76,6 +78,7 @@ export function ProgressPhotoForm() {
       setStatus({ ok: true, message: "Progress photo uploaded." });
       setSelectedFile(null);
       setNote("");
+      router.refresh();
     } catch (error) {
       if (error instanceof TypeError) {
         setStatus({

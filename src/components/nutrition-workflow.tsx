@@ -617,6 +617,8 @@ export function NutritionWorkflow({ foods }: { foods: FoodOption[] }) {
 
     const payload = (await response.json().catch(() => null)) as { id?: string; ids?: string[] } | null;
     const mealLogId = payload?.ids?.[0] ?? payload?.id;
+    // Refresh immediately after meal save so log/calendar updates right away.
+    router.refresh();
 
     if (mealPhoto && mealLogId) {
       try {
