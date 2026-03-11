@@ -95,7 +95,7 @@ export function SessionSetLogger({
             <img
               src={selectedExercise.gifUrl}
               alt={`${selectedExercise.name} demo`}
-              className="mt-2 h-44 w-full rounded-md border border-cyan-200 object-cover"
+              className="mt-2 w-full rounded-md border border-cyan-200 object-contain"
             />
           </div>
         ) : null}
@@ -203,7 +203,7 @@ export function SessionSetLogger({
           {exerciseOptions.map((exercise) => (
             <figure key={exercise.id} className="overflow-hidden rounded border border-slate-200 bg-white">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={exercise.gifUrl} alt={`${exercise.name} gif`} className="h-24 w-full object-cover" />
+              <img src={exercise.gifUrl} alt={`${exercise.name} gif`} className="w-full object-contain" />
               <figcaption className="px-2 py-1 text-[11px] text-slate-700">{exercise.name}</figcaption>
             </figure>
           ))}
@@ -243,7 +243,7 @@ export function SessionSetLogger({
                       <img
                         src={candidate.gifUrl}
                         alt={`${candidate.name} gif`}
-                        className="h-20 w-full rounded border border-slate-200 object-cover"
+                        className="w-full rounded border border-slate-200 object-contain"
                       />
                       <div>
                         <p className="text-sm font-semibold text-slate-900">{candidate.name}</p>
