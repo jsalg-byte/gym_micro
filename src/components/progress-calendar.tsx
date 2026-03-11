@@ -1,13 +1,22 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-type CalendarEntry = {
+type PhotoEntry = {
   id: string;
   capturedAt: string;
   note: string | null;
   objectKey: string;
   imageUrl: string;
+};
+
+type SessionEntry = {
+  id: string;
+  startedAt: string;
+  status: string;
+  routineName: string | null;
+  dayName: string | null;
+  setCount: number;
 };
 
 function startOfMonth(date: Date) {
@@ -25,6 +34,11 @@ function formatDayKey(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
+function dayKeyToDate(dayKey: string) {
+  const [year, month, day] = dayKey.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
 function formatDayLabel(date: Date) {
   return date.toLocaleDateString(undefined, {
     weekday: "long",
@@ -36,13 +50,21 @@ function formatDayLabel(date: Date) {
 
 const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-export function ProgressCalendar({ entries }: { entries: CalendarEntry[] }) {
-  const initialMonth = startOfMonth(entries[0] ? new Date(entries[0].capturedAt) : new Date());
+export function ProgressCalendar({
+  entries,
+  sessionEntries,
+}: {
+  entries: PhotoEntry[];
+  sessionEntries: SessionEntry[];
+}) {
+  const latestDate = entries[0]?.capturedAt ?? sessionEntries[0]?.startedAt ?? new Date().toISOString();
+  const initialMonth = startOfMonth(new Date(latestDate));
   const [month, setMonth] = useState(initialMonth);
   const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
 
-  const groupedByDay = useMemo(() => {
-    const map = new Map<string, CalendarEntry[]>();
+  const photosByDay = useMemo(() => {
+    const map = new Map<string, PhotoEntry[]>();
     for (const entry of entries) {
       const key = formatDayKey(new Date(entry.capturedAt));
       const list = map.get(key) ?? [];
@@ -52,6 +74,17 @@ export function ProgressCalendar({ entries }: { entries: CalendarEntry[] }) {
     return map;
   }, [entries]);
 
+  const sessionsByDay = useMemo(() => {
+    const map = new Map<string, SessionEntry[]>();
+    for (const entry of sessionEntries) {
+      const key = formatDayKey(new Date(entry.startedAt));
+      const list = map.get(key) ?? [];
+      list.push(entry);
+      map.set(key, list);
+    }
+    return map;
+  }, [sessionEntries]);
+
   const monthStart = startOfMonth(month);
   const startGrid = new Date(monthStart);
   startGrid.setDate(monthStart.getDate() - monthStart.getDay());
@@ -60,17 +93,40 @@ export function ProgressCalendar({ entries }: { entries: CalendarEntry[] }) {
     const date = new Date(startGrid);
     date.setDate(startGrid.getDate() + index);
     const key = formatDayKey(date);
-    const isInCurrentMonth = date.getMonth() === monthStart.getMonth();
+    const dayPhotos = photosByDay.get(key) ?? [];
+    const daySessions = sessionsByDay.get(key) ?? [];
+
     return {
       key,
       date,
-      isInCurrentMonth,
-      entries: groupedByDay.get(key) ?? [],
+      isInCurrentMonth: date.getMonth() === monthStart.getMonth(),
+      photos: dayPhotos,
+      sessions: daySessions,
     };
   });
 
-  const selectedEntries = selectedDayKey ? groupedByDay.get(selectedDayKey) ?? [] : [];
-  const selectedDate = selectedDayKey ? new Date(`${selectedDayKey}T12:00:00Z`) : null;
+  const selectedPhotos = selectedDayKey ? photosByDay.get(selectedDayKey) ?? [] : [];
+  const selectedSessions = selectedDayKey ? sessionsByDay.get(selectedDayKey) ?? [] : [];
+  const selectedDate = selectedDayKey ? dayKeyToDate(selectedDayKey) : null;
+  const activePhoto = selectedPhotos[selectedPhotoIndex] ?? null;
+
+  useEffect(() => {
+    setSelectedPhotoIndex(0);
+  }, [selectedDayKey]);
+
+  function goToNextPhoto() {
+    if (selectedPhotos.length <= 1) {
+      return;
+    }
+    setSelectedPhotoIndex((prev) => (prev + 1) % selectedPhotos.length);
+  }
+
+  function goToPrevPhoto() {
+    if (selectedPhotos.length <= 1) {
+      return;
+    }
+    setSelectedPhotoIndex((prev) => (prev - 1 + selectedPhotos.length) % selectedPhotos.length);
+  }
 
   return (
     <section className="panel p-4">
@@ -113,30 +169,44 @@ export function ProgressCalendar({ entries }: { entries: CalendarEntry[] }) {
             <p className={`text-xs font-semibold ${day.isInCurrentMonth ? "text-slate-800" : "text-slate-400"}`}>
               {day.date.getDate()}
             </p>
-            {day.entries.length > 0 ? (
-              <button
-                type="button"
-                onClick={() => setSelectedDayKey(day.key)}
-                className="mt-2 rounded-md bg-emerald-100 px-2 py-1 text-left text-[11px] font-semibold text-emerald-800 hover:bg-emerald-200"
-              >
-                {day.entries.length} upload{day.entries.length > 1 ? "s" : ""}
-              </button>
-            ) : null}
+            <div className="mt-2 space-y-1">
+              {day.photos.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setSelectedDayKey(day.key)}
+                  className="block rounded-md bg-emerald-100 px-2 py-1 text-left text-[11px] font-semibold text-emerald-800 hover:bg-emerald-200"
+                >
+                  {day.photos.length} photo{day.photos.length > 1 ? "s" : ""}
+                </button>
+              ) : null}
+              {day.sessions.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setSelectedDayKey(day.key)}
+                  className="block rounded-md bg-cyan-100 px-2 py-1 text-left text-[11px] font-semibold text-cyan-900 hover:bg-cyan-200"
+                >
+                  {day.sessions.length} session{day.sessions.length > 1 ? "s" : ""}
+                </button>
+              ) : null}
+            </div>
           </div>
         ))}
       </div>
 
-      {entries.length === 0 ? (
-        <p className="mt-3 text-sm text-slate-500">No progress photos yet.</p>
+      {entries.length === 0 && sessionEntries.length === 0 ? (
+        <p className="mt-3 text-sm text-slate-500">No progress photos or workout sessions yet.</p>
       ) : null}
 
       {selectedDayKey && selectedDate ? (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 p-4">
-          <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-xl bg-white p-4">
+          <div className="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-xl bg-white p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className="text-lg font-black text-slate-900">Uploads on {formatDayLabel(selectedDate)}</h2>
-                <p className="text-xs text-slate-600">{selectedEntries.length} photo(s)</p>
+                <h2 className="text-lg font-black text-slate-900">{formatDayLabel(selectedDate)}</h2>
+                <p className="text-xs text-slate-600">
+                  {selectedPhotos.length} photo{selectedPhotos.length === 1 ? "" : "s"} · {selectedSessions.length} session
+                  {selectedSessions.length === 1 ? "" : "s"}
+                </p>
               </div>
               <button
                 type="button"
@@ -147,21 +217,89 @@ export function ProgressCalendar({ entries }: { entries: CalendarEntry[] }) {
               </button>
             </div>
 
-            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {selectedEntries.map((entry) => (
-                <figure key={entry.id} className="rounded-lg border border-slate-200 bg-slate-50 p-2">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={entry.imageUrl}
-                    alt={`Progress upload ${entry.id}`}
-                    className="h-40 w-full rounded-md object-cover"
-                  />
-                  <figcaption className="mt-2 text-xs text-slate-700">
-                    <p>{new Date(entry.capturedAt).toLocaleTimeString()}</p>
-                    <p className="mt-1">{entry.note || "No note."}</p>
-                  </figcaption>
-                </figure>
-              ))}
+            <div className="mt-4 space-y-4">
+              <section className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <h3 className="text-sm font-black text-slate-900">Progress Photos</h3>
+                {activePhoto ? (
+                  <div className="mt-2 space-y-2">
+                    <div className="overflow-hidden rounded-lg border border-slate-200 bg-black">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={activePhoto.imageUrl}
+                        alt={`Progress upload ${activePhoto.id}`}
+                        className="mx-auto max-h-[65vh] w-auto object-contain"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-xs text-slate-600">
+                        {new Date(activePhoto.capturedAt).toLocaleTimeString()} · {activePhoto.note || "No note."}
+                      </p>
+                      {selectedPhotos.length > 1 ? (
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={goToPrevPhoto}
+                            className="rounded-md border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                          >
+                            Prev Photo
+                          </button>
+                          <p className="text-xs text-slate-600">
+                            {selectedPhotoIndex + 1} / {selectedPhotos.length}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={goToNextPhoto}
+                            className="rounded-md border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                          >
+                            Next Photo
+                          </button>
+                        </div>
+                      ) : null}
+                    </div>
+
+                    {selectedPhotos.length > 1 ? (
+                      <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
+                        {selectedPhotos.map((entry, index) => (
+                          <button
+                            key={entry.id}
+                            type="button"
+                            onClick={() => setSelectedPhotoIndex(index)}
+                            className={`overflow-hidden rounded border ${
+                              index === selectedPhotoIndex ? "border-cyan-500" : "border-slate-200"
+                            }`}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={entry.imageUrl} alt={`Progress thumbnail ${entry.id}`} className="h-16 w-full object-cover" />
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : (
+                  <p className="mt-2 text-sm text-slate-500">No photos uploaded on this day.</p>
+                )}
+              </section>
+
+              <section className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <h3 className="text-sm font-black text-slate-900">Workout Sessions</h3>
+                {selectedSessions.length === 0 ? (
+                  <p className="mt-2 text-sm text-slate-500">No sessions logged on this day.</p>
+                ) : (
+                  <ul className="mt-2 space-y-2">
+                    {selectedSessions.map((session) => (
+                      <li key={session.id} className="rounded-md border border-slate-200 bg-white p-2 text-sm">
+                        <p className="font-semibold text-slate-900">
+                          {session.routineName ?? "Workout Plan"} / {session.dayName ?? "Day"}
+                        </p>
+                        <p className="text-xs text-slate-600">
+                          {new Date(session.startedAt).toLocaleTimeString()} · {session.status} · {session.setCount} set
+                          {session.setCount === 1 ? "" : "s"}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
             </div>
           </div>
         </div>

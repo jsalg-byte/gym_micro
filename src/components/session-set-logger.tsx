@@ -1,0 +1,196 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { addWorkoutSetAction, createExerciseForSessionAction } from "@/server/actions";
+import { weightUnitLabel, type WeightUnit } from "@/lib/weight-unit";
+
+type ExerciseOption = {
+  id: string;
+  name: string;
+  gifUrl: string;
+  prefillReps: number | null;
+  prefillWeight: string | null;
+};
+
+type SessionSetLoggerProps = {
+  sessionId: string;
+  weightUnit: WeightUnit;
+  exerciseOptions: ExerciseOption[];
+  initialExerciseId: string;
+};
+
+export function SessionSetLogger({
+  sessionId,
+  weightUnit,
+  exerciseOptions,
+  initialExerciseId,
+}: SessionSetLoggerProps) {
+  const [selectedExerciseId, setSelectedExerciseId] = useState(initialExerciseId);
+  const [reps, setReps] = useState("");
+  const [weight, setWeight] = useState("");
+
+  const selectedExercise = useMemo(
+    () => exerciseOptions.find((exercise) => exercise.id === selectedExerciseId) ?? null,
+    [exerciseOptions, selectedExerciseId],
+  );
+
+  useEffect(() => {
+    setSelectedExerciseId(initialExerciseId);
+  }, [initialExerciseId]);
+
+  useEffect(() => {
+    if (!selectedExercise) {
+      setReps("");
+      setWeight("");
+      return;
+    }
+
+    setReps(selectedExercise.prefillReps ? String(selectedExercise.prefillReps) : "");
+    setWeight(selectedExercise.prefillWeight ?? "");
+  }, [selectedExercise]);
+
+  return (
+    <div className="space-y-3">
+      <form action={addWorkoutSetAction} className="space-y-3">
+        <input type="hidden" name="sessionId" value={sessionId} />
+        <label className="block text-sm text-slate-700">
+          Exercise
+          <select
+            name="exerciseId"
+            required
+            value={selectedExerciseId}
+            onChange={(event) => setSelectedExerciseId(event.target.value)}
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+          >
+            {exerciseOptions.map((exercise) => (
+              <option key={exercise.id} value={exercise.id}>
+                {exercise.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        {selectedExercise ? (
+          <div className="rounded-lg border border-cyan-200 bg-cyan-50 p-2">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-cyan-900">Exercise Demo</p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={selectedExercise.gifUrl}
+              alt={`${selectedExercise.name} demo`}
+              className="mt-2 h-44 w-full rounded-md border border-cyan-200 object-cover"
+            />
+          </div>
+        ) : null}
+
+        <label className="block text-sm text-slate-700">
+          Reps
+          <input
+            type="number"
+            name="reps"
+            min={1}
+            max={100}
+            required
+            value={reps}
+            onChange={(event) => setReps(event.target.value)}
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+          />
+        </label>
+
+        <label className="block text-sm text-slate-700">
+          Weight ({weightUnitLabel(weightUnit)})
+          <input
+            type="number"
+            name="weight"
+            min={0}
+            step="0.5"
+            value={weight}
+            onChange={(event) => setWeight(event.target.value)}
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+          />
+        </label>
+
+        <label className="flex items-center gap-2 text-sm text-slate-700">
+          <input type="checkbox" name="isWarmup" />
+          Warmup set
+        </label>
+
+        <button className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">
+          Add Set
+        </button>
+      </form>
+
+      <details className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+        <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-slate-700">
+          Create Exercise In This Session
+        </summary>
+        <form action={createExerciseForSessionAction} className="mt-3 grid gap-2 sm:grid-cols-2">
+          <input type="hidden" name="sessionId" value={sessionId} />
+          <label className="sm:col-span-2 text-xs text-slate-700">
+            Exercise Name
+            <input
+              name="name"
+              required
+              minLength={2}
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+            />
+          </label>
+          <label className="text-xs text-slate-700">
+            Category
+            <select
+              name="category"
+              defaultValue="strength"
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+            >
+              <option value="strength">Strength</option>
+              <option value="cardio">Cardio</option>
+              <option value="mobility">Mobility</option>
+            </select>
+          </label>
+          <label className="text-xs text-slate-700">
+            Muscle Group
+            <input
+              name="muscleGroup"
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+            />
+          </label>
+          <label className="text-xs text-slate-700">
+            Default Reps
+            <input
+              type="number"
+              name="targetReps"
+              min={1}
+              max={50}
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+            />
+          </label>
+          <label className="text-xs text-slate-700">
+            Default Weight ({weightUnitLabel(weightUnit)})
+            <input
+              type="number"
+              name="targetWeight"
+              min={0}
+              step="0.5"
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+            />
+          </label>
+          <button className="sm:col-span-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+            Create Exercise
+          </button>
+        </form>
+      </details>
+
+      <section className="rounded-lg border border-slate-200 bg-slate-50 p-2">
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">Exercise GIFs In This Session</p>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          {exerciseOptions.map((exercise) => (
+            <figure key={exercise.id} className="overflow-hidden rounded border border-slate-200 bg-white">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={exercise.gifUrl} alt={`${exercise.name} gif`} className="h-24 w-full object-cover" />
+              <figcaption className="px-2 py-1 text-[11px] text-slate-700">{exercise.name}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}

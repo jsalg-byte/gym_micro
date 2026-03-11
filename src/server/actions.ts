@@ -1,18 +1,20 @@
 "use server";
 
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getDb } from "@/db/client";
 import {
   exercises,
+  friendRequests,
   foods,
   mealLogs,
   routineDayExercises,
   routineDays,
   routines,
   userPreferences,
+  users,
   workoutSessions,
   workoutSets,
 } from "@/db/schema";
@@ -71,6 +73,37 @@ const createAndAttachExerciseSchema = z.object({
   targetSets: z.number().int().positive().max(20).optional(),
   targetReps: z.number().int().positive().max(50).optional(),
   targetWeight: z.number().nonnegative().max(2000).optional(),
+});
+
+const createExerciseForSessionSchema = z.object({
+  sessionId: z.string().uuid(),
+  name: z.string().trim().min(2).max(120),
+  category: z.enum(["strength", "cardio", "mobility"]).default("strength"),
+  muscleGroup: z.string().trim().max(80).optional(),
+  targetReps: z.number().int().positive().max(50).optional(),
+  targetWeight: z.number().nonnegative().max(2000).optional(),
+});
+
+const weightUnitSchema = z.object({
+  weightUnit: z.enum(["kg", "lbs"]),
+});
+
+const sendFriendRequestSchema = z.object({
+  username: z
+    .string()
+    .trim()
+    .min(3)
+    .max(64)
+    .regex(/^[^\s]+$/)
+    .transform((value) => value.toLowerCase()),
+});
+
+const friendRequestDecisionSchema = z.object({
+  requestId: z.string().uuid(),
+});
+
+const removeFriendSchema = z.object({
+  friendUserId: z.string().uuid(),
 });
 
 const startSessionSchema = z.object({
@@ -480,6 +513,305 @@ export async function createExerciseAction(formData: FormData) {
   revalidatePath("/exercises");
   revalidatePath("/routines");
   revalidatePath("/sessions");
+}
+
+export async function createExerciseForSessionAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = createExerciseForSessionSchema.safeParse({
+    sessionId: formData.get("sessionId"),
+    name: formData.get("name"),
+    category: formData.get("category") || "strength",
+    muscleGroup: formData.get("muscleGroup") || undefined,
+    targetReps: formData.get("targetReps") ? Number(formData.get("targetReps")) : undefined,
+    targetWeight: formData.get("targetWeight") ? Number(formData.get("targetWeight")) : undefined,
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid create exercise for session payload");
+  }
+
+  const db = getDb();
+  const [session] = await db
+    .select({
+      id: workoutSessions.id,
+      routineDayId: workoutSessions.routineDayId,
+    })
+    .from(workoutSessions)
+    .where(and(eq(workoutSessions.id, parsed.data.sessionId), eq(workoutSessions.userId, userId)))
+    .limit(1);
+
+  if (!session) {
+    throw new Error("Workout session not found");
+  }
+
+  const [insertedExercise] = await db
+    .insert(exercises)
+    .values({
+      name: parsed.data.name,
+      category: parsed.data.category,
+      muscleGroup: parsed.data.muscleGroup,
+      createdByUserId: userId,
+    })
+    .returning({
+      id: exercises.id,
+    });
+
+  if (session.routineDayId) {
+    const [lastExercise] = await db
+      .select({ sortOrder: routineDayExercises.sortOrder })
+      .from(routineDayExercises)
+      .where(eq(routineDayExercises.routineDayId, session.routineDayId))
+      .orderBy(desc(routineDayExercises.sortOrder))
+      .limit(1);
+
+    await db.insert(routineDayExercises).values({
+      routineDayId: session.routineDayId,
+      exerciseId: insertedExercise.id,
+      sortOrder: (lastExercise?.sortOrder ?? -1) + 1,
+      targetSets: 3,
+      targetReps: parsed.data.targetReps,
+      targetWeight: parsed.data.targetWeight?.toString(),
+    });
+  }
+
+  revalidatePath(`/sessions/${session.id}`);
+  revalidatePath("/sessions");
+  revalidatePath("/exercises");
+  revalidatePath("/routines");
+}
+
+export async function updateWeightUnitAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = weightUnitSchema.safeParse({
+    weightUnit: formData.get("weightUnit"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid weight unit payload");
+  }
+
+  const db = getDb();
+  await db
+    .insert(userPreferences)
+    .values({
+      userId,
+      weightUnit: parsed.data.weightUnit,
+      updatedAt: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: userPreferences.userId,
+      set: {
+        weightUnit: parsed.data.weightUnit,
+        updatedAt: new Date(),
+      },
+    });
+
+  revalidatePath("/settings");
+  revalidatePath("/sessions");
+  revalidatePath("/routines");
+}
+
+export async function sendFriendRequestAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = sendFriendRequestSchema.safeParse({
+    username: formData.get("username"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid friend request payload");
+  }
+
+  const db = getDb();
+  const [targetUser] = await db
+    .select({
+      id: users.id,
+      username: users.username,
+    })
+    .from(users)
+    .where(eq(users.username, parsed.data.username))
+    .limit(1);
+
+  if (!targetUser) {
+    throw new Error("User not found");
+  }
+
+  if (targetUser.id === userId) {
+    throw new Error("You cannot add yourself");
+  }
+
+  const existingRows = await db
+    .select({
+      id: friendRequests.id,
+      requesterId: friendRequests.requesterId,
+      addresseeId: friendRequests.addresseeId,
+      status: friendRequests.status,
+    })
+    .from(friendRequests)
+    .where(
+      or(
+        and(eq(friendRequests.requesterId, userId), eq(friendRequests.addresseeId, targetUser.id)),
+        and(eq(friendRequests.requesterId, targetUser.id), eq(friendRequests.addresseeId, userId)),
+      ),
+    );
+
+  if (existingRows.some((row) => row.status === "accepted")) {
+    revalidatePath("/friends");
+    return;
+  }
+
+  const incomingPending = existingRows.find(
+    (row) =>
+      row.requesterId === targetUser.id && row.addresseeId === userId && row.status === "pending",
+  );
+  if (incomingPending) {
+    await db
+      .update(friendRequests)
+      .set({
+        status: "accepted",
+        updatedAt: new Date(),
+      })
+      .where(eq(friendRequests.id, incomingPending.id));
+
+    revalidatePath("/friends");
+    return;
+  }
+
+  const outgoingPending = existingRows.find(
+    (row) =>
+      row.requesterId === userId && row.addresseeId === targetUser.id && row.status === "pending",
+  );
+  if (outgoingPending) {
+    throw new Error("Friend request already sent");
+  }
+
+  const outgoingRejected = existingRows.find(
+    (row) =>
+      row.requesterId === userId && row.addresseeId === targetUser.id && row.status === "rejected",
+  );
+  if (outgoingRejected) {
+    await db
+      .update(friendRequests)
+      .set({
+        status: "pending",
+        updatedAt: new Date(),
+      })
+      .where(eq(friendRequests.id, outgoingRejected.id));
+
+    revalidatePath("/friends");
+    return;
+  }
+
+  await db.insert(friendRequests).values({
+    requesterId: userId,
+    addresseeId: targetUser.id,
+    status: "pending",
+  });
+
+  revalidatePath("/friends");
+}
+
+export async function acceptFriendRequestAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = friendRequestDecisionSchema.safeParse({
+    requestId: formData.get("requestId"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid friend request decision payload");
+  }
+
+  const db = getDb();
+  const [request] = await db
+    .select({
+      id: friendRequests.id,
+    })
+    .from(friendRequests)
+    .where(
+      and(
+        eq(friendRequests.id, parsed.data.requestId),
+        eq(friendRequests.addresseeId, userId),
+        eq(friendRequests.status, "pending"),
+      ),
+    )
+    .limit(1);
+
+  if (!request) {
+    throw new Error("Friend request not found");
+  }
+
+  await db
+    .update(friendRequests)
+    .set({
+      status: "accepted",
+      updatedAt: new Date(),
+    })
+    .where(eq(friendRequests.id, request.id));
+
+  revalidatePath("/friends");
+}
+
+export async function rejectFriendRequestAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = friendRequestDecisionSchema.safeParse({
+    requestId: formData.get("requestId"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid friend request decision payload");
+  }
+
+  const db = getDb();
+  const [request] = await db
+    .select({
+      id: friendRequests.id,
+    })
+    .from(friendRequests)
+    .where(
+      and(
+        eq(friendRequests.id, parsed.data.requestId),
+        eq(friendRequests.addresseeId, userId),
+        eq(friendRequests.status, "pending"),
+      ),
+    )
+    .limit(1);
+
+  if (!request) {
+    throw new Error("Friend request not found");
+  }
+
+  await db
+    .update(friendRequests)
+    .set({
+      status: "rejected",
+      updatedAt: new Date(),
+    })
+    .where(eq(friendRequests.id, request.id));
+
+  revalidatePath("/friends");
+}
+
+export async function removeFriendAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = removeFriendSchema.safeParse({
+    friendUserId: formData.get("friendUserId"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid remove friend payload");
+  }
+
+  const db = getDb();
+  await db.delete(friendRequests).where(
+    and(
+      eq(friendRequests.status, "accepted"),
+      or(
+        and(eq(friendRequests.requesterId, userId), eq(friendRequests.addresseeId, parsed.data.friendUserId)),
+        and(eq(friendRequests.requesterId, parsed.data.friendUserId), eq(friendRequests.addresseeId, userId)),
+      ),
+    ),
+  );
+
+  revalidatePath("/friends");
 }
 
 export async function startWorkoutSessionAction(formData: FormData) {

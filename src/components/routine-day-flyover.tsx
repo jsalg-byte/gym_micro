@@ -8,6 +8,7 @@ import {
   removeExerciseFromRoutineDayAction,
   updateRoutineDayAction,
 } from "@/server/actions";
+import { weightUnitLabel, type WeightUnit } from "@/lib/weight-unit";
 
 type ExerciseOption = {
   id: string;
@@ -27,11 +28,12 @@ type RoutineDayFlyoverProps = {
     id: string;
     dayName: string;
   };
+  weightUnit: WeightUnit;
   dayExercises: DayExerciseEntry[];
   allExercises: ExerciseOption[];
 };
 
-export function RoutineDayFlyover({ day, dayExercises, allExercises }: RoutineDayFlyoverProps) {
+export function RoutineDayFlyover({ day, weightUnit, dayExercises, allExercises }: RoutineDayFlyoverProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -53,7 +55,7 @@ export function RoutineDayFlyover({ day, dayExercises, allExercises }: RoutineDa
             <li key={entry.id} className="text-xs text-slate-700">
               {entry.exerciseName} - Sets: {entry.targetSets}
               {entry.targetReps ? ` | Reps: ${entry.targetReps}` : " | Reps: -"}
-              {entry.targetWeight ? ` | Weight: ${entry.targetWeight}kg` : ""}
+              {entry.targetWeight ? ` | Weight: ${entry.targetWeight}${weightUnitLabel(weightUnit)}` : ""}
             </li>
           ))}
           {dayExercises.length === 0 ? <li className="text-xs text-slate-500">No exercises yet for this day.</li> : null}
@@ -120,7 +122,7 @@ export function RoutineDayFlyover({ day, dayExercises, allExercises }: RoutineDa
                         <span>
                           {entry.exerciseName} - Sets: {entry.targetSets}
                           {entry.targetReps ? ` | Reps: ${entry.targetReps}` : " | Reps: -"}
-                          {entry.targetWeight ? ` | Weight: ${entry.targetWeight}kg` : ""}
+                          {entry.targetWeight ? ` | Weight: ${entry.targetWeight}${weightUnitLabel(weightUnit)}` : ""}
                         </span>
                         <form action={removeExerciseFromRoutineDayAction}>
                           <input type="hidden" name="routineDayExerciseId" value={entry.id} />
@@ -175,7 +177,7 @@ export function RoutineDayFlyover({ day, dayExercises, allExercises }: RoutineDa
                     />
                   </label>
                   <label className="text-[11px] text-slate-700">
-                    Weight (kg)
+                    Weight ({weightUnitLabel(weightUnit)})
                     <input
                       type="number"
                       name="targetWeight"
@@ -244,7 +246,7 @@ export function RoutineDayFlyover({ day, dayExercises, allExercises }: RoutineDa
                     />
                   </label>
                   <label className="text-[11px] text-slate-700">
-                    Weight (kg)
+                    Weight ({weightUnitLabel(weightUnit)})
                     <input
                       type="number"
                       name="targetWeight"

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 const PRESET_SECONDS = [60, 90, 120];
+const STORAGE_PREFIX = "gym-micro:rest-timer";
 
 function formatClock(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60)
@@ -14,30 +15,84 @@ function formatClock(totalSeconds: number) {
   return `${minutes}:${seconds}`;
 }
 
-export function RestTimer() {
+type RestTimerProps = {
+  storageKey?: string;
+};
+
+type StoredTimer = {
+  durationSec: number;
+  remainingSec: number;
+  endAtMs: number | null;
+  running: boolean;
+};
+
+export function RestTimer({ storageKey = "default" }: RestTimerProps) {
+  const fullStorageKey = `${STORAGE_PREFIX}:${storageKey}`;
   const [durationSec, setDurationSec] = useState<number>(90);
   const [remainingSec, setRemainingSec] = useState<number>(90);
+  const [endAtMs, setEndAtMs] = useState<number | null>(null);
   const [running, setRunning] = useState(false);
 
   useEffect(() => {
-    if (!running) {
+    const raw = window.localStorage.getItem(fullStorageKey);
+    if (!raw) {
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(raw) as StoredTimer;
+      if (
+        !Number.isFinite(parsed.durationSec) ||
+        !Number.isFinite(parsed.remainingSec) ||
+        typeof parsed.running !== "boolean"
+      ) {
+        return;
+      }
+
+      setDurationSec(Math.max(10, Math.min(600, Math.round(parsed.durationSec))));
+      if (parsed.running && parsed.endAtMs && Number.isFinite(parsed.endAtMs)) {
+        const nextRemaining = Math.max(0, Math.ceil((parsed.endAtMs - Date.now()) / 1000));
+        setRemainingSec(nextRemaining);
+        setRunning(nextRemaining > 0);
+        setEndAtMs(nextRemaining > 0 ? parsed.endAtMs : null);
+      } else {
+        setRemainingSec(Math.max(0, Math.round(parsed.remainingSec)));
+        setRunning(false);
+        setEndAtMs(null);
+      }
+    } catch {
+      // Ignore corrupt local storage values.
+    }
+  }, [fullStorageKey]);
+
+  useEffect(() => {
+    const payload: StoredTimer = {
+      durationSec,
+      remainingSec,
+      endAtMs,
+      running,
+    };
+    window.localStorage.setItem(fullStorageKey, JSON.stringify(payload));
+  }, [durationSec, remainingSec, endAtMs, running, fullStorageKey]);
+
+  useEffect(() => {
+    if (!running || !endAtMs) {
       return;
     }
 
     const timer = window.setInterval(() => {
-      setRemainingSec((prev) => {
-        if (prev <= 1) {
-          setRunning(false);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+      const next = Math.max(0, Math.ceil((endAtMs - Date.now()) / 1000));
+      setRemainingSec(next);
+      if (next <= 0) {
+        setRunning(false);
+        setEndAtMs(null);
+      }
+    }, 250);
 
     return () => {
       window.clearInterval(timer);
     };
-  }, [running]);
+  }, [running, endAtMs]);
 
   const done = remainingSec === 0;
   const clock = useMemo(() => formatClock(remainingSec), [remainingSec]);
@@ -45,11 +100,34 @@ export function RestTimer() {
   function applyPreset(seconds: number) {
     setDurationSec(seconds);
     setRemainingSec(seconds);
+    setEndAtMs(null);
     setRunning(false);
   }
 
   function resetTimer() {
     setRemainingSec(durationSec);
+    setEndAtMs(null);
+    setRunning(false);
+  }
+
+  function toggleTimer() {
+    if (!running) {
+      if (remainingSec <= 0) {
+        const restartAt = Date.now() + durationSec * 1000;
+        setRemainingSec(durationSec);
+        setEndAtMs(restartAt);
+        setRunning(true);
+        return;
+      }
+
+      setEndAtMs(Date.now() + remainingSec * 1000);
+      setRunning(true);
+      return;
+    }
+
+    const nextRemaining = endAtMs ? Math.max(0, Math.ceil((endAtMs - Date.now()) / 1000)) : remainingSec;
+    setRemainingSec(nextRemaining);
+    setEndAtMs(null);
     setRunning(false);
   }
 
@@ -86,6 +164,7 @@ export function RestTimer() {
             }
             setDurationSec(value);
             setRemainingSec(value);
+            setEndAtMs(null);
             setRunning(false);
           }}
           className="mt-1 w-full rounded-md border border-cyan-300 px-2 py-1 text-sm outline-none focus:border-cyan-500"
@@ -95,7 +174,7 @@ export function RestTimer() {
       <div className="mt-2 flex gap-2">
         <button
           type="button"
-          onClick={() => setRunning((prev) => !prev)}
+          onClick={toggleTimer}
           className="rounded-md bg-cyan-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-cyan-800"
         >
           {running ? "Pause" : done ? "Start Again" : "Start"}
