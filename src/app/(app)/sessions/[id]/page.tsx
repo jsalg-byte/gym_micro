@@ -3,6 +3,7 @@ import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { getDb } from "@/db/client";
 import {
+  exerciseGifOverrides,
   exercises,
   routineDayExercises,
   routineDays,
@@ -11,7 +12,7 @@ import {
   workoutSessions,
   workoutSets,
 } from "@/db/schema";
-import { resolveExerciseGifUrl } from "@/lib/exercise-gifs";
+import { resolveExerciseGif } from "@/lib/exercise-gifs";
 import { requireUserId } from "@/lib/session";
 import { normalizeWeightUnit } from "@/lib/weight-unit";
 import {
@@ -26,11 +27,15 @@ import { SessionSetLogger } from "@/components/session-set-logger";
 
 export default async function SessionDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ edit?: string }>;
 }) {
   const userId = await requireUserId();
   const { id } = await params;
+  const { edit } = await searchParams;
+  const editMode = edit === "1";
   const db = getDb();
 
   const [session] = await db
@@ -111,13 +116,28 @@ export default async function SessionDetailPage({
           .from(workoutSets)
           .innerJoin(workoutSessions, eq(workoutSets.sessionId, workoutSessions.id))
           .where(
-            and(
-              eq(workoutSessions.userId, userId),
-              inArray(workoutSets.exerciseId, exerciseIds),
-            ),
+            and(eq(workoutSessions.userId, userId), inArray(workoutSets.exerciseId, exerciseIds)),
           )
           .orderBy(desc(workoutSets.createdAt))
       : [];
+
+  const gifOverrides =
+    exerciseIds.length > 0
+      ? await db
+          .select({
+            exerciseId: exerciseGifOverrides.exerciseId,
+            gifUrl: exerciseGifOverrides.gifUrl,
+          })
+          .from(exerciseGifOverrides)
+          .where(
+            and(
+              eq(exerciseGifOverrides.userId, userId),
+              inArray(exerciseGifOverrides.exerciseId, exerciseIds),
+            ),
+          )
+      : [];
+
+  const gifOverrideByExerciseId = new Map(gifOverrides.map((row) => [row.exerciseId, row.gifUrl]));
 
   const recentByExercise = new Map<
     string,
@@ -139,10 +159,12 @@ export default async function SessionDetailPage({
   const exerciseOptions = await Promise.all(
     dayPlannedExercises.map(async (exercise) => {
       const recent = recentByExercise.get(exercise.id);
+      const gifResolution = await resolveExerciseGif(exercise.name);
       return {
         id: exercise.id,
         name: exercise.name,
-        gifUrl: await resolveExerciseGifUrl(exercise.name),
+        gifUrl: gifOverrideByExerciseId.get(exercise.id) ?? gifResolution.gifUrl,
+        gifCandidates: gifResolution.candidates,
         prefillReps: recent?.reps ?? exercise.targetReps ?? null,
         prefillWeight:
           recent?.weight ?? (exercise.targetWeight !== null ? String(exercise.targetWeight) : null),
@@ -150,7 +172,21 @@ export default async function SessionDetailPage({
     }),
   );
 
+  const exerciseNameById = new Map<string, string>();
+  for (const exercise of dayPlannedExercises) {
+    exerciseNameById.set(exercise.id, exercise.name);
+  }
+  for (const set of sets) {
+    if (!exerciseNameById.has(set.exerciseId)) {
+      exerciseNameById.set(set.exerciseId, set.exerciseName ?? "Exercise");
+    }
+  }
+  const setExerciseOptions = Array.from(exerciseNameById.entries())
+    .map(([id, name]) => ({ id, name }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   const initialExerciseId = sets[sets.length - 1]?.exerciseId ?? exerciseOptions[0]?.id ?? "";
+
   const groupedSets = new Map<
     string,
     {
@@ -170,6 +206,9 @@ export default async function SessionDetailPage({
     }
     group.sets.push(set);
   }
+
+  const canEditLoggedSets = session.status === "active" || editMode;
+  const showEditToggle = session.status !== "active" && sets.length > 0;
 
   return (
     <main className="space-y-4">
@@ -211,7 +250,21 @@ export default async function SessionDetailPage({
         </article>
 
         <article className="panel p-4">
-          <h2 className="text-lg font-black text-slate-900">Logged Sets</h2>
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-lg font-black text-slate-900">Logged Sets</h2>
+            {showEditToggle ? (
+              <Link
+                href={
+                  canEditLoggedSets
+                    ? `/sessions/${session.id}`
+                    : `/sessions/${session.id}?edit=1`
+                }
+                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+              >
+                {canEditLoggedSets ? "Done Editing" : "Edit"}
+              </Link>
+            ) : null}
+          </div>
           <div className="mt-3 space-y-3">
             {Array.from(groupedSets.entries()).map(([exerciseId, group]) => (
               <section key={exerciseId} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
@@ -221,56 +274,86 @@ export default async function SessionDetailPage({
                     {group.sets.length} set{group.sets.length === 1 ? "" : "s"}
                   </span>
                 </div>
-                <ul className="mt-2 space-y-2">
-                  {group.sets.map((set, index) => (
-                    <li key={set.id} className="rounded-md border border-slate-200 bg-white p-2 text-sm">
-                      <p className="font-semibold text-slate-900">
-                        Set {index + 1} (overall #{set.setOrder})
-                      </p>
-                      <form action={updateWorkoutSetAction} className="mt-2 grid gap-2 sm:grid-cols-4">
-                        <input type="hidden" name="setId" value={set.id} />
-                        <label className="text-xs text-slate-600">
-                          Reps
-                          <input
-                            type="number"
-                            name="reps"
-                            min={1}
-                            max={100}
-                            required
-                            defaultValue={set.reps}
-                            className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-500"
-                          />
-                        </label>
-                        <label className="text-xs text-slate-600">
-                          Weight ({weightUnit})
-                          <input
-                            type="number"
-                            name="weight"
-                            min={0}
-                            step="0.5"
-                            defaultValue={set.weight !== null ? String(set.weight) : ""}
-                            className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-500"
-                          />
-                        </label>
-                        <label className="flex items-center gap-2 text-xs text-slate-600 sm:mt-6">
-                          <input type="checkbox" name="isWarmup" defaultChecked={set.isWarmup} />
-                          Warmup
-                        </label>
-                        <div className="flex items-center gap-2 sm:mt-5">
-                          <button className="rounded-md border border-slate-300 px-2 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100">
-                            Save
+
+                {canEditLoggedSets ? (
+                  <ul className="mt-2 space-y-2">
+                    {group.sets.map((set, index) => (
+                      <li key={set.id} className="rounded-md border border-slate-200 bg-white p-2 text-sm">
+                        <p className="font-semibold text-slate-900">
+                          Set {index + 1} (overall #{set.setOrder})
+                        </p>
+                        <form action={updateWorkoutSetAction} className="mt-2 grid gap-2 sm:grid-cols-5">
+                          <input type="hidden" name="setId" value={set.id} />
+                          <label className="text-xs text-slate-600">
+                            Exercise
+                            <select
+                              name="exerciseId"
+                              defaultValue={set.exerciseId}
+                              className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-500"
+                            >
+                              {setExerciseOptions.map((exercise) => (
+                                <option key={exercise.id} value={exercise.id}>
+                                  {exercise.name}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <label className="text-xs text-slate-600">
+                            Reps
+                            <input
+                              type="number"
+                              name="reps"
+                              min={1}
+                              max={100}
+                              required
+                              defaultValue={set.reps}
+                              className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-500"
+                            />
+                          </label>
+                          <label className="text-xs text-slate-600">
+                            Weight ({weightUnit})
+                            <input
+                              type="number"
+                              name="weight"
+                              min={0}
+                              step="0.5"
+                              defaultValue={set.weight !== null ? String(set.weight) : ""}
+                              className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-500"
+                            />
+                          </label>
+                          <label className="flex items-center gap-2 text-xs text-slate-600 sm:mt-6">
+                            <input type="checkbox" name="isWarmup" defaultChecked={set.isWarmup} />
+                            Warmup
+                          </label>
+                          <div className="flex items-center gap-2 sm:mt-5">
+                            <button className="rounded-md border border-slate-300 px-2 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100">
+                              Save
+                            </button>
+                          </div>
+                        </form>
+                        <form action={deleteWorkoutSetAction} className="mt-2">
+                          <input type="hidden" name="setId" value={set.id} />
+                          <button className="rounded-md border border-rose-300 px-2 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50">
+                            Delete Set
                           </button>
-                        </div>
-                      </form>
-                      <form action={deleteWorkoutSetAction} className="mt-2">
-                        <input type="hidden" name="setId" value={set.id} />
-                        <button className="rounded-md border border-rose-300 px-2 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50">
-                          Delete Set
-                        </button>
-                      </form>
-                    </li>
-                  ))}
-                </ul>
+                        </form>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <ul className="mt-2 space-y-2">
+                    {group.sets.map((set, index) => (
+                      <li key={set.id} className="rounded-md border border-slate-200 bg-white p-2 text-sm">
+                        <p className="font-semibold text-slate-900">
+                          Set {index + 1} (overall #{set.setOrder})
+                        </p>
+                        <p className="text-slate-600">
+                          {set.reps} reps @ {set.weight ?? "0"} {weightUnit} {set.isWarmup ? "(warmup)" : ""}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </section>
             ))}
             {sets.length === 0 ? <p className="text-sm text-slate-500">No sets logged yet.</p> : null}

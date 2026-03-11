@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getDb } from "@/db/client";
 import {
+  exerciseGifOverrides,
   exercises,
   friendRequests,
   foods,
@@ -88,6 +89,14 @@ const weightUnitSchema = z.object({
   weightUnit: z.enum(["kg", "lbs"]),
 });
 
+const setExerciseGifOverrideSchema = z.object({
+  sessionId: z.string().uuid(),
+  exerciseId: z.string().uuid(),
+  gifUrl: z.string().url().max(500),
+  sourceExerciseId: z.string().trim().max(64).optional(),
+  sourceName: z.string().trim().max(160).optional(),
+});
+
 const sendFriendRequestSchema = z.object({
   username: z
     .string()
@@ -120,6 +129,7 @@ const setSchema = z.object({
 
 const updateSetSchema = z.object({
   setId: z.string().uuid(),
+  exerciseId: z.string().uuid(),
   reps: z.number().int().positive().max(100),
   weight: z.number().nonnegative().max(2000).optional(),
   isWarmup: z.boolean().optional(),
@@ -626,6 +636,69 @@ export async function updateWeightUnitAction(formData: FormData) {
   revalidatePath("/routines");
 }
 
+export async function setExerciseGifOverrideAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = setExerciseGifOverrideSchema.safeParse({
+    sessionId: formData.get("sessionId"),
+    exerciseId: formData.get("exerciseId"),
+    gifUrl: formData.get("gifUrl"),
+    sourceExerciseId: formData.get("sourceExerciseId") || undefined,
+    sourceName: formData.get("sourceName") || undefined,
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid exercise GIF override payload");
+  }
+
+  const db = getDb();
+  const [session] = await db
+    .select({
+      id: workoutSessions.id,
+    })
+    .from(workoutSessions)
+    .where(and(eq(workoutSessions.id, parsed.data.sessionId), eq(workoutSessions.userId, userId)))
+    .limit(1);
+
+  if (!session) {
+    throw new Error("Workout session not found");
+  }
+
+  const [exercise] = await db
+    .select({
+      id: exercises.id,
+    })
+    .from(exercises)
+    .where(eq(exercises.id, parsed.data.exerciseId))
+    .limit(1);
+
+  if (!exercise) {
+    throw new Error("Exercise not found");
+  }
+
+  await db
+    .insert(exerciseGifOverrides)
+    .values({
+      userId,
+      exerciseId: parsed.data.exerciseId,
+      gifUrl: parsed.data.gifUrl,
+      sourceExerciseId: parsed.data.sourceExerciseId,
+      sourceName: parsed.data.sourceName,
+      updatedAt: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: [exerciseGifOverrides.userId, exerciseGifOverrides.exerciseId],
+      set: {
+        gifUrl: parsed.data.gifUrl,
+        sourceExerciseId: parsed.data.sourceExerciseId,
+        sourceName: parsed.data.sourceName,
+        updatedAt: new Date(),
+      },
+    });
+
+  revalidatePath(`/sessions/${parsed.data.sessionId}`);
+  revalidatePath("/sessions");
+}
+
 export async function sendFriendRequestAction(formData: FormData) {
   const userId = await requireUserId();
   const parsed = sendFriendRequestSchema.safeParse({
@@ -917,6 +990,7 @@ export async function updateWorkoutSetAction(formData: FormData) {
   const rawWeight = formData.get("weight");
   const parsed = updateSetSchema.safeParse({
     setId: formData.get("setId"),
+    exerciseId: formData.get("exerciseId"),
     reps: Number(formData.get("reps")),
     weight:
       typeof rawWeight === "string" && rawWeight.trim() !== "" ? Number(rawWeight) : undefined,
@@ -945,6 +1019,7 @@ export async function updateWorkoutSetAction(formData: FormData) {
   await db
     .update(workoutSets)
     .set({
+      exerciseId: parsed.data.exerciseId,
       reps: parsed.data.reps,
       weight: parsed.data.weight?.toString(),
       isWarmup: parsed.data.isWarmup ?? false,

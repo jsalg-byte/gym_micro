@@ -1,13 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { addWorkoutSetAction, createExerciseForSessionAction } from "@/server/actions";
+import {
+  addWorkoutSetAction,
+  createExerciseForSessionAction,
+  setExerciseGifOverrideAction,
+} from "@/server/actions";
+import type { ExerciseGifCandidate } from "@/lib/exercise-gifs";
 import { weightUnitLabel, type WeightUnit } from "@/lib/weight-unit";
 
 type ExerciseOption = {
   id: string;
   name: string;
   gifUrl: string;
+  gifCandidates: ExerciseGifCandidate[];
   prefillReps: number | null;
   prefillWeight: string | null;
 };
@@ -28,6 +34,7 @@ export function SessionSetLogger({
   const [selectedExerciseId, setSelectedExerciseId] = useState(initialExerciseId);
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
+  const [showGifFixModal, setShowGifFixModal] = useState(false);
 
   const selectedExercise = useMemo(
     () => exerciseOptions.find((exercise) => exercise.id === selectedExerciseId) ?? null,
@@ -42,11 +49,13 @@ export function SessionSetLogger({
     if (!selectedExercise) {
       setReps("");
       setWeight("");
+      setShowGifFixModal(false);
       return;
     }
 
     setReps(selectedExercise.prefillReps ? String(selectedExercise.prefillReps) : "");
     setWeight(selectedExercise.prefillWeight ?? "");
+    setShowGifFixModal(false);
   }, [selectedExercise]);
 
   return (
@@ -72,7 +81,16 @@ export function SessionSetLogger({
 
         {selectedExercise ? (
           <div className="rounded-lg border border-cyan-200 bg-cyan-50 p-2">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-cyan-900">Exercise Demo</p>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-cyan-900">Exercise Demo</p>
+              <button
+                type="button"
+                onClick={() => setShowGifFixModal(true)}
+                className="text-[11px] font-semibold text-cyan-900 underline underline-offset-2 hover:text-cyan-700"
+              >
+                Wrong gif?
+              </button>
+            </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={selectedExercise.gifUrl}
@@ -191,6 +209,64 @@ export function SessionSetLogger({
           ))}
         </div>
       </section>
+
+      {showGifFixModal && selectedExercise ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-base font-black text-slate-900">Fix GIF Match</h3>
+                <p className="text-xs text-slate-600">
+                  Is this one of the exercises below? Pick one to remember it for{" "}
+                  {selectedExercise.name}.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowGifFixModal(false)}
+                className="rounded-md border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+              >
+                Close
+              </button>
+            </div>
+
+            {selectedExercise.gifCandidates.length === 0 ? (
+              <p className="mt-3 text-sm text-slate-500">
+                No fuzzy matches found right now. Please try again later.
+              </p>
+            ) : (
+              <ul className="mt-3 space-y-2">
+                {selectedExercise.gifCandidates.map((candidate) => (
+                  <li key={candidate.exerciseId} className="rounded-lg border border-slate-200 bg-slate-50 p-2">
+                    <div className="grid gap-2 sm:grid-cols-[120px_minmax(0,1fr)_auto] sm:items-center">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={candidate.gifUrl}
+                        alt={`${candidate.name} gif`}
+                        className="h-20 w-full rounded border border-slate-200 object-cover"
+                      />
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">{candidate.name}</p>
+                        <p className="text-xs text-slate-600">Match score: {candidate.score.toFixed(1)}</p>
+                      </div>
+                      <form action={setExerciseGifOverrideAction}>
+                        <input type="hidden" name="sessionId" value={sessionId} />
+                        <input type="hidden" name="exerciseId" value={selectedExercise.id} />
+                        <input type="hidden" name="gifUrl" value={candidate.gifUrl} />
+                        <input type="hidden" name="sourceExerciseId" value={candidate.exerciseId} />
+                        <input type="hidden" name="sourceName" value={candidate.name} />
+                        <button className="rounded-md border border-cyan-300 bg-cyan-50 px-2 py-1 text-xs font-semibold text-cyan-900 hover:bg-cyan-100">
+                          Use This GIF
+                        </button>
+                      </form>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
