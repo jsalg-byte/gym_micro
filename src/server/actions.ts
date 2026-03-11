@@ -1,6 +1,6 @@
 "use server";
 
-import { and, desc, eq, or } from "drizzle-orm";
+import { and, asc, desc, eq, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -118,7 +118,22 @@ const setSchema = z.object({
   isWarmup: z.boolean().optional(),
 });
 
+const updateSetSchema = z.object({
+  setId: z.string().uuid(),
+  reps: z.number().int().positive().max(100),
+  weight: z.number().nonnegative().max(2000).optional(),
+  isWarmup: z.boolean().optional(),
+});
+
+const deleteSetSchema = z.object({
+  setId: z.string().uuid(),
+});
+
 const cancelSessionSchema = z.object({
+  sessionId: z.string().uuid(),
+});
+
+const deleteSessionSchema = z.object({
   sessionId: z.string().uuid(),
 });
 
@@ -897,6 +912,97 @@ export async function addWorkoutSetAction(formData: FormData) {
   revalidatePath("/sessions");
 }
 
+export async function updateWorkoutSetAction(formData: FormData) {
+  const userId = await requireUserId();
+  const rawWeight = formData.get("weight");
+  const parsed = updateSetSchema.safeParse({
+    setId: formData.get("setId"),
+    reps: Number(formData.get("reps")),
+    weight:
+      typeof rawWeight === "string" && rawWeight.trim() !== "" ? Number(rawWeight) : undefined,
+    isWarmup: formData.get("isWarmup") === "on",
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid update workout set payload");
+  }
+
+  const db = getDb();
+  const [ownedSet] = await db
+    .select({
+      id: workoutSets.id,
+      sessionId: workoutSets.sessionId,
+    })
+    .from(workoutSets)
+    .innerJoin(workoutSessions, eq(workoutSets.sessionId, workoutSessions.id))
+    .where(and(eq(workoutSets.id, parsed.data.setId), eq(workoutSessions.userId, userId)))
+    .limit(1);
+
+  if (!ownedSet) {
+    throw new Error("Workout set not found");
+  }
+
+  await db
+    .update(workoutSets)
+    .set({
+      reps: parsed.data.reps,
+      weight: parsed.data.weight?.toString(),
+      isWarmup: parsed.data.isWarmup ?? false,
+    })
+    .where(eq(workoutSets.id, ownedSet.id));
+
+  revalidatePath(`/sessions/${ownedSet.sessionId}`);
+  revalidatePath("/sessions");
+}
+
+export async function deleteWorkoutSetAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = deleteSetSchema.safeParse({
+    setId: formData.get("setId"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid delete workout set payload");
+  }
+
+  const db = getDb();
+  const [ownedSet] = await db
+    .select({
+      id: workoutSets.id,
+      sessionId: workoutSets.sessionId,
+    })
+    .from(workoutSets)
+    .innerJoin(workoutSessions, eq(workoutSets.sessionId, workoutSessions.id))
+    .where(and(eq(workoutSets.id, parsed.data.setId), eq(workoutSessions.userId, userId)))
+    .limit(1);
+
+  if (!ownedSet) {
+    throw new Error("Workout set not found");
+  }
+
+  await db.transaction(async (tx) => {
+    await tx.delete(workoutSets).where(eq(workoutSets.id, ownedSet.id));
+
+    const remaining = await tx
+      .select({
+        id: workoutSets.id,
+      })
+      .from(workoutSets)
+      .where(eq(workoutSets.sessionId, ownedSet.sessionId))
+      .orderBy(asc(workoutSets.setOrder), asc(workoutSets.createdAt));
+
+    for (let index = 0; index < remaining.length; index += 1) {
+      await tx
+        .update(workoutSets)
+        .set({ setOrder: index + 1 })
+        .where(eq(workoutSets.id, remaining[index].id));
+    }
+  });
+
+  revalidatePath(`/sessions/${ownedSet.sessionId}`);
+  revalidatePath("/sessions");
+}
+
 export async function completeWorkoutSessionAction(formData: FormData) {
   const userId = await requireUserId();
   const sessionId = formData.get("sessionId");
@@ -950,6 +1056,27 @@ export async function cancelWorkoutSessionAction(formData: FormData) {
   await db.delete(workoutSessions).where(eq(workoutSessions.id, session.id));
 
   revalidatePath("/sessions");
+  revalidatePath("/dashboard");
+  redirect("/sessions");
+}
+
+export async function deleteWorkoutSessionAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = deleteSessionSchema.safeParse({
+    sessionId: formData.get("sessionId"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid delete session payload");
+  }
+
+  const db = getDb();
+  await db
+    .delete(workoutSessions)
+    .where(and(eq(workoutSessions.id, parsed.data.sessionId), eq(workoutSessions.userId, userId)));
+
+  revalidatePath("/sessions");
+  revalidatePath("/progress");
   revalidatePath("/dashboard");
   redirect("/sessions");
 }

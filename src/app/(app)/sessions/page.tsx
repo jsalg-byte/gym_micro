@@ -3,7 +3,11 @@ import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { routineDays, routines, userPreferences, workoutSessions } from "@/db/schema";
 import { requireUserId } from "@/lib/session";
-import { setActiveRoutineAction, startWorkoutSessionAction } from "@/server/actions";
+import {
+  deleteWorkoutSessionAction,
+  setActiveRoutineAction,
+  startWorkoutSessionAction,
+} from "@/server/actions";
 
 export default async function SessionsPage() {
   const userId = await requireUserId();
@@ -129,12 +133,20 @@ export default async function SessionsPage() {
                   {new Date(session.startedAt).toLocaleString()} · {session.status}
                 </p>
               </div>
-              <Link
-                href={`/sessions/${session.id}`}
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100"
-              >
-                Open
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/sessions/${session.id}`}
+                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                >
+                  Open
+                </Link>
+                <form action={deleteWorkoutSessionAction}>
+                  <input type="hidden" name="sessionId" value={session.id} />
+                  <button className="rounded-lg border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50">
+                    Delete
+                  </button>
+                </form>
+              </div>
             </li>
           ))}
           {sessions.length === 0 ? <li className="text-sm text-slate-500">No sessions yet.</li> : null}
