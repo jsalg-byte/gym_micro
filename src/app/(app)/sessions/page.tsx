@@ -3,6 +3,7 @@ import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { routineDays, routines, userPreferences, workoutSessions } from "@/db/schema";
 import { requireUserId } from "@/lib/session";
+import { formatEasternDateTime } from "@/lib/timezone";
 import {
   deleteWorkoutSessionAction,
   setActiveRoutineAction,
@@ -130,7 +131,7 @@ export default async function SessionsPage() {
                   {session.routineName ?? "Workout Plan"} - {session.dayName ?? "Day"}
                 </p>
                 <p className="text-xs text-slate-600">
-                  {new Date(session.startedAt).toLocaleString()} · {session.status}
+                  {formatEasternDateTime(session.startedAt)} · {session.status}
                 </p>
               </div>
               <div className="flex items-center gap-2">

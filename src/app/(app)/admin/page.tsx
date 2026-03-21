@@ -7,6 +7,7 @@ import {
 import { getDb } from "@/db/client";
 import { userIpAddresses, users } from "@/db/schema";
 import { requireAdminUserId } from "@/lib/admin";
+import { formatEasternDateTime } from "@/lib/timezone";
 
 export default async function AdminPage() {
   await requireAdminUserId();
@@ -121,8 +122,7 @@ export default async function AdminPage() {
                     Save User
                   </button>
                   <p className="text-xs text-slate-500">
-                    Created {new Date(user.createdAt).toLocaleDateString()} · Updated{" "}
-                    {new Date(user.updatedAt).toLocaleDateString()}
+                    Created {formatEasternDateTime(user.createdAt)} · Updated {formatEasternDateTime(user.updatedAt)}
                   </p>
                 </div>
               </form>
@@ -143,7 +143,7 @@ export default async function AdminPage() {
                   <ul className="mt-2 space-y-1">
                     {ips.map((ip) => (
                       <li key={ip.id} className="text-xs text-slate-700">
-                        {ip.ipAddress} · last seen {new Date(ip.lastSeenAt).toLocaleString()} · hits {ip.hitCount}
+                        {ip.ipAddress} · last seen {formatEasternDateTime(ip.lastSeenAt)} · hits {ip.hitCount}
                       </li>
                     ))}
                   </ul>

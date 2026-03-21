@@ -2,6 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  formatEasternDayKey,
+  formatEasternDayLabel,
+  formatEasternMonthYear,
+  formatEasternTime,
+} from "@/lib/timezone";
 
 type PhotoEntry = {
   id: string;
@@ -37,16 +43,7 @@ function formatDayKey(date: Date) {
 
 function dayKeyToDate(dayKey: string) {
   const [year, month, day] = dayKey.split("-").map(Number);
-  return new Date(year, month - 1, day);
-}
-
-function formatDayLabel(date: Date) {
-  return date.toLocaleDateString(undefined, {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  return new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
 }
 
 const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -60,7 +57,7 @@ export function ProgressCalendar({
 }) {
   const router = useRouter();
   const latestDate = entries[0]?.capturedAt ?? sessionEntries[0]?.startedAt ?? new Date().toISOString();
-  const initialMonth = startOfMonth(new Date(latestDate));
+  const initialMonth = startOfMonth(dayKeyToDate(formatEasternDayKey(latestDate)));
   const [month, setMonth] = useState(initialMonth);
   const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
@@ -71,7 +68,7 @@ export function ProgressCalendar({
   const photosByDay = useMemo(() => {
     const map = new Map<string, PhotoEntry[]>();
     for (const entry of entries) {
-      const key = formatDayKey(new Date(entry.capturedAt));
+      const key = formatEasternDayKey(entry.capturedAt);
       const list = map.get(key) ?? [];
       list.push(entry);
       map.set(key, list);
@@ -82,7 +79,7 @@ export function ProgressCalendar({
   const sessionsByDay = useMemo(() => {
     const map = new Map<string, SessionEntry[]>();
     for (const entry of sessionEntries) {
-      const key = formatDayKey(new Date(entry.startedAt));
+      const key = formatEasternDayKey(entry.startedAt);
       const list = map.get(key) ?? [];
       list.push(entry);
       map.set(key, list);
@@ -211,9 +208,7 @@ export function ProgressCalendar({
           >
             Prev
           </button>
-          <p className="text-sm font-semibold text-slate-800">
-            {monthStart.toLocaleDateString(undefined, { month: "long", year: "numeric" })}
-          </p>
+          <p className="text-sm font-semibold text-slate-800">{formatEasternMonthYear(monthStart)}</p>
           <button
             type="button"
             onClick={() => setMonth((prev) => addMonths(prev, 1))}
@@ -273,7 +268,7 @@ export function ProgressCalendar({
           <div className="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-xl bg-white p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className="text-lg font-black text-slate-900">{formatDayLabel(selectedDate)}</h2>
+                <h2 className="text-lg font-black text-slate-900">{formatEasternDayLabel(selectedDate)}</h2>
                 <p className="text-xs text-slate-600">
                   {selectedPhotos.length} photo{selectedPhotos.length === 1 ? "" : "s"} · {selectedSessions.length} session
                   {selectedSessions.length === 1 ? "" : "s"}
@@ -303,7 +298,7 @@ export function ProgressCalendar({
                     </div>
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-xs text-slate-600">
-                        {new Date(activePhoto.capturedAt).toLocaleTimeString()} · {activePhoto.note || "No note."}
+                        {formatEasternTime(activePhoto.capturedAt)} · {activePhoto.note || "No note."}
                       </p>
                       {selectedPhotos.length > 1 ? (
                         <div className="flex items-center gap-2">
@@ -395,7 +390,7 @@ export function ProgressCalendar({
                           {session.routineName ?? "Workout Plan"} / {session.dayName ?? "Day"}
                         </p>
                         <p className="text-xs text-slate-600">
-                          {new Date(session.startedAt).toLocaleTimeString()} · {session.status} · {session.setCount} set
+                          {formatEasternTime(session.startedAt)} · {session.status} · {session.setCount} set
                           {session.setCount === 1 ? "" : "s"}
                         </p>
                       </li>

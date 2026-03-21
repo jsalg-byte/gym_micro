@@ -2,6 +2,7 @@ import { and, count, desc, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { friendRequests, routineDays, routines, users, workoutSessions, workoutSets } from "@/db/schema";
 import { requireUserId } from "@/lib/session";
+import { formatEasternDateTime } from "@/lib/timezone";
 import {
   acceptFriendRequestAction,
   rejectFriendRequestAction,
@@ -222,7 +223,7 @@ export default async function FriendsPage() {
               <li key={row.id} className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
                 <p className="font-semibold text-slate-900">{row.friendName ?? row.friendUsername}</p>
                 <p className="text-xs text-slate-600">
-                  @{row.friendUsername} · {new Date(row.startedAt).toLocaleString()}
+                  @{row.friendUsername} · {formatEasternDateTime(row.startedAt)}
                 </p>
                 <p className="mt-1 text-slate-700">
                   {row.routineName ?? "Workout Plan"} / {row.dayName ?? "Day"} · {row.status} ·{" "}
