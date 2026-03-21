@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-const PRESET_SECONDS = [60, 90, 120];
+const PRESET_SECONDS = [60, 120, 300];
 const STORAGE_PREFIX = "gym-micro:rest-timer";
 
 function formatClock(totalSeconds: number) {
@@ -132,9 +132,9 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
   }
 
   return (
-    <section className="rounded-lg border border-cyan-200 bg-cyan-50 p-3">
-      <p className="text-xs font-black uppercase tracking-wide text-cyan-800">Rest Timer</p>
-      <p className="mt-1 text-3xl font-black tabular-nums text-cyan-900">{clock}</p>
+    <section className="rounded-lg border border-cyan-200 bg-cyan-50 p-3 dark:border-cyan-200 dark:bg-cyan-50">
+      <p className="text-xs font-black uppercase tracking-wide text-cyan-800 dark:text-white">Rest Timer</p>
+      <p className="mt-1 text-3xl font-black tabular-nums text-cyan-900 dark:text-white">{clock}</p>
 
       <div className="mt-2 flex flex-wrap gap-2">
         {PRESET_SECONDS.map((seconds) => (
@@ -142,14 +142,14 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
             key={seconds}
             type="button"
             onClick={() => applyPreset(seconds)}
-            className="rounded-md border border-cyan-300 bg-white px-2 py-1 text-xs font-semibold text-cyan-900 hover:bg-cyan-100"
+            className="rounded-md border border-white bg-cyan-900 px-2 py-1 text-xs font-semibold text-white hover:bg-cyan-800 dark:border-white dark:bg-cyan-900 dark:text-white dark:hover:bg-cyan-800"
           >
             {Math.round(seconds / 60)} min
           </button>
         ))}
       </div>
 
-      <label className="mt-2 block text-xs text-cyan-900">
+      <label className="mt-2 block text-xs text-cyan-900 dark:text-white">
         Custom seconds
         <input
           type="number"
@@ -167,7 +167,7 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
             setEndAtMs(null);
             setRunning(false);
           }}
-          className="mt-1 w-full rounded-md border border-cyan-300 px-2 py-1 text-sm outline-none focus:border-cyan-500"
+          className="mt-1 w-full rounded-md border border-white bg-cyan-900 px-2 py-1 text-sm text-white outline-none focus:border-white dark:border-white dark:bg-cyan-900 dark:text-white dark:focus:border-white"
         />
       </label>
 
@@ -175,20 +175,24 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
         <button
           type="button"
           onClick={toggleTimer}
-          className="rounded-md bg-cyan-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-cyan-800"
+          className="rounded-md bg-cyan-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-cyan-800 dark:bg-cyan-900 dark:text-white dark:hover:bg-cyan-800"
         >
           {running ? "Pause" : done ? "Start Again" : "Start"}
         </button>
         <button
           type="button"
           onClick={resetTimer}
-          className="rounded-md border border-cyan-300 bg-white px-3 py-1.5 text-xs font-semibold text-cyan-900 hover:bg-cyan-100"
+          className="rounded-md border border-white bg-cyan-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-cyan-800 dark:border-white dark:bg-cyan-900 dark:text-white dark:hover:bg-cyan-800"
         >
           Reset
         </button>
       </div>
 
-      {done ? <p className="mt-2 text-xs font-semibold text-emerald-700">Rest complete. Ready for next set.</p> : null}
+      {done ? (
+        <p className="mt-2 text-xs font-semibold text-emerald-700 dark:text-white">
+          Rest complete. Ready for next set.
+        </p>
+      ) : null}
     </section>
   );
 }

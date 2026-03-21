@@ -1,6 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import {
+  formatEasternDayKey,
+  formatEasternDayLabel,
+  formatEasternMonthYear,
+  formatEasternTime,
+} from "@/lib/timezone";
 
 type MealLogEntry = {
   id: string;
@@ -50,16 +56,7 @@ function formatDayKey(date: Date) {
 
 function dayKeyToDate(dayKey: string) {
   const [year, month, day] = dayKey.split("-").map(Number);
-  return new Date(year, month - 1, day);
-}
-
-function formatDayLabel(date: Date) {
-  return date.toLocaleDateString(undefined, {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  return new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
 }
 
 function toMealGroupKey(entry: MealLogEntry) {
@@ -69,13 +66,15 @@ function toMealGroupKey(entry: MealLogEntry) {
 const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export function MealLogCalendar({ entries }: { entries: MealLogEntry[] }) {
-  const [month, setMonth] = useState(startOfMonth(entries[0] ? new Date(entries[0].consumedAt) : new Date()));
+  const [month, setMonth] = useState(
+    startOfMonth(dayKeyToDate(entries[0] ? formatEasternDayKey(entries[0].consumedAt) : formatEasternDayKey(new Date()))),
+  );
   const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
 
   const groupedByDay = useMemo(() => {
     const map = new Map<string, MealLogEntry[]>();
     for (const entry of entries) {
-      const key = formatDayKey(new Date(entry.consumedAt));
+      const key = formatEasternDayKey(entry.consumedAt);
       const list = map.get(key) ?? [];
       list.push(entry);
       map.set(key, list);
@@ -161,9 +160,7 @@ export function MealLogCalendar({ entries }: { entries: MealLogEntry[] }) {
           >
             Prev
           </button>
-          <p className="text-sm font-semibold text-slate-800">
-            {monthStart.toLocaleDateString(undefined, { month: "long", year: "numeric" })}
-          </p>
+          <p className="text-sm font-semibold text-slate-800">{formatEasternMonthYear(monthStart)}</p>
           <button
             type="button"
             onClick={() => setMonth((prev) => addMonths(prev, 1))}
@@ -210,7 +207,7 @@ export function MealLogCalendar({ entries }: { entries: MealLogEntry[] }) {
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-xl bg-white p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h3 className="text-lg font-black text-slate-900">Meals on {formatDayLabel(selectedDate)}</h3>
+                <h3 className="text-lg font-black text-slate-900">Meals on {formatEasternDayLabel(selectedDate)}</h3>
                 <p className="text-xs text-slate-600">
                   {selectedMealGroups.length} meal{selectedMealGroups.length === 1 ? "" : "s"} · {selectedEntries.length}{" "}
                   ingredient item{selectedEntries.length === 1 ? "" : "s"}
@@ -229,7 +226,7 @@ export function MealLogCalendar({ entries }: { entries: MealLogEntry[] }) {
               {selectedMealGroups.map((mealGroup) => (
                 <li key={mealGroup.key} className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
                   <p className="font-semibold capitalize text-slate-900">{mealGroup.mealType}</p>
-                  <p className="text-slate-600">{new Date(mealGroup.consumedAt).toLocaleTimeString()}</p>
+                  <p className="text-slate-600">{formatEasternTime(mealGroup.consumedAt)}</p>
                   <p className="mt-1 text-xs font-semibold text-slate-700">
                     Total {mealGroup.totalCaloriesKcal} kcal · Protein {mealGroup.totalProteinG}g · Carbs {mealGroup.totalCarbsG}g · Fat{" "}
                     {mealGroup.totalFatG}g

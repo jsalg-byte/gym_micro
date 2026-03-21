@@ -14,6 +14,7 @@ import {
 } from "@/db/schema";
 import { resolveExerciseGif } from "@/lib/exercise-gifs";
 import { requireUserId } from "@/lib/session";
+import { formatEasternDateTime } from "@/lib/timezone";
 import { normalizeWeightUnit } from "@/lib/weight-unit";
 import {
   cancelWorkoutSessionAction,
@@ -219,7 +220,7 @@ export default async function SessionDetailPage({
               Session: {session.routineName ?? "Workout Plan"} / {session.dayName ?? "Day"}
             </h1>
             <p className="mt-1 text-xs text-slate-600">
-              Started {new Date(session.startedAt).toLocaleString()} · Status {session.status}
+              Started {formatEasternDateTime(session.startedAt)} · Status {session.status}
             </p>
           </div>
           <Link

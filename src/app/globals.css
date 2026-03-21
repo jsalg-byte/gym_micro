@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
@@ -7,6 +13,17 @@
   --line: #dbe3ef;
   --muted: #64748b;
   --accent: #0f766e;
+  color-scheme: light;
+}
+
+:root.dark {
+  --background: #020617;
+  --foreground: #e2e8f0;
+  --surface: #0f172a;
+  --line: #334155;
+  --muted: #94a3b8;
+  --accent: #2dd4bf;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -17,6 +34,10 @@
 }
 
 body {
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
   background:
     radial-gradient(1200px 500px at 10% -20%, #e0f2fe 0%, transparent 60%),
     radial-gradient(1000px 400px at 100% 0%, #dcfce7 0%, transparent 50%),
@@ -25,19 +46,208 @@ body {
   font-family: var(--font-bricolage), ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+:root.dark body {
+  background:
+    radial-gradient(1200px 500px at 10% -20%, rgba(15, 23, 42, 0.85) 0%, transparent 60%),
+    radial-gradient(1000px 400px at 100% 0%, rgba(20, 83, 45, 0.35) 0%, transparent 50%),
+    var(--background);
+}
+
 a {
   color: inherit;
 }
 
 .shell {
   margin: 0 auto;
-  width: min(920px, 100%);
-  padding: 1rem;
+  width: 100%;
+  max-width: 920px;
+  padding: clamp(0.75rem, 2.5vw, 1rem);
+  overflow-x: clip;
 }
 
 .panel {
+  max-width: 100%;
   border: 1px solid var(--line);
   background: var(--surface);
   border-radius: 1rem;
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.05);
+  overflow-x: clip;
+}
+
+.panel p,
+.panel li,
+.panel a,
+.panel span {
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.shell > * {
+  min-width: 0;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+}
+
+pre,
+code {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.theme-toggle {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--foreground);
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.theme-toggle:hover {
+  background: color-mix(in srgb, var(--surface) 86%, var(--foreground));
+}
+
+.menu-trigger {
+  border: 1px solid #0e7490;
+  background: #0891b2;
+  color: #f8fafc;
+}
+
+.menu-trigger:hover {
+  background: #0e7490;
+}
+
+.menu-trigger-caret {
+  color: #cffafe;
+}
+
+.menu-trigger-hint {
+  border-color: #0e7490;
+  background: #ecfeff;
+  color: #155e75;
+}
+
+:root.dark .theme-toggle:hover {
+  background: #1e293b;
+}
+
+:root.dark .menu-trigger {
+  border-color: #22d3ee;
+  background: #0f172a;
+  color: #e0f2fe;
+}
+
+:root.dark .menu-trigger:hover {
+  background: #082f49;
+}
+
+:root.dark .menu-trigger-caret {
+  color: #67e8f9;
+}
+
+:root.dark .menu-trigger-hint {
+  border-color: #22d3ee;
+  background: #082f49;
+  color: #a5f3fc;
+}
+
+:root.dark .panel {
+  box-shadow: 0 1px 0 rgba(148, 163, 184, 0.15);
+}
+
+:root.dark .text-slate-900 {
+  color: #f8fafc;
+}
+
+:root.dark .text-slate-800 {
+  color: #e2e8f0;
+}
+
+:root.dark .text-slate-700 {
+  color: #cbd5e1;
+}
+
+:root.dark .text-slate-600 {
+  color: #94a3b8;
+}
+
+:root.dark .text-slate-500 {
+  color: #64748b;
+}
+
+:root.dark .text-slate-400 {
+  color: #475569;
+}
+
+:root.dark .bg-white {
+  background-color: #0f172a;
+}
+
+:root.dark .bg-slate-50 {
+  background-color: #111827;
+}
+
+:root.dark .bg-slate-100 {
+  background-color: #1f2937;
+}
+
+:root.dark .bg-slate-900 {
+  background-color: #e2e8f0;
+}
+
+:root.dark .bg-slate-900.text-white {
+  color: #0f172a;
+}
+
+:root.dark .border-slate-100 {
+  border-color: #1f2937;
+}
+
+:root.dark .border-slate-200 {
+  border-color: #334155;
+}
+
+:root.dark .border-slate-300 {
+  border-color: #475569;
+}
+
+:root.dark .border-slate-400 {
+  border-color: #64748b;
+}
+
+:root.dark .hover\:bg-slate-50:hover {
+  background-color: #1e293b;
+}
+
+:root.dark .hover\:bg-slate-100:hover {
+  background-color: #334155;
+}
+
+:root.dark .hover\:bg-slate-700:hover {
+  background-color: #cbd5e1;
+}
+
+:root.dark .focus\:border-slate-500:focus {
+  border-color: #94a3b8;
 }

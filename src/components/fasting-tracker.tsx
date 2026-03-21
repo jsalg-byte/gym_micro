@@ -2,6 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  formatEasternDayKey,
+  formatEasternDayLabel,
+  formatEasternDateTime,
+  formatEasternMonthYear,
+  formatEasternTime,
+} from "@/lib/timezone";
 
 type FastingEntry = {
   id: string;
@@ -54,16 +61,7 @@ function formatDayKey(date: Date) {
 
 function dayKeyToDate(dayKey: string) {
   const [year, month, day] = dayKey.split("-").map(Number);
-  return new Date(year, month - 1, day);
-}
-
-function formatDayLabel(date: Date) {
-  return date.toLocaleDateString(undefined, {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  return new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
 }
 
 export function FastingTracker({
@@ -82,7 +80,9 @@ export function FastingTracker({
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
-  const [month, setMonth] = useState(startOfMonth(new Date(entries[0]?.endedAt ?? new Date().toISOString())));
+  const [month, setMonth] = useState(
+    startOfMonth(dayKeyToDate(formatEasternDayKey(entries[0]?.endedAt ?? new Date().toISOString()))),
+  );
 
   useEffect(() => {
     setActiveFastStartedAt(initialActiveFast?.startedAt ?? null);
@@ -112,7 +112,7 @@ export function FastingTracker({
   const groupedByDay = useMemo(() => {
     const map = new Map<string, FastingEntry[]>();
     for (const entry of entries) {
-      const key = formatDayKey(new Date(entry.endedAt));
+      const key = formatEasternDayKey(entry.endedAt);
       const list = map.get(key) ?? [];
       list.push(entry);
       map.set(key, list);
@@ -230,7 +230,7 @@ export function FastingTracker({
           <p className="mt-2 text-4xl font-black tabular-nums text-slate-900">{formatClock(activeElapsedMs)}</p>
           <p className="mt-1 text-xs text-slate-500">
             {activeFastStartedAt
-              ? `Started ${new Date(activeFastStartedAt).toLocaleString()}`
+              ? `Started ${formatEasternDateTime(activeFastStartedAt)}`
               : "No active fast running."}
           </p>
 
@@ -281,9 +281,7 @@ export function FastingTracker({
             >
               Prev
             </button>
-            <p className="text-sm font-semibold text-slate-800">
-              {monthStart.toLocaleDateString(undefined, { month: "long", year: "numeric" })}
-            </p>
+            <p className="text-sm font-semibold text-slate-800">{formatEasternMonthYear(monthStart)}</p>
             <button
               type="button"
               onClick={() => setMonth((prev) => addMonths(prev, 1))}
@@ -331,7 +329,7 @@ export function FastingTracker({
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-xl bg-white p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h3 className="text-lg font-black text-slate-900">{formatDayLabel(selectedDate)}</h3>
+                <h3 className="text-lg font-black text-slate-900">{formatEasternDayLabel(selectedDate)}</h3>
                 <p className="text-xs text-slate-600">{selectedEntries.length} fast log(s)</p>
               </div>
               <button
@@ -348,7 +346,7 @@ export function FastingTracker({
                 <li key={entry.id} className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
                   <p className="font-semibold text-slate-900">{formatDurationFromMinutes(entry.durationMinutes)}</p>
                   <p className="text-xs text-slate-600">
-                    {new Date(entry.startedAt).toLocaleTimeString()} - {new Date(entry.endedAt).toLocaleTimeString()}
+                    {formatEasternTime(entry.startedAt)} - {formatEasternTime(entry.endedAt)}
                   </p>
                   {entry.note ? <p className="mt-1 text-xs text-slate-700">{entry.note}</p> : null}
                 </li>
