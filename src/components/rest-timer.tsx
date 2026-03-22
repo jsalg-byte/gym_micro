@@ -32,6 +32,7 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
   const [remainingSec, setRemainingSec] = useState<number>(90);
   const [endAtMs, setEndAtMs] = useState<number | null>(null);
   const [running, setRunning] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const raw = window.localStorage.getItem(fullStorageKey);
@@ -132,67 +133,100 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
   }
 
   return (
-    <section className="rounded-lg border border-cyan-200 bg-cyan-50 p-3 dark:border-cyan-200 dark:bg-cyan-50">
-      <p className="text-xs font-black uppercase tracking-wide text-cyan-800 dark:text-white">Rest Timer</p>
-      <p className="mt-1 text-3xl font-black tabular-nums text-cyan-900 dark:text-white">{clock}</p>
+    <>
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        className="fixed bottom-4 right-4 z-40 rounded-full border border-cyan-300 bg-cyan-900 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:bg-cyan-800"
+      >
+        Rest Timer {clock}
+      </button>
 
-      <div className="mt-2 flex flex-wrap gap-2">
-        {PRESET_SECONDS.map((seconds) => (
-          <button
-            key={seconds}
-            type="button"
-            onClick={() => applyPreset(seconds)}
-            className="rounded-md border border-white bg-cyan-900 px-2 py-1 text-xs font-semibold text-white hover:bg-cyan-800 dark:border-white dark:bg-cyan-900 dark:text-white dark:hover:bg-cyan-800"
+      {isOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 sm:items-center"
+          onClick={() => setIsOpen(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-xl border border-cyan-200 bg-cyan-50 p-4 dark:border-cyan-200 dark:bg-cyan-50"
+            onClick={(event) => event.stopPropagation()}
           >
-            {Math.round(seconds / 60)} min
-          </button>
-        ))}
-      </div>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-wide text-cyan-800 dark:text-white">Rest Timer</p>
+                <p className="mt-1 text-3xl font-black tabular-nums text-cyan-900 dark:text-white">{clock}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="rounded-md border border-white bg-cyan-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-cyan-800"
+              >
+                Close
+              </button>
+            </div>
 
-      <label className="mt-2 block text-xs text-cyan-900 dark:text-white">
-        Custom seconds
-        <input
-          type="number"
-          min={10}
-          max={600}
-          step={5}
-          value={durationSec}
-          onChange={(event) => {
-            const value = Number(event.target.value);
-            if (!Number.isFinite(value) || value <= 0) {
-              return;
-            }
-            setDurationSec(value);
-            setRemainingSec(value);
-            setEndAtMs(null);
-            setRunning(false);
-          }}
-          className="mt-1 w-full rounded-md border border-white bg-cyan-900 px-2 py-1 text-sm text-white outline-none focus:border-white dark:border-white dark:bg-cyan-900 dark:text-white dark:focus:border-white"
-        />
-      </label>
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              {PRESET_SECONDS.map((seconds) => (
+                <button
+                  key={seconds}
+                  type="button"
+                  onClick={() => applyPreset(seconds)}
+                  className="rounded-md border border-white bg-cyan-900 px-2 py-1 text-xs font-semibold text-white hover:bg-cyan-800 dark:border-white dark:bg-cyan-900 dark:text-white dark:hover:bg-cyan-800"
+                >
+                  {Math.round(seconds / 60)} min
+                </button>
+              ))}
+            </div>
 
-      <div className="mt-2 flex gap-2">
-        <button
-          type="button"
-          onClick={toggleTimer}
-          className="rounded-md bg-cyan-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-cyan-800 dark:bg-cyan-900 dark:text-white dark:hover:bg-cyan-800"
-        >
-          {running ? "Pause" : done ? "Start Again" : "Start"}
-        </button>
-        <button
-          type="button"
-          onClick={resetTimer}
-          className="rounded-md border border-white bg-cyan-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-cyan-800 dark:border-white dark:bg-cyan-900 dark:text-white dark:hover:bg-cyan-800"
-        >
-          Reset
-        </button>
-      </div>
+            <details className="mt-2">
+              <summary className="cursor-pointer list-none text-xs font-semibold text-cyan-800 underline underline-offset-2 dark:text-white">
+                Custom seconds
+              </summary>
+              <input
+                type="number"
+                min={10}
+                max={600}
+                step={5}
+                value={durationSec}
+                onChange={(event) => {
+                  const value = Number(event.target.value);
+                  if (!Number.isFinite(value) || value <= 0) {
+                    return;
+                  }
+                  setDurationSec(value);
+                  setRemainingSec(value);
+                  setEndAtMs(null);
+                  setRunning(false);
+                }}
+                className="mt-1 w-full rounded-md border border-white bg-cyan-900 px-2 py-1 text-sm text-white outline-none focus:border-white dark:border-white dark:bg-cyan-900 dark:text-white dark:focus:border-white"
+              />
+            </details>
 
-      {done ? (
-        <p className="mt-2 text-xs font-semibold text-emerald-700 dark:text-white">
-          Rest complete. Ready for next set.
-        </p>
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={toggleTimer}
+                className="rounded-md bg-cyan-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-cyan-800 dark:bg-cyan-900 dark:text-white dark:hover:bg-cyan-800"
+              >
+                {running ? "Pause" : done ? "Start Again" : "Start"}
+              </button>
+              <button
+                type="button"
+                onClick={resetTimer}
+                className="rounded-md border border-white bg-cyan-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-cyan-800 dark:border-white dark:bg-cyan-900 dark:text-white dark:hover:bg-cyan-800"
+              >
+                Reset
+              </button>
+            </div>
+
+            {done ? (
+              <p className="mt-2 text-xs font-semibold text-emerald-700 dark:text-white">
+                Rest complete. Ready for next set.
+              </p>
+            ) : null}
+          </div>
+        </div>
       ) : null}
-    </section>
+    </>
   );
 }

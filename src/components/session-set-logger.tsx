@@ -25,6 +25,9 @@ type SessionSetLoggerProps = {
   initialExerciseId: string;
 };
 
+const ACTIVE_EXERCISE_STORAGE_PREFIX = "gym-micro:session-active-exercise";
+const ACTIVE_EXERCISE_EVENT = "gym-micro:session-active-exercise-change";
+
 export function SessionSetLogger({
   sessionId,
   weightUnit,
@@ -57,6 +60,22 @@ export function SessionSetLogger({
     setWeight(selectedExercise.prefillWeight ?? "");
     setShowGifFixModal(false);
   }, [selectedExercise]);
+
+  useEffect(() => {
+    if (!selectedExerciseId) {
+      return;
+    }
+    const storageKey = `${ACTIVE_EXERCISE_STORAGE_PREFIX}:${sessionId}`;
+    window.localStorage.setItem(storageKey, selectedExerciseId);
+    window.dispatchEvent(
+      new CustomEvent(ACTIVE_EXERCISE_EVENT, {
+        detail: {
+          sessionId,
+          exerciseId: selectedExerciseId,
+        },
+      }),
+    );
+  }, [selectedExerciseId, sessionId]);
 
   return (
     <div className="space-y-3">
@@ -196,19 +215,6 @@ export function SessionSetLogger({
           </button>
         </form>
       </details>
-
-      <section className="rounded-lg border border-slate-200 bg-slate-50 p-2">
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">Exercise GIFs In This Session</p>
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          {exerciseOptions.map((exercise) => (
-            <figure key={exercise.id} className="overflow-hidden rounded border border-slate-200 bg-white">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={exercise.gifUrl} alt={`${exercise.name} gif`} className="w-full object-contain" />
-              <figcaption className="px-2 py-1 text-[11px] text-slate-700">{exercise.name}</figcaption>
-            </figure>
-          ))}
-        </div>
-      </section>
 
       {showGifFixModal && selectedExercise ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">

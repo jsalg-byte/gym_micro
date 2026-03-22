@@ -110,8 +110,26 @@ export default async function SessionsPage() {
                   </option>
                 ))}
               </select>
+              <details className="mt-1">
+                <summary className="inline cursor-pointer list-none text-xs font-semibold text-cyan-700 underline underline-offset-2 hover:text-cyan-800">
+                  Forgot to log session?
+                </summary>
+                <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-2">
+                  <label className="block text-xs text-slate-600">
+                    Session date
+                    <input
+                      type="date"
+                      name="startedAtDate"
+                      className="mt-1 w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-500"
+                    />
+                  </label>
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    Leave blank to start now.
+                  </p>
+                </div>
+              </details>
               <button className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">
-                Start Session
+                Create Session
               </button>
             </form>
           )}

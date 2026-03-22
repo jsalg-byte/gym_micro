@@ -117,6 +117,11 @@ const removeFriendSchema = z.object({
 
 const startSessionSchema = z.object({
   routineDayId: z.string().uuid(),
+  startedAtDate: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
 });
 
 const setSchema = z.object({
@@ -907,6 +912,7 @@ export async function startWorkoutSessionAction(formData: FormData) {
 
   const parsed = startSessionSchema.safeParse({
     routineDayId: formData.get("routineDayId"),
+    startedAtDate: formData.get("startedAtDate") || undefined,
   });
 
   if (!parsed.success) {
@@ -927,10 +933,23 @@ export async function startWorkoutSessionAction(formData: FormData) {
     throw new Error("Routine day not found");
   }
 
+  let startedAt = new Date();
+  if (parsed.data.startedAtDate) {
+    const [yearRaw, monthRaw, dayRaw] = parsed.data.startedAtDate.split("-");
+    const year = Number(yearRaw);
+    const month = Number(monthRaw);
+    const dayOfMonth = Number(dayRaw);
+    const parsedDate = new Date(Date.UTC(year, month - 1, dayOfMonth, 12, 0, 0));
+    if (!Number.isNaN(parsedDate.getTime())) {
+      startedAt = parsedDate;
+    }
+  }
+
   await db.insert(workoutSessions).values({
     userId,
     routineId: day.routineId,
     routineDayId: parsed.data.routineDayId,
+    startedAt,
     status: "active",
   });
 
