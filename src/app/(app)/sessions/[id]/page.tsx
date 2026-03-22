@@ -25,6 +25,7 @@ import {
 } from "@/server/actions";
 import { RestTimer } from "@/components/rest-timer";
 import { SessionSetLogger } from "@/components/session-set-logger";
+import { LoggedSetGroups } from "@/components/logged-set-groups";
 
 export default async function SessionDetailPage({
   params,
@@ -207,9 +208,14 @@ export default async function SessionDetailPage({
     }
     group.sets.push(set);
   }
+  const groupedSetList = Array.from(groupedSets.entries()).map(([exerciseId, group]) => ({
+    exerciseId,
+    exerciseName: group.exerciseName,
+    sets: group.sets,
+  }));
 
-  const canEditLoggedSets = session.status === "active" || editMode;
-  const showEditToggle = session.status !== "active" && sets.length > 0;
+  const canEditLoggedSets = editMode;
+  const showEditToggle = sets.length > 0;
 
   return (
     <main className="space-y-4">
@@ -267,16 +273,15 @@ export default async function SessionDetailPage({
             ) : null}
           </div>
           <div className="mt-3 space-y-3">
-            {Array.from(groupedSets.entries()).map(([exerciseId, group]) => (
-              <section key={exerciseId} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-sm font-bold text-slate-900">{group.exerciseName}</p>
-                  <span className="rounded-full border border-cyan-300 bg-cyan-100 px-2 py-0.5 text-[11px] font-semibold text-cyan-900">
-                    {group.sets.length} set{group.sets.length === 1 ? "" : "s"}
-                  </span>
-                </div>
-
-                {canEditLoggedSets ? (
+            {canEditLoggedSets ? (
+              Array.from(groupedSets.entries()).map(([exerciseId, group]) => (
+                <section key={exerciseId} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-bold text-slate-900">{group.exerciseName}</p>
+                    <span className="rounded-full border border-cyan-300 bg-cyan-100 px-2 py-0.5 text-[11px] font-semibold text-cyan-900">
+                      {group.sets.length} set{group.sets.length === 1 ? "" : "s"}
+                    </span>
+                  </div>
                   <ul className="mt-2 space-y-2">
                     {group.sets.map((set, index) => (
                       <li key={set.id} className="rounded-md border border-slate-200 bg-white p-2 text-sm">
@@ -341,23 +346,11 @@ export default async function SessionDetailPage({
                       </li>
                     ))}
                   </ul>
-                ) : (
-                  <ul className="mt-2 space-y-2">
-                    {group.sets.map((set, index) => (
-                      <li key={set.id} className="rounded-md border border-slate-200 bg-white p-2 text-sm">
-                        <p className="font-semibold text-slate-900">
-                          Set {index + 1} (overall #{set.setOrder})
-                        </p>
-                        <p className="text-slate-600">
-                          {set.reps} reps @ {set.weight ?? "0"} {weightUnit} {set.isWarmup ? "(warmup)" : ""}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </section>
-            ))}
-            {sets.length === 0 ? <p className="text-sm text-slate-500">No sets logged yet.</p> : null}
+                </section>
+              ))
+            ) : (
+              <LoggedSetGroups sessionId={session.id} weightUnit={weightUnit} groups={groupedSetList} />
+            )}
           </div>
           {session.status === "active" ? (
             <div className="mt-3 flex flex-wrap gap-2">
