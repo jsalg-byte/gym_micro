@@ -56,6 +56,11 @@ const removeRoutineDayExerciseSchema = z.object({
   routineDayExerciseId: z.string().uuid(),
 });
 
+const reorderRoutineDayExerciseSchema = z.object({
+  routineDayExerciseId: z.string().uuid(),
+  direction: z.enum(["up", "down"]),
+});
+
 const activeRoutineSchema = z.object({
   routineId: z.string().uuid(),
 });
@@ -473,6 +478,67 @@ export async function removeExerciseFromRoutineDayAction(formData: FormData) {
   }
 
   await db.delete(routineDayExercises).where(eq(routineDayExercises.id, entry.id));
+
+  revalidatePath("/routines");
+  revalidatePath("/sessions");
+}
+
+export async function reorderRoutineDayExerciseAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = reorderRoutineDayExerciseSchema.safeParse({
+    routineDayExerciseId: formData.get("routineDayExerciseId"),
+    direction: formData.get("direction"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid reorder routine-day exercise payload");
+  }
+
+  const db = getDb();
+
+  await db.transaction(async (tx) => {
+    const [entry] = await tx
+      .select({
+        id: routineDayExercises.id,
+        routineDayId: routineDayExercises.routineDayId,
+      })
+      .from(routineDayExercises)
+      .innerJoin(routineDays, eq(routineDayExercises.routineDayId, routineDays.id))
+      .innerJoin(routines, eq(routineDays.routineId, routines.id))
+      .where(and(eq(routineDayExercises.id, parsed.data.routineDayExerciseId), eq(routines.userId, userId)))
+      .limit(1);
+
+    if (!entry) {
+      throw new Error("Routine day exercise not found");
+    }
+
+    const entries = await tx
+      .select({ id: routineDayExercises.id })
+      .from(routineDayExercises)
+      .where(eq(routineDayExercises.routineDayId, entry.routineDayId))
+      .orderBy(asc(routineDayExercises.sortOrder), asc(routineDayExercises.id));
+
+    const currentIndex = entries.findIndex((item) => item.id === entry.id);
+    if (currentIndex < 0) {
+      throw new Error("Routine day exercise not found");
+    }
+
+    const targetIndex = parsed.data.direction === "up" ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= entries.length) {
+      return;
+    }
+
+    const reordered = [...entries];
+    const [moved] = reordered.splice(currentIndex, 1);
+    reordered.splice(targetIndex, 0, moved);
+
+    for (const [index, item] of reordered.entries()) {
+      await tx
+        .update(routineDayExercises)
+        .set({ sortOrder: index })
+        .where(eq(routineDayExercises.id, item.id));
+    }
+  });
 
   revalidatePath("/routines");
   revalidatePath("/sessions");
@@ -945,15 +1011,19 @@ export async function startWorkoutSessionAction(formData: FormData) {
     }
   }
 
-  await db.insert(workoutSessions).values({
-    userId,
-    routineId: day.routineId,
-    routineDayId: parsed.data.routineDayId,
-    startedAt,
-    status: "active",
-  });
+  const [createdSession] = await db
+    .insert(workoutSessions)
+    .values({
+      userId,
+      routineId: day.routineId,
+      routineDayId: parsed.data.routineDayId,
+      startedAt,
+      status: "active",
+    })
+    .returning({ id: workoutSessions.id });
 
   revalidatePath("/sessions");
+  redirect(`/sessions/${createdSession.id}`);
 }
 
 export async function addWorkoutSetAction(formData: FormData) {

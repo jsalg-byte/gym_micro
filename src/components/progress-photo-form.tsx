@@ -8,9 +8,16 @@ type UploadState = {
   ok: boolean;
 };
 
+function toDateInputValue(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export function ProgressPhotoForm() {
   const router = useRouter();
-  const [capturedAt, setCapturedAt] = useState(() => new Date().toISOString().slice(0, 10));
+  const [capturedAt, setCapturedAt] = useState(() => toDateInputValue(new Date()));
   const [note, setNote] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [status, setStatus] = useState<UploadState | null>(null);

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import {
   addExerciseToRoutineDayAction,
   createAndAttachExerciseToRoutineDayAction,
   deleteRoutineDayAction,
+  reorderRoutineDayExerciseAction,
   removeExerciseFromRoutineDayAction,
   updateRoutineDayAction,
 } from "@/server/actions";
@@ -35,6 +36,30 @@ type RoutineDayFlyoverProps = {
 
 export function RoutineDayFlyover({ day, weightUnit, dayExercises, allExercises }: RoutineDayFlyoverProps) {
   const [open, setOpen] = useState(false);
+  const [dayName, setDayName] = useState(day.dayName);
+  const [isSavingDay, startSavingDay] = useTransition();
+
+  useEffect(() => {
+    setDayName(day.dayName);
+  }, [day.dayName, open]);
+
+  const canSaveDay = useMemo(() => {
+    const next = dayName.trim();
+    const original = day.dayName.trim();
+    return next.length >= 2 && next !== original && !isSavingDay;
+  }, [dayName, day.dayName, isSavingDay]);
+
+  async function saveDayAction(formData: FormData) {
+    if (!canSaveDay) {
+      return;
+    }
+
+    startSavingDay(() => {
+      void updateRoutineDayAction(formData).then(() => {
+        setOpen(false);
+      });
+    });
+  }
 
   return (
     <>
@@ -89,19 +114,27 @@ export function RoutineDayFlyover({ day, weightUnit, dayExercises, allExercises 
             <div className="mt-4 space-y-4">
               <section className="rounded-lg border border-slate-200 bg-slate-50 p-3">
                 <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-700">Day Settings</h4>
-                <form action={updateRoutineDayAction} className="mt-2 flex flex-wrap items-end gap-2">
+                <form action={saveDayAction} className="mt-2 flex flex-wrap items-end gap-2">
                   <input type="hidden" name="routineDayId" value={day.id} />
                   <label className="block flex-1 text-xs text-slate-700">
                     Day Name
                     <input
                       name="dayName"
-                      defaultValue={day.dayName}
+                      value={dayName}
+                      onChange={(event) => setDayName(event.target.value)}
                       required
                       className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
                     />
                   </label>
-                  <button className="rounded border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100">
-                    Save Day
+                  <button
+                    disabled={!canSaveDay}
+                    className={`rounded px-3 py-2 text-xs font-semibold transition ${
+                      canSaveDay
+                        ? "border border-cyan-400 bg-cyan-600 text-white hover:bg-cyan-700"
+                        : "cursor-not-allowed border border-slate-300 bg-slate-200 text-slate-500"
+                    }`}
+                  >
+                    {isSavingDay ? "Saving..." : "Save Day"}
                   </button>
                 </form>
 
@@ -116,7 +149,7 @@ export function RoutineDayFlyover({ day, weightUnit, dayExercises, allExercises 
               <section className="rounded-lg border border-slate-200 bg-slate-50 p-3">
                 <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-700">Current Exercises</h4>
                 <ul className="mt-2 space-y-2">
-                  {dayExercises.map((entry) => (
+                  {dayExercises.map((entry, index) => (
                     <li key={entry.id} className="rounded border border-slate-200 bg-white p-2 text-xs text-slate-700">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <span>
@@ -124,12 +157,42 @@ export function RoutineDayFlyover({ day, weightUnit, dayExercises, allExercises 
                           {entry.targetReps ? ` | Reps: ${entry.targetReps}` : " | Reps: -"}
                           {entry.targetWeight ? ` | Weight: ${entry.targetWeight}${weightUnitLabel(weightUnit)}` : ""}
                         </span>
-                        <form action={removeExerciseFromRoutineDayAction}>
-                          <input type="hidden" name="routineDayExerciseId" value={entry.id} />
-                          <button className="rounded border border-rose-300 px-2 py-1 text-[11px] font-semibold text-rose-700 hover:bg-rose-50">
-                            Remove
-                          </button>
-                        </form>
+                        <div className="flex items-center gap-1">
+                          <form action={reorderRoutineDayExerciseAction}>
+                            <input type="hidden" name="routineDayExerciseId" value={entry.id} />
+                            <input type="hidden" name="direction" value="up" />
+                            <button
+                              disabled={index === 0}
+                              className={`rounded px-2 py-1 text-[11px] font-semibold ${
+                                index === 0
+                                  ? "cursor-not-allowed border border-slate-200 bg-slate-100 text-slate-400"
+                                  : "border border-slate-300 text-slate-700 hover:bg-slate-100"
+                              }`}
+                            >
+                              Up
+                            </button>
+                          </form>
+                          <form action={reorderRoutineDayExerciseAction}>
+                            <input type="hidden" name="routineDayExerciseId" value={entry.id} />
+                            <input type="hidden" name="direction" value="down" />
+                            <button
+                              disabled={index === dayExercises.length - 1}
+                              className={`rounded px-2 py-1 text-[11px] font-semibold ${
+                                index === dayExercises.length - 1
+                                  ? "cursor-not-allowed border border-slate-200 bg-slate-100 text-slate-400"
+                                  : "border border-slate-300 text-slate-700 hover:bg-slate-100"
+                              }`}
+                            >
+                              Down
+                            </button>
+                          </form>
+                          <form action={removeExerciseFromRoutineDayAction}>
+                            <input type="hidden" name="routineDayExerciseId" value={entry.id} />
+                            <button className="rounded border border-rose-300 px-2 py-1 text-[11px] font-semibold text-rose-700 hover:bg-rose-50">
+                              Remove
+                            </button>
+                          </form>
+                        </div>
                       </div>
                     </li>
                   ))}

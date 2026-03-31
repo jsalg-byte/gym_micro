@@ -2,10 +2,10 @@ import Link from "next/link";
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { routineDays, routines, userPreferences, workoutSessions } from "@/db/schema";
+import { DeleteSessionButton } from "@/components/delete-session-button";
 import { requireUserId } from "@/lib/session";
 import { formatEasternDateTime } from "@/lib/timezone";
 import {
-  deleteWorkoutSessionAction,
   setActiveRoutineAction,
   startWorkoutSessionAction,
 } from "@/server/actions";
@@ -159,12 +159,15 @@ export default async function SessionsPage() {
                 >
                   Open
                 </Link>
-                <form action={deleteWorkoutSessionAction}>
-                  <input type="hidden" name="sessionId" value={session.id} />
-                  <button className="rounded-lg border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50">
-                    Delete
-                  </button>
-                </form>
+                {session.status === "completed" ? (
+                  <Link
+                    href={`/share/session/${session.id}`}
+                    className="rounded-lg border border-cyan-300 bg-cyan-50 px-3 py-1.5 text-xs font-semibold text-cyan-900 hover:bg-cyan-100"
+                  >
+                    Share
+                  </Link>
+                ) : null}
+                <DeleteSessionButton sessionId={session.id} buttonLabel="Delete" />
               </div>
             </li>
           ))}

@@ -28,15 +28,23 @@ type SessionSetLoggerProps = {
 const ACTIVE_EXERCISE_STORAGE_PREFIX = "gym-micro:session-active-exercise";
 const ACTIVE_EXERCISE_EVENT = "gym-micro:session-active-exercise-change";
 
+function isVideoUrl(url: string) {
+  return /\.(mp4|webm|mov|m4v|m3u8)(\?.*)?$/i.test(url);
+}
+
 export function SessionSetLogger({
   sessionId,
   weightUnit,
   exerciseOptions,
   initialExerciseId,
 }: SessionSetLoggerProps) {
+  const activeExerciseStorageKey = `${ACTIVE_EXERCISE_STORAGE_PREFIX}:${sessionId}`;
   const [selectedExerciseId, setSelectedExerciseId] = useState(initialExerciseId);
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
+  const [isDemoHidden, setIsDemoHidden] = useState(false);
+  const [forceImageFallback, setForceImageFallback] = useState(false);
+  const [isMediaUnavailable, setIsMediaUnavailable] = useState(false);
   const [showGifFixModal, setShowGifFixModal] = useState(false);
 
   const selectedExercise = useMemo(
@@ -45,19 +53,45 @@ export function SessionSetLogger({
   );
 
   useEffect(() => {
-    setSelectedExerciseId(initialExerciseId);
-  }, [initialExerciseId]);
+    const options = new Set(exerciseOptions.map((exercise) => exercise.id));
+    if (options.size === 0) {
+      setSelectedExerciseId("");
+      return;
+    }
+
+    if (selectedExerciseId && options.has(selectedExerciseId)) {
+      return;
+    }
+
+    const stored = window.localStorage.getItem(activeExerciseStorageKey);
+    if (stored && options.has(stored)) {
+      setSelectedExerciseId(stored);
+      return;
+    }
+
+    if (initialExerciseId && options.has(initialExerciseId)) {
+      setSelectedExerciseId(initialExerciseId);
+      return;
+    }
+
+    setSelectedExerciseId(exerciseOptions[0]?.id ?? "");
+  }, [exerciseOptions, selectedExerciseId, activeExerciseStorageKey, initialExerciseId]);
 
   useEffect(() => {
     if (!selectedExercise) {
       setReps("");
       setWeight("");
+      setIsDemoHidden(false);
+      setForceImageFallback(false);
+      setIsMediaUnavailable(false);
       setShowGifFixModal(false);
       return;
     }
 
     setReps(selectedExercise.prefillReps ? String(selectedExercise.prefillReps) : "");
     setWeight(selectedExercise.prefillWeight ?? "");
+    setForceImageFallback(false);
+    setIsMediaUnavailable(false);
     setShowGifFixModal(false);
   }, [selectedExercise]);
 
@@ -65,8 +99,7 @@ export function SessionSetLogger({
     if (!selectedExerciseId) {
       return;
     }
-    const storageKey = `${ACTIVE_EXERCISE_STORAGE_PREFIX}:${sessionId}`;
-    window.localStorage.setItem(storageKey, selectedExerciseId);
+    window.localStorage.setItem(activeExerciseStorageKey, selectedExerciseId);
     window.dispatchEvent(
       new CustomEvent(ACTIVE_EXERCISE_EVENT, {
         detail: {
@@ -75,7 +108,7 @@ export function SessionSetLogger({
         },
       }),
     );
-  }, [selectedExerciseId, sessionId]);
+  }, [selectedExerciseId, sessionId, activeExerciseStorageKey]);
 
   return (
     <div className="space-y-3">
@@ -102,20 +135,48 @@ export function SessionSetLogger({
           <div className="rounded-lg border border-cyan-200 bg-cyan-50 p-2">
             <div className="flex items-center justify-between gap-2">
               <p className="text-[11px] font-semibold uppercase tracking-wide text-cyan-900">Exercise Demo</p>
-              <button
-                type="button"
-                onClick={() => setShowGifFixModal(true)}
-                className="text-[11px] font-semibold text-cyan-900 underline underline-offset-2 hover:text-cyan-700"
-              >
-                Wrong gif?
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowGifFixModal(true)}
+                  className="text-[11px] font-semibold text-cyan-900 underline underline-offset-2 hover:text-cyan-700"
+                >
+                  Wrong demo?
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsDemoHidden((current) => !current)}
+                  className="inline-flex h-6 w-6 items-center justify-center rounded border border-cyan-400 bg-cyan-100 text-base font-black leading-none text-cyan-900 hover:bg-cyan-200"
+                  aria-label={isDemoHidden ? "Show demo" : "Hide demo"}
+                >
+                  {isDemoHidden ? "+" : "−"}
+                </button>
+              </div>
             </div>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={selectedExercise.gifUrl}
-              alt={`${selectedExercise.name} demo`}
-              className="mt-2 w-full rounded-md border border-cyan-200 object-contain"
-            />
+            {isDemoHidden ? null : isMediaUnavailable ? (
+              <p className="mt-2 rounded-md border border-cyan-200 bg-white p-2 text-xs text-slate-600">
+                Demo unavailable for this exercise right now.
+              </p>
+            ) : isVideoUrl(selectedExercise.gifUrl) && !forceImageFallback ? (
+              <video
+                src={selectedExercise.gifUrl}
+                className="mt-2 w-full rounded-md border border-cyan-200 object-contain"
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls
+                onError={() => setForceImageFallback(true)}
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={selectedExercise.gifUrl}
+                alt={`${selectedExercise.name} demo`}
+                className="mt-2 w-full rounded-md border border-cyan-200 object-contain"
+                onError={() => setIsMediaUnavailable(true)}
+              />
+            )}
           </div>
         ) : null}
 
@@ -151,7 +212,7 @@ export function SessionSetLogger({
           Warmup set
         </label>
 
-        <button className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">
+        <button className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition active:translate-y-px active:bg-slate-950 hover:bg-slate-700">
           Add Set
         </button>
       </form>
@@ -217,14 +278,16 @@ export function SessionSetLogger({
       </details>
 
       {showGifFixModal && selectedExercise ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setShowGifFixModal(false)}>
+          <div
+            className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-4"
+            onClick={(event) => event.stopPropagation()}
+          >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h3 className="text-base font-black text-slate-900">Fix GIF Match</h3>
+                <h3 className="text-base font-black text-slate-900">Fix Demo Match</h3>
                 <p className="text-xs text-slate-600">
-                  Is this one of the exercises below? Pick one to remember it for{" "}
-                  {selectedExercise.name}.
+                  Is this one of the exercises below? Pick one to remember it for {selectedExercise.name}.
                 </p>
               </div>
               <button
@@ -237,20 +300,20 @@ export function SessionSetLogger({
             </div>
 
             {selectedExercise.gifCandidates.length === 0 ? (
-              <p className="mt-3 text-sm text-slate-500">
-                No fuzzy matches found right now. Please try again later.
-              </p>
+              <p className="mt-3 text-sm text-slate-500">No fuzzy matches found right now. Please try again later.</p>
             ) : (
               <ul className="mt-3 space-y-2">
                 {selectedExercise.gifCandidates.map((candidate) => (
                   <li key={candidate.exerciseId} className="rounded-lg border border-slate-200 bg-slate-50 p-2">
                     <div className="grid gap-2 sm:grid-cols-[120px_minmax(0,1fr)_auto] sm:items-center">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={candidate.gifUrl}
-                        alt={`${candidate.name} gif`}
-                        className="w-full rounded border border-slate-200 object-contain"
-                      />
+                      {
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={candidate.gifUrl}
+                          alt={`${candidate.name} demo`}
+                          className="w-full rounded border border-slate-200 object-contain"
+                        />
+                      }
                       <div>
                         <p className="text-sm font-semibold text-slate-900">{candidate.name}</p>
                         <p className="text-xs text-slate-600">Match score: {candidate.score.toFixed(1)}</p>
@@ -262,7 +325,7 @@ export function SessionSetLogger({
                         <input type="hidden" name="sourceExerciseId" value={candidate.exerciseId} />
                         <input type="hidden" name="sourceName" value={candidate.name} />
                         <button className="rounded-md border border-cyan-300 bg-cyan-50 px-2 py-1 text-xs font-semibold text-cyan-900 hover:bg-cyan-100">
-                          Use This GIF
+                          Use This Demo
                         </button>
                       </form>
                     </div>

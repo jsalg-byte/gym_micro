@@ -137,7 +137,7 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 z-40 rounded-full border border-cyan-300 bg-cyan-900 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:bg-cyan-800"
+        className="fixed bottom-4 right-4 z-40 rounded-full border border-slate-300 bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:bg-slate-700 dark:border-slate-400 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
       >
         Rest Timer {clock}
       </button>
@@ -148,18 +148,18 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
           onClick={() => setIsOpen(false)}
         >
           <div
-            className="w-full max-w-md rounded-xl border border-cyan-200 bg-cyan-50 p-4 dark:border-cyan-200 dark:bg-cyan-50"
+            className="w-full max-w-md rounded-xl border border-slate-300 bg-white p-4 dark:border-slate-600 dark:bg-slate-900"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-2">
               <div>
-                <p className="text-[11px] font-black uppercase tracking-wide text-cyan-800 dark:text-white">Rest Timer</p>
-                <p className="mt-1 text-3xl font-black tabular-nums text-cyan-900 dark:text-white">{clock}</p>
+                <p className="text-[11px] font-black uppercase tracking-wide text-slate-600 dark:text-slate-300">Rest Timer</p>
+                <p className="mt-1 text-3xl font-black tabular-nums text-slate-900 dark:text-white">{clock}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="rounded-md border border-white bg-cyan-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-cyan-800"
+                className="rounded-md border border-slate-300 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-900 hover:bg-slate-200 dark:border-slate-500 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
               >
                 Close
               </button>
@@ -171,7 +171,7 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
                   key={seconds}
                   type="button"
                   onClick={() => applyPreset(seconds)}
-                  className="rounded-md border border-white bg-cyan-900 px-2 py-1 text-xs font-semibold text-white hover:bg-cyan-800 dark:border-white dark:bg-cyan-900 dark:text-white dark:hover:bg-cyan-800"
+                  className="rounded-md border border-slate-300 bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-900 hover:bg-slate-200 dark:border-slate-500 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
                 >
                   {Math.round(seconds / 60)} min
                 </button>
@@ -179,7 +179,7 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
             </div>
 
             <details className="mt-2">
-              <summary className="cursor-pointer list-none text-xs font-semibold text-cyan-800 underline underline-offset-2 dark:text-white">
+              <summary className="cursor-pointer list-none text-xs font-semibold text-slate-700 underline underline-offset-2 dark:text-slate-200">
                 Custom seconds
               </summary>
               <input
@@ -198,7 +198,7 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
                   setEndAtMs(null);
                   setRunning(false);
                 }}
-                className="mt-1 w-full rounded-md border border-white bg-cyan-900 px-2 py-1 text-sm text-white outline-none focus:border-white dark:border-white dark:bg-cyan-900 dark:text-white dark:focus:border-white"
+                className="mt-1 w-full rounded-md border border-slate-400 bg-white px-2 py-1 text-sm text-slate-900 outline-none focus:border-slate-600 dark:border-slate-500 dark:bg-slate-950 dark:text-white dark:focus:border-slate-300"
               />
             </details>
 
@@ -206,21 +206,21 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
               <button
                 type="button"
                 onClick={toggleTimer}
-                className="rounded-md bg-cyan-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-cyan-800 dark:bg-cyan-900 dark:text-white dark:hover:bg-cyan-800"
+                className="rounded-md bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-700 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
               >
                 {running ? "Pause" : done ? "Start Again" : "Start"}
               </button>
               <button
                 type="button"
                 onClick={resetTimer}
-                className="rounded-md border border-white bg-cyan-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-cyan-800 dark:border-white dark:bg-cyan-900 dark:text-white dark:hover:bg-cyan-800"
+                className="rounded-md border border-slate-300 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-900 hover:bg-slate-200 dark:border-slate-500 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
               >
                 Reset
               </button>
             </div>
 
             {done ? (
-              <p className="mt-2 text-xs font-semibold text-emerald-700 dark:text-white">
+              <p className="mt-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
                 Rest complete. Ready for next set.
               </p>
             ) : null}
