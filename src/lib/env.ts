@@ -7,6 +7,7 @@ const envSchema = z.object({
   REDIS_URL: z.string().optional(),
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
+  MUSCLEWIKI_API_KEY: z.string().optional(),
   S3_ENDPOINT: z.string().optional(),
   S3_REGION: z.string().optional(),
   S3_BUCKET: z.string().optional(),

@@ -19,13 +19,13 @@ import { normalizeWeightUnit } from "@/lib/weight-unit";
 import {
   cancelWorkoutSessionAction,
   completeWorkoutSessionAction,
-  deleteWorkoutSessionAction,
   deleteWorkoutSetAction,
   updateWorkoutSetAction,
 } from "@/server/actions";
 import { RestTimer } from "@/components/rest-timer";
 import { SessionSetLogger } from "@/components/session-set-logger";
 import { LoggedSetGroups } from "@/components/logged-set-groups";
+import { DeleteSessionButton } from "@/components/delete-session-button";
 
 export default async function SessionDetailPage({
   params,
@@ -236,6 +236,16 @@ export default async function SessionDetailPage({
             Back to sessions
           </Link>
         </div>
+        {session.status === "completed" ? (
+          <div className="mt-2">
+            <Link
+              href={`/share/session/${session.id}`}
+              className="rounded-lg border border-cyan-300 bg-cyan-50 px-3 py-1.5 text-xs font-semibold text-cyan-900 hover:bg-cyan-100"
+            >
+              Share Workout
+            </Link>
+          </div>
+        ) : null}
       </section>
 
       <section className="grid gap-4 md:grid-cols-[320px_minmax(0,1fr)]">
@@ -369,12 +379,11 @@ export default async function SessionDetailPage({
             </div>
           ) : (
             <div className="mt-3">
-              <form action={deleteWorkoutSessionAction}>
-                <input type="hidden" name="sessionId" value={session.id} />
-                <button className="rounded-lg border border-rose-300 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-100">
-                  Delete Session
-                </button>
-              </form>
+              <DeleteSessionButton
+                sessionId={session.id}
+                buttonLabel="Delete Session"
+                buttonClassName="rounded-lg border border-rose-300 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-100"
+              />
             </div>
           )}
         </article>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 type AppNavigationProps = {
   isAdmin: boolean;
@@ -9,10 +10,18 @@ type AppNavigationProps = {
 
 export function AppNavigation({ isAdmin }: AppNavigationProps) {
   const pathname = usePathname();
-  const hideMenu = pathname === "/dashboard";
+  const mobileMenuRef = useRef<HTMLDetailsElement | null>(null);
 
-  if (hideMenu) {
-    return null;
+  useEffect(() => {
+    if (mobileMenuRef.current) {
+      mobileMenuRef.current.open = false;
+    }
+  }, [pathname]);
+
+  function closeMobileMenu() {
+    if (mobileMenuRef.current) {
+      mobileMenuRef.current.open = false;
+    }
   }
 
   return (
@@ -49,7 +58,7 @@ export function AppNavigation({ isAdmin }: AppNavigationProps) {
         ) : null}
       </nav>
 
-      <details className="group md:hidden">
+      <details ref={mobileMenuRef} className="group md:hidden">
         <summary className="menu-trigger flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-2 text-sm font-bold shadow-sm transition group-open:rounded-b-none">
           <span className="flex items-center gap-2">
             <span className="text-base leading-none">☰</span>
@@ -63,48 +72,56 @@ export function AppNavigation({ isAdmin }: AppNavigationProps) {
         <nav className="mt-2 grid grid-cols-1 gap-2 text-sm text-slate-700 sm:grid-cols-2">
           <Link
             href="/routines"
+            onClick={closeMobileMenu}
             className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
           >
             Workout Plans
           </Link>
           <Link
             href="/exercises"
+            onClick={closeMobileMenu}
             className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
           >
             Exercise Library
           </Link>
           <Link
             href="/sessions"
+            onClick={closeMobileMenu}
             className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
           >
             Sessions
           </Link>
           <Link
             href="/nutrition"
+            onClick={closeMobileMenu}
             className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
           >
             Nutrition
           </Link>
           <Link
             href="/fasting"
+            onClick={closeMobileMenu}
             className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
           >
             Fasting
           </Link>
           <Link
             href="/progress"
+            onClick={closeMobileMenu}
             className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
           >
             Progress
           </Link>
           <Link
             href="/friends"
+            onClick={closeMobileMenu}
             className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
           >
             Friends
           </Link>
           <Link
             href="/settings"
+            onClick={closeMobileMenu}
             className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
           >
             Settings
@@ -112,6 +129,7 @@ export function AppNavigation({ isAdmin }: AppNavigationProps) {
           {isAdmin ? (
             <Link
               href="/admin"
+              onClick={closeMobileMenu}
               className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
             >
               Admin

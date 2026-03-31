@@ -13,9 +13,9 @@ import { normalizeWeightUnit } from "@/lib/weight-unit";
 import {
   createRoutineAction,
   createRoutineDayAction,
-  deleteRoutineAction,
   setActiveRoutineAction,
 } from "@/server/actions";
+import { DeleteRoutineButton } from "@/components/delete-routine-button";
 
 export default async function RoutinesPage() {
   const userId = await requireUserId();
@@ -147,12 +147,7 @@ export default async function RoutinesPage() {
                       {isActive ? "Active Plan" : "Set Active"}
                     </button>
                   </form>
-                  <form action={deleteRoutineAction}>
-                    <input type="hidden" name="routineId" value={routine.id} />
-                    <button className="rounded-lg border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50">
-                      Delete Plan
-                    </button>
-                  </form>
+                  <DeleteRoutineButton routineId={routine.id} routineName={routine.name} />
                 </div>
               </div>
 
