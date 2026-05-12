@@ -81,120 +81,131 @@ export default async function RoutinesPage() {
   }
 
   return (
-    <main className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
-      <aside className="space-y-4">
-        <section className="panel p-4">
-          <h2 className="text-sm font-black uppercase tracking-wide text-slate-700">How Workout Plans Work</h2>
-          <p className="mt-2 text-sm text-slate-600">
-            A workout plan is your weekly structure. Add one or more plan days, attach exercises to each day, then set
-            a plan as active on Sessions to start logging.
+    <main className="grid gap-8 lg:grid-cols-[320px_minmax(0,1fr)] pb-12 transition-colors">
+      <aside className="space-y-6">
+        <section className="rounded-3xl border border-line bg-surface/50 p-6 backdrop-blur-sm">
+          <h2 className="text-xs font-black uppercase tracking-widest text-muted">How Plans Work</h2>
+          <p className="mt-4 text-sm font-medium leading-relaxed text-muted/80">
+            A workout plan is your weekly structure. Add days, attach exercises, and set a plan as active to start logging.
           </p>
         </section>
 
-        <section className="panel p-4">
-          <h1 className="text-xl font-black text-slate-900">Create Workout Plan</h1>
-          <p className="mt-1 text-xs text-slate-600">Every new workout plan starts with Day 1 automatically.</p>
-          <form action={createRoutineAction} className="mt-3 space-y-3">
-            <label className="block text-sm text-slate-700">
-              Name
+        <section className="rounded-3xl border border-line bg-surface p-6 shadow-xl">
+          <h1 className="text-xl font-black text-foreground">Create Plan</h1>
+          <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-muted">Starts with Day 1</p>
+          <form action={createRoutineAction} className="mt-6 space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Plan Name</label>
               <input
                 type="text"
                 name="name"
                 required
                 minLength={2}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+                placeholder="e.g. PPL Hypertrophy"
+                className="w-full rounded-2xl border border-line bg-background px-4 py-3 text-sm text-foreground outline-none ring-accent-pink/20 transition-all focus:border-accent-pink focus:ring-4"
               />
-            </label>
-            <label className="block text-sm text-slate-700">
-              Description
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Description</label>
               <textarea
                 name="description"
                 rows={3}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+                placeholder="Focus on compound movements..."
+                className="w-full rounded-2xl border border-line bg-background px-4 py-3 text-sm text-foreground outline-none ring-accent-pink/20 transition-all focus:border-accent-pink focus:ring-4"
               />
-            </label>
-            <button className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">
-              Save Workout Plan
+            </div>
+            <button className="w-full rounded-2xl bg-foreground px-4 py-4 text-sm font-black uppercase tracking-widest text-background transition-all hover:opacity-90 active:scale-95">
+              Save Plan
             </button>
           </form>
         </section>
       </aside>
 
-      <section className="space-y-3">
-        <h2 className="text-xl font-black text-slate-900">Your Workout Plans</h2>
-        {routineItems.length === 0 ? <p className="text-sm text-slate-500">No workout plans yet.</p> : null}
+      <section className="space-y-6">
+        <h2 className="text-2xl font-black tracking-tight text-foreground px-2">Your Workout Plans</h2>
+        {routineItems.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-line p-12 text-center">
+            <p className="text-sm font-medium text-muted">No workout plans yet. Create your first one to get started.</p>
+          </div>
+        ) : null}
+        
         {routineItems.map((routine) => {
           const days = daysByRoutine.get(routine.id) ?? [];
           const isActive = activePref?.activeRoutineId === routine.id;
 
           return (
-            <article key={routine.id} className="panel p-4">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="text-lg font-black text-slate-900">{routine.name}</p>
-                  <p className="text-sm text-slate-600">{routine.description || "No description."}</p>
+            <article key={routine.id} className="rounded-3xl border border-line bg-surface p-6 shadow-lg transition-all hover:border-foreground/10">
+              <div className="flex flex-wrap items-start justify-between gap-4 pb-6 border-b border-line/50">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-xl font-black text-foreground">{routine.name}</h3>
+                    {isActive && (
+                      <span className="rounded-full bg-accent-cyan/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-accent-cyan ring-1 ring-accent-cyan/20">
+                        Active Plan
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm font-medium text-muted">{routine.description || "No description provided."}</p>
                 </div>
+                
                 <div className="flex items-center gap-2">
-                  <form action={setActiveRoutineAction}>
-                    <input type="hidden" name="routineId" value={routine.id} />
-                    <button
-                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${
-                        isActive
-                          ? "bg-emerald-100 text-emerald-800"
-                          : "border border-slate-300 text-slate-700 hover:bg-slate-100"
-                      }`}
-                    >
-                      {isActive ? "Active Plan" : "Set Active"}
-                    </button>
-                  </form>
-                  <DeleteRoutineButton routineId={routine.id} routineName={routine.name} />
+                  {!isActive && (
+                    <form action={setActiveRoutineAction}>
+                      <input type="hidden" name="routineId" value={routine.id} />
+                      <button className="rounded-xl border border-line bg-background px-4 py-2 text-xs font-black uppercase tracking-widest text-foreground transition-all hover:bg-foreground hover:text-background active:scale-95">
+                        Set Active
+                      </button>
+                    </form>
+                  )}
+                  <div className="text-muted/40 hover:text-red-500 transition-colors">
+                    <DeleteRoutineButton routineId={routine.id} routineName={routine.name} />
+                  </div>
                 </div>
               </div>
 
-              <form action={createRoutineDayAction} className="mt-3 flex flex-wrap items-end gap-2">
-                <input type="hidden" name="routineId" value={routine.id} />
-                <label className="block text-xs text-slate-600">
-                  Day Name
-                  <input
-                    name="dayName"
-                    required
-                    placeholder="Monday"
-                    className="mt-1 w-40 rounded-lg border border-slate-300 px-3 py-1.5 text-sm outline-none focus:border-slate-500"
-                  />
-                </label>
-                <button className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100">
-                  Add Day
-                </button>
-              </form>
-
-              <div className="mt-3 space-y-3">
+              <div className="mt-8 space-y-6">
                 {days.map((day) => {
                   const dayExercises = exercisesByDay.get(day.id) ?? [];
                   return (
-                    <RoutineDayFlyover
-                      key={day.id}
-                      day={{
-                        id: day.id,
-                        dayName: day.dayName,
-                      }}
-                      weightUnit={weightUnit}
-                      dayExercises={dayExercises.map((entry) => ({
-                        id: entry.id,
-                        exerciseName: entry.exerciseName,
-                        targetSets: entry.targetSets,
-                        targetReps: entry.targetReps,
-                        targetWeight: entry.targetWeight ? String(entry.targetWeight) : null,
-                      }))}
-                      allExercises={allExercises.map((exercise) => ({
-                        id: exercise.id,
-                        name: exercise.name,
-                      }))}
-                    />
+                    <div key={day.id} className="rounded-2xl bg-background border border-line p-5 group transition-all hover:border-foreground/10">
+                      <RoutineDayFlyover
+                        day={{ id: day.id, dayName: day.dayName }}
+                        weightUnit={weightUnit}
+                        dayExercises={dayExercises.map((entry) => ({
+                          id: entry.id,
+                          exerciseName: entry.exerciseName,
+                          targetSets: entry.targetSets,
+                          targetReps: entry.targetReps,
+                          targetWeight: entry.targetWeight ? String(entry.targetWeight) : null,
+                        }))}
+                        allExercises={allExercises.map((exercise) => ({
+                          id: exercise.id,
+                          name: exercise.name,
+                        }))}
+                      />
+                    </div>
                   );
                 })}
-                {days.length === 0 ? (
-                  <p className="text-xs text-slate-500">Add days to structure this workout plan.</p>
-                ) : null}
+                
+                {days.length === 0 && (
+                  <p className="text-xs font-bold text-muted text-center py-4 italic">No days added to this plan yet.</p>
+                )}
+
+                {/* Add Day Row */}
+                <form action={createRoutineDayAction} className="mt-6 flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-line bg-background/30 p-4 transition-all hover:border-muted/50">
+                  <input type="hidden" name="routineId" value={routine.id} />
+                  <div className="flex-1 min-w-[200px]">
+                    <input
+                      name="dayName"
+                      required
+                      placeholder="e.g. Monday (Chest & Tris)"
+                      className="w-full bg-transparent border-none px-2 py-1 text-sm font-bold text-foreground placeholder:text-muted/50 outline-none"
+                    />
+                  </div>
+                  <button className="rounded-xl bg-surface px-4 py-2 text-xs font-black uppercase tracking-widest text-foreground border border-line transition-all hover:bg-foreground hover:text-background active:scale-95">
+                    Add Day
+                  </button>
+                </form>
               </div>
             </article>
           );

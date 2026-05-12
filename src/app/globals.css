@@ -7,30 +7,52 @@
 }
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --surface: #ffffff;
-  --line: #dbe3ef;
-  --muted: #64748b;
-  --accent: #0f766e;
+  --background: #ffffff;
+  --foreground: #09090b;
+  --surface: #f4f4f5;
+  --surface-soft: #fafafa;
+  --surface-raised: #ffffff;
+  --line: #e4e4e7;
+  --line-strong: #d4d4d8;
+  --muted: #71717a;
+  --accent: #ff5c5c;
+  --accent-cyan: #06b6d4;
+  --accent-yellow: #eab308;
+  --accent-purple: #a855f7;
   color-scheme: light;
 }
 
 :root.dark {
-  --background: #020617;
-  --foreground: #e2e8f0;
-  --surface: #0f172a;
-  --line: #334155;
-  --muted: #94a3b8;
-  --accent: #2dd4bf;
+  --background: #000000;
+  --foreground: #ffffff;
+  --surface: #09090b;
+  --surface-soft: #111113;
+  --surface-raised: #09090b;
+  --line: #18181b;
+  --line-strong: #3f3f46;
+  --muted: #a1a1aa;
+  --accent: #ff5c5c;
+  --accent-cyan: #70e0e0;
+  --accent-yellow: #f9d423;
+  --accent-purple: #c084fc;
   color-scheme: dark;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-bricolage);
-  --font-mono: var(--font-space-grotesk);
+  --color-surface: var(--surface);
+  --color-surface-soft: var(--surface-soft);
+  --color-surface-raised: var(--surface-raised);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-muted: var(--muted);
+  --color-accent-pink: var(--accent);
+  --color-accent-cyan: var(--accent-cyan);
+  --color-accent-yellow: var(--accent-yellow);
+  --color-accent-purple: var(--accent-purple);
+  --radius-app: 28px;
+  --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 body {
@@ -38,12 +60,9 @@ body {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
-  background:
-    radial-gradient(1200px 500px at 10% -20%, #e0f2fe 0%, transparent 60%),
-    radial-gradient(1000px 400px at 100% 0%, #dcfce7 0%, transparent 50%),
-    var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-bricolage), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
 }
 
 html {
@@ -54,10 +73,7 @@ html {
 }
 
 :root.dark body {
-  background:
-    radial-gradient(1200px 500px at 10% -20%, rgba(15, 23, 42, 0.85) 0%, transparent 60%),
-    radial-gradient(1000px 400px at 100% 0%, rgba(20, 83, 45, 0.35) 0%, transparent 50%),
-    var(--background);
+  background: var(--background);
 }
 
 a {
@@ -138,125 +154,176 @@ code {
 }
 
 .menu-trigger {
-  border: 1px solid #0e7490;
-  background: #0891b2;
-  color: #f8fafc;
+  border: 1px solid var(--accent-cyan);
+  background: var(--accent-cyan);
+  color: var(--background);
 }
 
 .menu-trigger:hover {
-  background: #0e7490;
+  background: color-mix(in srgb, var(--accent-cyan) 86%, var(--foreground));
 }
 
 .menu-trigger-caret {
-  color: #cffafe;
+  color: color-mix(in srgb, var(--background) 72%, var(--accent-cyan));
 }
 
 .menu-trigger-hint {
-  border-color: #0e7490;
-  background: #ecfeff;
-  color: #155e75;
+  border-color: color-mix(in srgb, var(--accent-cyan) 72%, var(--line));
+  background: color-mix(in srgb, var(--accent-cyan) 14%, var(--surface-raised));
+  color: color-mix(in srgb, var(--accent-cyan) 62%, var(--foreground));
 }
 
 :root.dark .theme-toggle:hover {
-  background: #1e293b;
+  background: var(--surface-soft);
 }
 
 :root.dark .menu-trigger {
-  border-color: #22d3ee;
-  background: #0f172a;
-  color: #e0f2fe;
+  border-color: color-mix(in srgb, var(--accent-cyan) 45%, var(--line-strong));
+  background: color-mix(in srgb, var(--accent-cyan) 12%, var(--surface));
+  color: var(--foreground);
 }
 
 :root.dark .menu-trigger:hover {
-  background: #082f49;
+  background: color-mix(in srgb, var(--accent-cyan) 18%, var(--surface-soft));
 }
 
 :root.dark .menu-trigger-caret {
-  color: #67e8f9;
+  color: var(--accent-cyan);
 }
 
 :root.dark .menu-trigger-hint {
-  border-color: #22d3ee;
-  background: #082f49;
-  color: #a5f3fc;
+  border-color: color-mix(in srgb, var(--accent-cyan) 45%, var(--line-strong));
+  background: color-mix(in srgb, var(--accent-cyan) 10%, var(--surface-soft));
+  color: var(--accent-cyan);
 }
 
 :root.dark .panel {
   box-shadow: 0 1px 0 rgba(148, 163, 184, 0.15);
 }
 
-:root.dark .text-slate-900 {
-  color: #f8fafc;
-}
-
+/* Keep older Tailwind color utilities aligned with the app theme tokens. */
+:root.dark .text-slate-900,
 :root.dark .text-slate-800 {
-  color: #e2e8f0;
+  color: var(--foreground);
 }
 
-:root.dark .text-slate-700 {
-  color: #cbd5e1;
-}
-
-:root.dark .text-slate-600 {
-  color: #94a3b8;
-}
-
-:root.dark .text-slate-500 {
-  color: #64748b;
-}
-
+:root.dark .text-slate-700,
+:root.dark .text-slate-600,
+:root.dark .text-slate-500,
 :root.dark .text-slate-400 {
-  color: #475569;
+  color: var(--muted);
 }
 
-:root.dark .bg-white {
-  background-color: #0f172a;
-}
-
-:root.dark .bg-slate-50 {
-  background-color: #111827;
-}
-
-:root.dark .bg-slate-100 {
-  background-color: #1f2937;
-}
-
+:root.dark .bg-white,
+:root.dark .bg-slate-950,
 :root.dark .bg-slate-900 {
-  background-color: #e2e8f0;
+  background-color: var(--surface-raised);
+}
+
+:root.dark .bg-slate-50,
+:root.dark .bg-slate-100 {
+  background-color: var(--surface-soft);
 }
 
 :root.dark .bg-slate-900.text-white {
-  color: #0f172a;
+  background-color: var(--foreground);
+  color: var(--background);
 }
 
-:root.dark .border-slate-100 {
-  border-color: #1f2937;
-}
-
+:root.dark .border-slate-100,
 :root.dark .border-slate-200 {
-  border-color: #334155;
+  border-color: var(--line);
 }
 
-:root.dark .border-slate-300 {
-  border-color: #475569;
+:root.dark .border-slate-300,
+:root.dark .border-slate-400,
+:root.dark .border-slate-500,
+:root.dark .border-slate-600 {
+  border-color: var(--line-strong);
 }
 
-:root.dark .border-slate-400 {
-  border-color: #64748b;
+:root.dark .hover\:bg-slate-50:hover,
+:root.dark .hover\:bg-slate-100:hover,
+:root.dark .hover\:bg-slate-200:hover,
+:root.dark .hover\:bg-slate-700:hover,
+:root.dark .hover\:bg-slate-800:hover {
+  background-color: var(--surface-soft);
 }
 
-:root.dark .hover\:bg-slate-50:hover {
-  background-color: #1e293b;
+:root.dark .focus\:border-slate-500:focus,
+:root.dark .focus\:border-slate-600:focus {
+  border-color: var(--muted);
 }
 
-:root.dark .hover\:bg-slate-100:hover {
-  background-color: #334155;
+:root.dark .text-cyan-700,
+:root.dark .text-cyan-800,
+:root.dark .text-cyan-900,
+:root.dark .text-teal-700,
+:root.dark .text-teal-800,
+:root.dark .text-teal-900 {
+  color: var(--accent-cyan);
 }
 
-:root.dark .hover\:bg-slate-700:hover {
-  background-color: #cbd5e1;
+:root.dark .border-cyan-300,
+:root.dark .border-teal-300 {
+  border-color: color-mix(in srgb, var(--accent-cyan) 45%, var(--line-strong));
 }
 
-:root.dark .focus\:border-slate-500:focus {
-  border-color: #94a3b8;
+:root.dark .bg-cyan-50,
+:root.dark .bg-cyan-100,
+:root.dark .bg-teal-50,
+:root.dark .bg-teal-100,
+:root.dark .hover\:bg-cyan-100:hover,
+:root.dark .hover\:bg-cyan-200:hover,
+:root.dark .hover\:bg-teal-100:hover {
+  background-color: color-mix(in srgb, var(--accent-cyan) 12%, var(--surface-soft));
+}
+
+:root.dark .dark\:bg-white {
+  background-color: var(--foreground);
+}
+
+:root.dark .dark\:bg-slate-950 {
+  background-color: var(--background);
+}
+
+:root.dark .dark\:bg-slate-900 {
+  background-color: var(--surface-raised);
+}
+
+:root.dark .dark\:bg-slate-800 {
+  background-color: var(--surface-soft);
+}
+
+:root.dark .dark\:border-slate-400,
+:root.dark .dark\:border-slate-500,
+:root.dark .dark\:border-slate-600 {
+  border-color: var(--line-strong);
+}
+
+:root.dark .dark\:text-white,
+:root.dark .dark\:text-slate-100,
+:root.dark .dark\:text-slate-200 {
+  color: var(--foreground);
+}
+
+:root.dark .dark\:text-slate-300 {
+  color: var(--muted);
+}
+
+:root.dark .dark\:text-slate-900 {
+  color: var(--background);
+}
+
+:root.dark .dark\:hover\:bg-slate-800:hover,
+:root.dark .dark\:hover\:bg-slate-700:hover {
+  background-color: var(--line);
+}
+
+:root.dark .dark\:hover\:bg-slate-200:hover {
+  background-color: color-mix(in srgb, var(--foreground) 88%, var(--background));
+}
+
+:root.dark .dark\:focus\:border-slate-300:focus {
+  border-color: var(--muted);
 }

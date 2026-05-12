@@ -2,12 +2,16 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { eq } from "drizzle-orm";
 import { AppNavigation } from "@/components/app-navigation";
 import { SignOutButton } from "@/components/signout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { getDb } from "@/db/client";
+import { userPreferences } from "@/db/schema";
 import { isAdminIdentity } from "@/lib/admin";
 import { authOptions } from "@/lib/auth";
 import { ensureExerciseLibrarySeeded } from "@/lib/exercise-seed";
+import { normalizeThemeOverrides, themeOverridesToStyle } from "@/lib/theme";
 import { trackUserIp } from "@/lib/user-ip";
 
 export default async function AppLayout({
@@ -25,26 +29,46 @@ export default async function AppLayout({
     userId: session.user.id,
     sessionEmail: session.user.email,
   });
+  const db = getDb();
+  const pref = await db
+    .select({
+      themeOverrides: userPreferences.themeOverrides,
+    })
+    .from(userPreferences)
+    .where(eq(userPreferences.userId, session.user.id))
+    .limit(1)
+    .then((rows) => rows[0] ?? null);
+  const themeStyle = themeOverridesToStyle(normalizeThemeOverrides(pref?.themeOverrides));
 
   await trackUserIp(session.user.id, await headers());
   await ensureExerciseLibrarySeeded();
 
   return (
-    <div className="shell min-h-screen py-4">
-      <header className="panel mb-4 space-y-3 px-4 py-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link href="/dashboard" className="text-sm font-black uppercase tracking-wider text-slate-900">
-            Gym-Micro
-          </Link>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <span className="hidden text-xs text-slate-500 sm:inline">{session.user.name ?? "Signed in"}</span>
-            <SignOutButton />
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300" style={themeStyle}>
+      <div className="mx-auto max-w-7xl px-4 py-6 md:px-8">
+        <header className="mb-6 rounded-3xl border border-line bg-surface/50 p-4 backdrop-blur-md">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <Link 
+              href="/dashboard" 
+              className="text-xl font-black uppercase tracking-tighter text-foreground hover:text-accent-pink transition-colors"
+            >
+              GYM-MICRO
+            </Link>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <div className="hidden h-4 w-px bg-line sm:block" />
+              <span className="hidden text-xs font-medium text-muted sm:inline">
+                {session.user.name ?? session.user.email ?? "Signed in"}
+              </span>
+              <SignOutButton />
+            </div>
           </div>
-        </div>
-        <AppNavigation isAdmin={isAdmin} />
-      </header>
-      {children}
+          <div className="mt-4 border-t border-line pt-4">
+            <AppNavigation isAdmin={isAdmin} />
+          </div>
+        </header>
+        <main>{children}</main>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { FlyoverSelect } from "@/components/flyover-select";
 import {
   addExerciseToRoutineDayAction,
   createAndAttachExerciseToRoutineDayAction,
@@ -40,6 +41,15 @@ export function RoutineDayFlyover({ day, weightUnit, dayExercises, allExercises 
   const [isSavingDay, startSavingDay] = useTransition();
 
   useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => { document.body.style.overflow = "unset"; };
+  }, [open]);
+
+  useEffect(() => {
     setDayName(day.dayName);
   }, [day.dayName, open]);
 
@@ -50,10 +60,7 @@ export function RoutineDayFlyover({ day, weightUnit, dayExercises, allExercises 
   }, [dayName, day.dayName, isSavingDay]);
 
   async function saveDayAction(formData: FormData) {
-    if (!canSaveDay) {
-      return;
-    }
-
+    if (!canSaveDay) { return; }
     startSavingDay(() => {
       void updateRoutineDayAction(formData).then(() => {
         setOpen(false);
@@ -63,270 +70,240 @@ export function RoutineDayFlyover({ day, weightUnit, dayExercises, allExercises 
 
   return (
     <>
-      <section className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm font-bold text-slate-900">{day.dayName}</p>
+      <div className="flex flex-col gap-4 transition-colors duration-300">
+        <div className="flex items-center justify-between">
+          <h4 className="text-sm font-black uppercase tracking-widest text-foreground">{day.dayName}</h4>
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="rounded border border-slate-300 px-2 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100"
+            className="rounded-xl border border-line bg-surface px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-foreground transition-all hover:bg-foreground hover:text-background active:scale-95"
           >
             Edit Day
           </button>
         </div>
 
-        <ul className="mt-2 space-y-1">
+        <ul className="space-y-2">
           {dayExercises.map((entry) => (
-            <li key={entry.id} className="text-xs text-slate-700">
-              {entry.exerciseName} - Sets: {entry.targetSets}
-              {entry.targetReps ? ` | Reps: ${entry.targetReps}` : " | Reps: -"}
-              {entry.targetWeight ? ` | Weight: ${entry.targetWeight}${weightUnitLabel(weightUnit)}` : ""}
+            <li key={entry.id} className="flex items-center justify-between rounded-xl border border-line/50 bg-background/50 px-4 py-3 group hover:border-foreground/10 transition-all">
+              <span className="text-sm font-bold text-foreground">{entry.exerciseName}</span>
+              <div className="flex items-center gap-2">
+                <span className="rounded-lg bg-surface px-2 py-1 text-[10px] font-bold text-muted">
+                  {entry.targetSets} <span className="text-[9px] uppercase tracking-tighter opacity-70">Sets</span>
+                </span>
+                {entry.targetReps && (
+                  <span className="rounded-lg bg-surface px-2 py-1 text-[10px] font-bold text-muted">
+                    {entry.targetReps} <span className="text-[9px] uppercase tracking-tighter opacity-70">Reps</span>
+                  </span>
+                )}
+                {entry.targetWeight && (
+                  <span className="rounded-lg bg-accent-cyan/10 px-2 py-1 text-[10px] font-bold text-accent-cyan ring-1 ring-accent-cyan/20">
+                    {entry.targetWeight}{weightUnitLabel(weightUnit)}
+                  </span>
+                )}
+              </div>
             </li>
           ))}
-          {dayExercises.length === 0 ? <li className="text-xs text-slate-500">No exercises yet for this day.</li> : null}
+          {dayExercises.length === 0 && (
+            <li className="text-[10px] font-bold uppercase tracking-wider text-muted italic text-center py-2">
+              No exercises added yet.
+            </li>
+          )}
         </ul>
-      </section>
+      </div>
 
-      {open ? (
-        <div className="fixed inset-0 z-40">
-          <button
-            type="button"
-            aria-label="Close day editor"
+      {open && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div
+            className="absolute inset-0 bg-background/60 backdrop-blur-md transition-opacity"
             onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-black/50"
           />
 
-          <aside className="absolute inset-y-0 right-0 z-50 h-full w-full max-w-xl overflow-y-auto border-l border-slate-200 bg-white p-4 shadow-2xl">
-            <div className="flex items-start justify-between gap-3">
+          <aside className="relative h-full w-full max-w-xl overflow-y-auto border-l border-line bg-surface shadow-2xl transition-transform animate-in slide-in-from-right duration-300">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-surface/80 p-6 backdrop-blur-lg">
               <div>
-                <h3 className="text-lg font-black text-slate-900">Edit {day.dayName}</h3>
-                <p className="text-xs text-slate-600">Rename, delete, and manage exercises for this day.</p>
+                <h3 className="text-xl font-black text-foreground">Edit {day.dayName}</h3>
+                <p className="text-xs font-medium text-muted">Manage settings and exercises for this day.</p>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-md border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                className="rounded-2xl border border-line bg-background p-2 text-muted transition-all hover:text-foreground hover:bg-foreground/5"
               >
-                Close
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
 
-            <div className="mt-4 space-y-4">
-              <section className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-700">Day Settings</h4>
-                <form action={saveDayAction} className="mt-2 flex flex-wrap items-end gap-2">
-                  <input type="hidden" name="routineDayId" value={day.id} />
-                  <label className="block flex-1 text-xs text-slate-700">
-                    Day Name
-                    <input
-                      name="dayName"
-                      value={dayName}
-                      onChange={(event) => setDayName(event.target.value)}
-                      required
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
-                    />
-                  </label>
-                  <button
-                    disabled={!canSaveDay}
-                    className={`rounded px-3 py-2 text-xs font-semibold transition ${
-                      canSaveDay
-                        ? "border border-cyan-400 bg-cyan-600 text-white hover:bg-cyan-700"
-                        : "cursor-not-allowed border border-slate-300 bg-slate-200 text-slate-500"
-                    }`}
-                  >
-                    {isSavingDay ? "Saving..." : "Save Day"}
-                  </button>
-                </form>
+            <div className="space-y-8 p-6">
+              {/* Day Settings */}
+              <section className="rounded-3xl border border-line bg-background p-6 shadow-sm">
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-muted">Day Settings</h4>
+                <div className="mt-4 space-y-4">
+                  <form action={saveDayAction} className="grid gap-4 sm:grid-cols-[1fr_auto] items-end">
+                    <input type="hidden" name="routineDayId" value={day.id} />
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Day Name</label>
+                      <input
+                        name="dayName"
+                        value={dayName}
+                        onChange={(e) => setDayName(e.target.value)}
+                        required
+                        className="w-full rounded-2xl border border-line bg-surface px-4 py-3 text-sm text-foreground outline-none ring-accent-pink/20 transition-all focus:border-accent-pink focus:ring-4"
+                      />
+                    </div>
+                    <button
+                      disabled={!canSaveDay}
+                      className={`h-[46px] rounded-2xl px-6 text-xs font-black uppercase tracking-widest transition-all ${
+                        canSaveDay
+                          ? "bg-accent-pink text-white shadow-lg shadow-accent-pink/20 hover:scale-[1.02]"
+                          : "bg-line text-muted cursor-not-allowed"
+                      }`}
+                    >
+                      {isSavingDay ? "..." : "Save"}
+                    </button>
+                  </form>
 
-                <form action={deleteRoutineDayAction} className="mt-2">
-                  <input type="hidden" name="routineDayId" value={day.id} />
-                  <button className="rounded border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50">
-                    Delete Day
-                  </button>
-                </form>
+                  <form action={deleteRoutineDayAction} className="pt-4 border-t border-line/50">
+                    <input type="hidden" name="routineDayId" value={day.id} />
+                    <button className="text-[10px] font-black uppercase tracking-widest text-red-500/60 hover:text-red-500 transition-colors">
+                      Delete this day
+                    </button>
+                  </form>
+                </div>
               </section>
 
-              <section className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-700">Current Exercises</h4>
-                <ul className="mt-2 space-y-2">
+              {/* Current Exercises */}
+              <section className="space-y-4">
+                <div className="flex items-center justify-between px-2">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-muted">Current Exercises</h4>
+                  <span className="text-[10px] font-bold text-muted bg-line px-2 py-0.5 rounded-full">{dayExercises.length}</span>
+                </div>
+                
+                <ul className="space-y-3">
                   {dayExercises.map((entry, index) => (
-                    <li key={entry.id} className="rounded border border-slate-200 bg-white p-2 text-xs text-slate-700">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span>
-                          {entry.exerciseName} - Sets: {entry.targetSets}
-                          {entry.targetReps ? ` | Reps: ${entry.targetReps}` : " | Reps: -"}
-                          {entry.targetWeight ? ` | Weight: ${entry.targetWeight}${weightUnitLabel(weightUnit)}` : ""}
-                        </span>
-                        <div className="flex items-center gap-1">
+                    <li key={entry.id} className="rounded-2xl border border-line bg-background p-4 shadow-sm transition-all hover:border-foreground/10 group">
+                      <div className="flex flex-wrap items-center justify-between gap-4">
+                        <div className="space-y-1">
+                          <p className="text-sm font-black text-foreground">{entry.exerciseName}</p>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold text-muted bg-surface px-2 py-0.5 rounded-md">{entry.targetSets} sets</span>
+                            {entry.targetReps && <span className="text-[10px] font-bold text-muted bg-surface px-2 py-0.5 rounded-md">× {entry.targetReps} reps</span>}
+                            {entry.targetWeight && <span className="text-[10px] font-bold text-accent-cyan bg-accent-cyan/10 px-2 py-0.5 rounded-md">{entry.targetWeight}{weightUnitLabel(weightUnit)}</span>}
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
                           <form action={reorderRoutineDayExerciseAction}>
-                            <input type="hidden" name="routineDayExerciseId" value={entry.id} />
-                            <input type="hidden" name="direction" value="up" />
-                            <button
-                              disabled={index === 0}
-                              className={`rounded px-2 py-1 text-[11px] font-semibold ${
-                                index === 0
-                                  ? "cursor-not-allowed border border-slate-200 bg-slate-100 text-slate-400"
-                                  : "border border-slate-300 text-slate-700 hover:bg-slate-100"
-                              }`}
-                            >
-                              Up
+                            <input type="hidden" name="routineDayExerciseId" value={entry.id} /><input type="hidden" name="direction" value="up" />
+                            <button disabled={index === 0} className="rounded-lg p-2 text-muted border border-line hover:text-foreground hover:bg-foreground/5 disabled:opacity-30">
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" /></svg>
                             </button>
                           </form>
                           <form action={reorderRoutineDayExerciseAction}>
-                            <input type="hidden" name="routineDayExerciseId" value={entry.id} />
-                            <input type="hidden" name="direction" value="down" />
-                            <button
-                              disabled={index === dayExercises.length - 1}
-                              className={`rounded px-2 py-1 text-[11px] font-semibold ${
-                                index === dayExercises.length - 1
-                                  ? "cursor-not-allowed border border-slate-200 bg-slate-100 text-slate-400"
-                                  : "border border-slate-300 text-slate-700 hover:bg-slate-100"
-                              }`}
-                            >
-                              Down
+                            <input type="hidden" name="routineDayExerciseId" value={entry.id} /><input type="hidden" name="direction" value="down" />
+                            <button disabled={index === dayExercises.length - 1} className="rounded-lg p-2 text-muted border border-line hover:text-foreground hover:bg-foreground/5 disabled:opacity-30">
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg>
                             </button>
                           </form>
                           <form action={removeExerciseFromRoutineDayAction}>
                             <input type="hidden" name="routineDayExerciseId" value={entry.id} />
-                            <button className="rounded border border-rose-300 px-2 py-1 text-[11px] font-semibold text-rose-700 hover:bg-rose-50">
-                              Remove
+                            <button className="rounded-lg p-2 text-red-500/40 hover:text-red-500 hover:bg-red-500/5 transition-colors">
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                             </button>
                           </form>
                         </div>
                       </div>
                     </li>
                   ))}
-                  {dayExercises.length === 0 ? <li className="text-xs text-slate-500">No exercises yet.</li> : null}
+                  {dayExercises.length === 0 && <li className="text-xs text-muted italic text-center py-4">No exercises listed yet.</li>}
                 </ul>
               </section>
 
-              <section className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-700">Add Existing Exercise</h4>
-                <form action={addExerciseToRoutineDayAction} className="mt-2 grid gap-2 sm:grid-cols-5">
+              {/* Add Exercise */}
+              <section className="rounded-3xl border border-line bg-background p-6 shadow-sm">
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-muted">Add Existing Exercise</h4>
+                <form action={addExerciseToRoutineDayAction} className="mt-6 grid gap-4 sm:grid-cols-2">
                   <input type="hidden" name="routineDayId" value={day.id} />
-                  <label className="sm:col-span-2 text-[11px] text-slate-700">
-                    Exercise
-                    <select
+                  <div className="sm:col-span-2 space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Exercise</label>
+                    <FlyoverSelect
                       name="exerciseId"
+                      label="Exercise"
+                      panelTitle="Add existing exercise"
+                      options={allExercises.map((ex) => ({
+                        value: ex.id,
+                        label: ex.name,
+                      }))}
                       required
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs outline-none focus:border-slate-500"
-                    >
-                      {allExercises.map((exercise) => (
-                        <option key={exercise.id} value={exercise.id}>
-                          {exercise.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="text-[11px] text-slate-700">
-                    Sets
-                    <input
-                      type="number"
-                      name="targetSets"
-                      min={1}
-                      max={20}
-                      defaultValue={3}
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs outline-none focus:border-slate-500"
+                      searchable
+                      triggerClassName="bg-surface focus:border-accent-cyan focus:ring-accent-cyan/10"
                     />
-                  </label>
-                  <label className="text-[11px] text-slate-700">
-                    Reps
-                    <input
-                      type="number"
-                      name="targetReps"
-                      min={1}
-                      max={50}
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs outline-none focus:border-slate-500"
-                    />
-                  </label>
-                  <label className="text-[11px] text-slate-700">
-                    Weight ({weightUnitLabel(weightUnit)})
-                    <input
-                      type="number"
-                      name="targetWeight"
-                      min={0}
-                      step="0.5"
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs outline-none focus:border-slate-500"
-                    />
-                  </label>
-                  <button className="sm:col-span-5 rounded-lg border border-slate-300 px-2 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100">
-                    Add Existing Exercise
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Sets</label>
+                    <input type="number" name="targetSets" min={1} defaultValue={3} className="w-full rounded-2xl border border-line bg-surface px-4 py-3 text-sm text-foreground outline-none focus:border-accent-cyan ring-accent-cyan/10 focus:ring-4 transition-all" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Reps</label>
+                    <input type="number" name="targetReps" min={1} className="w-full rounded-2xl border border-line bg-surface px-4 py-3 text-sm text-foreground outline-none focus:border-accent-cyan ring-accent-cyan/10 focus:ring-4 transition-all" />
+                  </div>
+                  <div className="sm:col-span-2 space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Weight ({weightUnitLabel(weightUnit)})</label>
+                    <input type="number" name="targetWeight" min={0} step="0.5" className="w-full rounded-2xl border border-line bg-surface px-4 py-3 text-sm text-foreground outline-none focus:border-accent-cyan ring-accent-cyan/10 focus:ring-4 transition-all" />
+                  </div>
+                  <button className="sm:col-span-2 rounded-2xl bg-accent-cyan px-4 py-4 text-[10px] font-black uppercase tracking-widest text-black shadow-lg shadow-accent-cyan/10 transition-all hover:scale-[1.01] active:scale-95">
+                    Add to Day
                   </button>
                 </form>
               </section>
 
-              <section className="rounded-lg border border-cyan-200 bg-cyan-50 p-3">
-                <h4 className="text-xs font-semibold uppercase tracking-wide text-cyan-900">Create + Add New Exercise</h4>
-                <form action={createAndAttachExerciseToRoutineDayAction} className="mt-2 grid gap-2 sm:grid-cols-6">
+              {/* Create New Exercise */}
+              <section className="rounded-3xl border border-accent-cyan/20 bg-accent-cyan/5 p-6 shadow-inner transition-colors">
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-accent-cyan">Create + Add New Exercise</h4>
+                <form action={createAndAttachExerciseToRoutineDayAction} className="mt-6 grid gap-4 sm:grid-cols-2">
                   <input type="hidden" name="routineDayId" value={day.id} />
-                  <label className="sm:col-span-2 text-[11px] text-slate-700">
-                    Exercise Name
-                    <input
-                      name="name"
-                      required
-                      minLength={2}
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs outline-none focus:border-slate-500"
-                    />
-                  </label>
-                  <label className="text-[11px] text-slate-700">
-                    Category
-                    <select
+                  <div className="sm:col-span-2 space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-accent-cyan/60 ml-1">Exercise Name</label>
+                    <input name="name" required minLength={2} placeholder="e.g. Incline DB Press" className="w-full rounded-2xl border border-accent-cyan/20 bg-background px-4 py-3 text-sm text-foreground outline-none focus:border-accent-cyan ring-accent-cyan/10 focus:ring-4 transition-all" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-accent-cyan/60 ml-1">Category</label>
+                    <FlyoverSelect
                       name="category"
                       defaultValue="strength"
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs outline-none focus:border-slate-500"
-                    >
-                      <option value="strength">Strength</option>
-                      <option value="cardio">Cardio</option>
-                      <option value="mobility">Mobility</option>
-                    </select>
-                  </label>
-                  <label className="sm:col-span-2 text-[11px] text-slate-700">
-                    Muscle Group
-                    <input
-                      name="muscleGroup"
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs outline-none focus:border-slate-500"
+                      label="Category"
+                      panelTitle="Choose category"
+                      options={[
+                        { value: "strength", label: "Strength" },
+                        { value: "cardio", label: "Cardio" },
+                        { value: "mobility", label: "Mobility" },
+                      ]}
+                      required
+                      triggerClassName="border-accent-cyan/20 bg-background focus:border-accent-cyan focus:ring-accent-cyan/10"
                     />
-                  </label>
-                  <label className="text-[11px] text-slate-700">
-                    Sets
-                    <input
-                      type="number"
-                      name="targetSets"
-                      min={1}
-                      max={20}
-                      defaultValue={3}
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs outline-none focus:border-slate-500"
-                    />
-                  </label>
-                  <label className="text-[11px] text-slate-700">
-                    Reps
-                    <input
-                      type="number"
-                      name="targetReps"
-                      min={1}
-                      max={50}
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs outline-none focus:border-slate-500"
-                    />
-                  </label>
-                  <label className="text-[11px] text-slate-700">
-                    Weight ({weightUnitLabel(weightUnit)})
-                    <input
-                      type="number"
-                      name="targetWeight"
-                      min={0}
-                      step="0.5"
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs outline-none focus:border-slate-500"
-                    />
-                  </label>
-                  <button className="sm:col-span-6 rounded-lg bg-cyan-900 px-2 py-1.5 text-xs font-semibold text-white hover:bg-cyan-800">
-                    Create + Add Exercise
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-accent-cyan/60 ml-1">Muscle Group</label>
+                    <input name="muscleGroup" placeholder="e.g. Chest" className="w-full rounded-2xl border border-accent-cyan/20 bg-background px-4 py-3 text-sm text-foreground outline-none focus:border-accent-cyan ring-accent-cyan/10 focus:ring-4 transition-all" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-accent-cyan/60 ml-1">Sets</label>
+                    <input type="number" name="targetSets" min={1} defaultValue={3} className="w-full rounded-2xl border border-accent-cyan/20 bg-background px-4 py-3 text-sm text-foreground outline-none focus:border-accent-cyan ring-accent-cyan/10 focus:ring-4 transition-all" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-accent-cyan/60 ml-1">Reps</label>
+                    <input type="number" name="targetReps" min={1} className="w-full rounded-2xl border border-accent-cyan/20 bg-background px-4 py-3 text-sm text-foreground outline-none focus:border-accent-cyan ring-accent-cyan/10 focus:ring-4 transition-all" />
+                  </div>
+                  <button className="sm:col-span-2 rounded-2xl bg-foreground px-4 py-4 text-[10px] font-black uppercase tracking-widest text-background transition-all hover:opacity-90 active:scale-95">
+                    Create & Add
                   </button>
                 </form>
               </section>
             </div>
           </aside>
         </div>
-      ) : null}
+      )}
     </>
   );
 }

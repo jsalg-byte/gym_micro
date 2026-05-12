@@ -11,6 +11,24 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
+type ThemeTokenOverrides = Partial<
+  Record<
+    | "background"
+    | "foreground"
+    | "surface"
+    | "surfaceSoft"
+    | "surfaceRaised"
+    | "line"
+    | "lineStrong"
+    | "muted"
+    | "accent"
+    | "accentCyan"
+    | "accentYellow"
+    | "accentPurple",
+    string
+  >
+>;
+
 export const users = pgTable(
   "users",
   {
@@ -81,6 +99,7 @@ export const userPreferences = pgTable(
       onDelete: "set null",
     }),
     weightUnit: text("weight_unit").notNull().default("lbs"),
+    themeOverrides: jsonb("theme_overrides").$type<ThemeTokenOverrides>().notNull().default({}),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

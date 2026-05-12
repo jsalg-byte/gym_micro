@@ -26,6 +26,7 @@ import { RestTimer } from "@/components/rest-timer";
 import { SessionSetLogger } from "@/components/session-set-logger";
 import { LoggedSetGroups } from "@/components/logged-set-groups";
 import { DeleteSessionButton } from "@/components/delete-session-button";
+import { FlyoverSelect } from "@/components/flyover-select";
 
 export default async function SessionDetailPage({
   params,
@@ -300,20 +301,23 @@ export default async function SessionDetailPage({
                         </p>
                         <form action={updateWorkoutSetAction} className="mt-2 grid gap-2 sm:grid-cols-5">
                           <input type="hidden" name="setId" value={set.id} />
-                          <label className="text-xs text-slate-600">
-                            Exercise
-                            <select
+                          <div className="text-xs text-slate-600">
+                            <span>Exercise</span>
+                            <FlyoverSelect
                               name="exerciseId"
                               defaultValue={set.exerciseId}
-                              className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-500"
-                            >
-                              {setExerciseOptions.map((exercise) => (
-                                <option key={exercise.id} value={exercise.id}>
-                                  {exercise.name}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
+                              label="Exercise"
+                              panelTitle="Move set to exercise"
+                              options={setExerciseOptions.map((exercise) => ({
+                                value: exercise.id,
+                                label: exercise.name,
+                              }))}
+                              required
+                              searchable
+                              className="mt-1"
+                              triggerClassName="rounded-lg px-2 py-1.5 text-sm"
+                            />
+                          </div>
                           <label className="text-xs text-slate-600">
                             Reps
                             <input

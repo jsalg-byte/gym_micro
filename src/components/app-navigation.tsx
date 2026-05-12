@@ -24,118 +24,73 @@ export function AppNavigation({ isAdmin }: AppNavigationProps) {
     }
   }
 
+  const navLinks = [
+    { href: "/routines", label: "Workout Plans" },
+    { href: "/exercises", label: "Exercise Library" },
+    { href: "/sessions", label: "Sessions" },
+    { href: "/nutrition", label: "Nutrition" },
+    { href: "/fasting", label: "Fasting" },
+    { href: "/progress", label: "Progress" },
+    { href: "/friends", label: "Friends" },
+    { href: "/settings", label: "Settings" },
+  ];
+
+  if (isAdmin) {
+    navLinks.push({ href: "/admin", label: "Admin" });
+  }
+
   return (
     <>
-      <nav className="hidden items-center gap-2 text-sm text-slate-700 md:flex">
-        <Link href="/routines" className="rounded-md px-2 py-1 whitespace-nowrap hover:bg-slate-100">
-          Workout Plans
-        </Link>
-        <Link href="/exercises" className="rounded-md px-2 py-1 whitespace-nowrap hover:bg-slate-100">
-          Exercise Library
-        </Link>
-        <Link href="/sessions" className="rounded-md px-2 py-1 whitespace-nowrap hover:bg-slate-100">
-          Sessions
-        </Link>
-        <Link href="/nutrition" className="rounded-md px-2 py-1 whitespace-nowrap hover:bg-slate-100">
-          Nutrition
-        </Link>
-        <Link href="/fasting" className="rounded-md px-2 py-1 whitespace-nowrap hover:bg-slate-100">
-          Fasting
-        </Link>
-        <Link href="/progress" className="rounded-md px-2 py-1 whitespace-nowrap hover:bg-slate-100">
-          Progress
-        </Link>
-        <Link href="/friends" className="rounded-md px-2 py-1 whitespace-nowrap hover:bg-slate-100">
-          Friends
-        </Link>
-        <Link href="/settings" className="rounded-md px-2 py-1 whitespace-nowrap hover:bg-slate-100">
-          Settings
-        </Link>
-        {isAdmin ? (
-          <Link href="/admin" className="rounded-md px-2 py-1 whitespace-nowrap hover:bg-slate-100">
-            Admin
-          </Link>
-        ) : null}
+      {/* Desktop Navigation */}
+      <nav className="hidden items-center gap-1 overflow-x-auto text-sm md:flex no-scrollbar">
+        {navLinks.map((link) => {
+          const isActive = pathname === link.href;
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`rounded-xl px-4 py-2 font-bold whitespace-nowrap transition-all ${
+                isActive
+                  ? "bg-accent-pink text-white shadow-[0_0_20px_rgba(255,92,92,0.3)]"
+                  : "text-muted hover:bg-foreground/5 hover:text-foreground"
+              }`}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
       </nav>
 
+      {/* Mobile Navigation */}
       <details ref={mobileMenuRef} className="group md:hidden">
-        <summary className="menu-trigger flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-2 text-sm font-bold shadow-sm transition group-open:rounded-b-none">
+        <summary className="flex cursor-pointer list-none items-center justify-between rounded-2xl border border-line bg-surface px-4 py-2.5 text-sm font-bold text-foreground transition-all hover:bg-foreground/5 active:scale-95 group-open:rounded-b-none group-open:border-line">
           <span className="flex items-center gap-2">
-            <span className="text-base leading-none">☰</span>
-            <span>Open Menu</span>
+            <span className="text-accent-pink">☰</span>
+            <span>Menu</span>
           </span>
-          <span className="menu-trigger-caret text-xs font-semibold transition group-open:rotate-180">▼</span>
+          <span className="text-[10px] text-muted transition-transform group-open:rotate-180">▼</span>
         </summary>
-        <p className="menu-trigger-hint rounded-b-lg border-x border-b px-3 py-1 text-[11px] font-semibold uppercase tracking-wide">
-          Choose a section
-        </p>
-        <nav className="mt-2 grid grid-cols-1 gap-2 text-sm text-slate-700 sm:grid-cols-2">
-          <Link
-            href="/routines"
-            onClick={closeMobileMenu}
-            className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
-          >
-            Workout Plans
-          </Link>
-          <Link
-            href="/exercises"
-            onClick={closeMobileMenu}
-            className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
-          >
-            Exercise Library
-          </Link>
-          <Link
-            href="/sessions"
-            onClick={closeMobileMenu}
-            className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
-          >
-            Sessions
-          </Link>
-          <Link
-            href="/nutrition"
-            onClick={closeMobileMenu}
-            className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
-          >
-            Nutrition
-          </Link>
-          <Link
-            href="/fasting"
-            onClick={closeMobileMenu}
-            className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
-          >
-            Fasting
-          </Link>
-          <Link
-            href="/progress"
-            onClick={closeMobileMenu}
-            className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
-          >
-            Progress
-          </Link>
-          <Link
-            href="/friends"
-            onClick={closeMobileMenu}
-            className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
-          >
-            Friends
-          </Link>
-          <Link
-            href="/settings"
-            onClick={closeMobileMenu}
-            className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
-          >
-            Settings
-          </Link>
-          {isAdmin ? (
-            <Link
-              href="/admin"
-              onClick={closeMobileMenu}
-              className="rounded-md border border-slate-200 bg-white px-2 py-2 text-center text-xs whitespace-nowrap sm:text-sm hover:bg-slate-50"
-            >
-              Admin
-            </Link>
-          ) : null}
-        </nav>
+        <div className="rounded-b-2xl border-x border-b border-line bg-surface p-2 shadow-2xl">
+          <nav className="grid grid-cols-1 gap-1">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={closeMobileMenu}
+                  className={`rounded-xl px-4 py-3 text-sm font-bold transition-all ${
+                    isActive
+                      ? "bg-accent-pink text-white"
+                      : "text-muted hover:bg-foreground/5 hover:text-foreground"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
       </details>
     </>
   );

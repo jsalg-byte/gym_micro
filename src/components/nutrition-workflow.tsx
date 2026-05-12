@@ -3,6 +3,7 @@
 import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { FlyoverSelect } from "@/components/flyover-select";
 import type {
   BarcodeNutritionContext,
   MicronutrientValue,
@@ -804,19 +805,21 @@ export function NutritionWorkflow({ foods }: { foods: FoodOption[] }) {
               return (
                 <div key={`ingredient-${index}`} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
                   <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_120px_120px_auto]">
-                    <select
+                    <FlyoverSelect
                       value={row.foodId}
-                      onChange={(event) => updateIngredient(index, { foodId: event.target.value })}
+                      onValueChange={(foodId) => updateIngredient(index, { foodId })}
                       required
-                      className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
-                    >
-                      <option value="">Select food</option>
-                      {foods.map((food) => (
-                        <option key={food.id} value={food.id}>
-                          {food.name}
-                        </option>
-                      ))}
-                    </select>
+                      label="Food"
+                      panelTitle="Choose food"
+                      placeholder="Select food"
+                      options={foods.map((food) => ({
+                        value: food.id,
+                        label: food.name,
+                        description: food.servingSizeText ?? (food.servingSizeG ? `${food.servingSizeG}g serving` : undefined),
+                      }))}
+                      searchable
+                      triggerClassName="rounded-lg py-2"
+                    />
                     <input
                       type="number"
                       value={row.amount}
@@ -827,15 +830,18 @@ export function NutritionWorkflow({ foods }: { foods: FoodOption[] }) {
                       placeholder="Amount"
                       className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
                     />
-                    <select
+                    <FlyoverSelect
                       value={row.unit}
-                      onChange={(event) => updateIngredient(index, { unit: event.target.value as AmountUnit })}
-                      className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
-                    >
-                      <option value="g">grams (g)</option>
-                      <option value="oz">ounces (oz)</option>
-                      <option value="serving">servings</option>
-                    </select>
+                      onValueChange={(unit) => updateIngredient(index, { unit: unit as AmountUnit })}
+                      label="Amount unit"
+                      panelTitle="Choose amount unit"
+                      options={[
+                        { value: "g", label: "grams (g)" },
+                        { value: "oz", label: "ounces (oz)" },
+                        { value: "serving", label: "servings" },
+                      ]}
+                      triggerClassName="rounded-lg py-2"
+                    />
                     <button
                       type="button"
                       onClick={() => removeIngredientRow(index)}
@@ -881,16 +887,19 @@ export function NutritionWorkflow({ foods }: { foods: FoodOption[] }) {
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              <select
+              <FlyoverSelect
                 value={mealType}
-                onChange={(event) => setMealType(event.target.value)}
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
-              >
-                <option value="breakfast">Breakfast</option>
-                <option value="lunch">Lunch</option>
-                <option value="dinner">Dinner</option>
-                <option value="snack">Snack</option>
-              </select>
+                onValueChange={setMealType}
+                label="Meal type"
+                panelTitle="Choose meal type"
+                options={[
+                  { value: "breakfast", label: "Breakfast" },
+                  { value: "lunch", label: "Lunch" },
+                  { value: "dinner", label: "Dinner" },
+                  { value: "snack", label: "Snack" },
+                ]}
+                triggerClassName="rounded-lg py-2"
+              />
               <div>
                 <p className="text-xs text-slate-600">Meal Photo (optional)</p>
                 <label

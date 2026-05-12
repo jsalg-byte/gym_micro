@@ -20,6 +20,11 @@ import {
   workoutSets,
 } from "@/db/schema";
 import { requireUserId } from "@/lib/session";
+import {
+  normalizeThemeOverrides,
+  themeTokenDefinitions,
+  type ThemeTokenOverrides,
+} from "@/lib/theme";
 
 const routineSchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -93,6 +98,12 @@ const createExerciseForSessionSchema = z.object({
 const weightUnitSchema = z.object({
   weightUnit: z.enum(["kg", "lbs"]),
 });
+
+const themeColorSchema = z
+  .string()
+  .trim()
+  .regex(/^#[0-9a-fA-F]{6}$/)
+  .transform((value) => value.toLowerCase());
 
 const setExerciseGifOverrideSchema = z.object({
   sessionId: z.string().uuid(),
@@ -705,6 +716,64 @@ export async function updateWeightUnitAction(formData: FormData) {
   revalidatePath("/settings");
   revalidatePath("/sessions");
   revalidatePath("/routines");
+}
+
+export async function updateThemeOverridesAction(formData: FormData) {
+  const userId = await requireUserId();
+  const nextOverrides: ThemeTokenOverrides = {};
+
+  for (const token of themeTokenDefinitions) {
+    const rawValue = formData.get(token.key);
+    const parsed = themeColorSchema.safeParse(rawValue);
+
+    if (!parsed.success) {
+      throw new Error("Invalid theme color payload");
+    }
+
+    nextOverrides[token.key] = parsed.data;
+  }
+
+  const db = getDb();
+  await db
+    .insert(userPreferences)
+    .values({
+      userId,
+      themeOverrides: normalizeThemeOverrides(nextOverrides),
+      updatedAt: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: userPreferences.userId,
+      set: {
+        themeOverrides: normalizeThemeOverrides(nextOverrides),
+        updatedAt: new Date(),
+      },
+    });
+
+  revalidatePath("/settings");
+  revalidatePath("/", "layout");
+}
+
+export async function resetThemeOverridesAction() {
+  const userId = await requireUserId();
+  const db = getDb();
+
+  await db
+    .insert(userPreferences)
+    .values({
+      userId,
+      themeOverrides: {},
+      updatedAt: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: userPreferences.userId,
+      set: {
+        themeOverrides: {},
+        updatedAt: new Date(),
+      },
+    });
+
+  revalidatePath("/settings");
+  revalidatePath("/", "layout");
 }
 
 export async function setExerciseGifOverrideAction(formData: FormData) {

@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   addWorkoutSetAction,
   createExerciseForSessionAction,
   setExerciseGifOverrideAction,
 } from "@/server/actions";
+import { FlyoverSelect } from "@/components/flyover-select";
 import type { ExerciseGifCandidate } from "@/lib/exercise-gifs";
 import { weightUnitLabel, type WeightUnit } from "@/lib/weight-unit";
 
@@ -39,6 +40,7 @@ export function SessionSetLogger({
   initialExerciseId,
 }: SessionSetLoggerProps) {
   const activeExerciseStorageKey = `${ACTIVE_EXERCISE_STORAGE_PREFIX}:${sessionId}`;
+  const hydratedStorageKeyRef = useRef<string | null>(null);
   const [selectedExerciseId, setSelectedExerciseId] = useState(initialExerciseId);
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
@@ -52,6 +54,22 @@ export function SessionSetLogger({
     [exerciseOptions, selectedExerciseId],
   );
 
+  const persistActiveExercise = useCallback((exerciseId: string) => {
+    if (!exerciseId) {
+      return;
+    }
+
+    window.localStorage.setItem(activeExerciseStorageKey, exerciseId);
+    window.dispatchEvent(
+      new CustomEvent(ACTIVE_EXERCISE_EVENT, {
+        detail: {
+          sessionId,
+          exerciseId,
+        },
+      }),
+    );
+  }, [activeExerciseStorageKey, sessionId]);
+
   useEffect(() => {
     const options = new Set(exerciseOptions.map((exercise) => exercise.id));
     if (options.size === 0) {
@@ -59,13 +77,16 @@ export function SessionSetLogger({
       return;
     }
 
-    if (selectedExerciseId && options.has(selectedExerciseId)) {
-      return;
+    if (hydratedStorageKeyRef.current !== activeExerciseStorageKey) {
+      hydratedStorageKeyRef.current = activeExerciseStorageKey;
+      const stored = window.localStorage.getItem(activeExerciseStorageKey);
+      if (stored && options.has(stored)) {
+        setSelectedExerciseId(stored);
+        return;
+      }
     }
 
-    const stored = window.localStorage.getItem(activeExerciseStorageKey);
-    if (stored && options.has(stored)) {
-      setSelectedExerciseId(stored);
+    if (selectedExerciseId && options.has(selectedExerciseId)) {
       return;
     }
 
@@ -99,37 +120,35 @@ export function SessionSetLogger({
     if (!selectedExerciseId) {
       return;
     }
-    window.localStorage.setItem(activeExerciseStorageKey, selectedExerciseId);
-    window.dispatchEvent(
-      new CustomEvent(ACTIVE_EXERCISE_EVENT, {
-        detail: {
-          sessionId,
-          exerciseId: selectedExerciseId,
-        },
-      }),
-    );
-  }, [selectedExerciseId, sessionId, activeExerciseStorageKey]);
+    persistActiveExercise(selectedExerciseId);
+  }, [selectedExerciseId, persistActiveExercise]);
 
   return (
     <div className="space-y-3">
-      <form action={addWorkoutSetAction} className="space-y-3">
+      <form
+        action={addWorkoutSetAction}
+        className="space-y-3"
+        onSubmit={() => persistActiveExercise(selectedExerciseId)}
+      >
         <input type="hidden" name="sessionId" value={sessionId} />
-        <label className="block text-sm text-slate-700">
-          Exercise
-          <select
+        <div className="block text-sm text-slate-700">
+          <span>Exercise</span>
+          <FlyoverSelect
             name="exerciseId"
             required
             value={selectedExerciseId}
-            onChange={(event) => setSelectedExerciseId(event.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
-          >
-            {exerciseOptions.map((exercise) => (
-              <option key={exercise.id} value={exercise.id}>
-                {exercise.name}
-              </option>
-            ))}
-          </select>
-        </label>
+            onValueChange={setSelectedExerciseId}
+            label="Exercise"
+            panelTitle="Choose exercise"
+            options={exerciseOptions.map((exercise) => ({
+              value: exercise.id,
+              label: exercise.name,
+            }))}
+            searchable
+            className="mt-1"
+            triggerClassName="rounded-lg py-2"
+          />
+        </div>
 
         {selectedExercise ? (
           <div className="rounded-lg border border-cyan-200 bg-cyan-50 p-2">
@@ -232,18 +251,23 @@ export function SessionSetLogger({
               className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
             />
           </label>
-          <label className="text-xs text-slate-700">
-            Category
-            <select
+          <div className="text-xs text-slate-700">
+            <span>Category</span>
+            <FlyoverSelect
               name="category"
               defaultValue="strength"
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
-            >
-              <option value="strength">Strength</option>
-              <option value="cardio">Cardio</option>
-              <option value="mobility">Mobility</option>
-            </select>
-          </label>
+              label="Category"
+              panelTitle="Choose category"
+              options={[
+                { value: "strength", label: "Strength" },
+                { value: "cardio", label: "Cardio" },
+                { value: "mobility", label: "Mobility" },
+              ]}
+              required
+              className="mt-1"
+              triggerClassName="rounded-lg py-2"
+            />
+          </div>
           <label className="text-xs text-slate-700">
             Muscle Group
             <input
