@@ -31,6 +31,11 @@ const routineSchema = z.object({
   description: z.string().trim().max(200).optional(),
 });
 
+const updateRoutineSchema = z.object({
+  routineId: z.string().uuid(),
+  name: z.string().trim().min(2).max(80),
+});
+
 const routineDaySchema = z.object({
   routineId: z.string().uuid(),
   dayName: z.string().trim().min(2).max(32),
@@ -223,6 +228,31 @@ export async function createRoutineAction(formData: FormData) {
 
   revalidatePath("/routines");
   revalidatePath("/sessions");
+}
+
+export async function updateRoutineAction(formData: FormData) {
+  const userId = await requireUserId();
+  const parsed = updateRoutineSchema.safeParse({
+    routineId: formData.get("routineId"),
+    name: formData.get("name"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid routine update payload");
+  }
+
+  const db = getDb();
+  await db
+    .update(routines)
+    .set({
+      name: parsed.data.name,
+      updatedAt: new Date(),
+    })
+    .where(and(eq(routines.id, parsed.data.routineId), eq(routines.userId, userId)));
+
+  revalidatePath("/routines");
+  revalidatePath("/sessions");
+  revalidatePath("/dashboard");
 }
 
 export async function createRoutineDayAction(formData: FormData) {
