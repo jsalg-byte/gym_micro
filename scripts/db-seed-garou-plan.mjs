@@ -104,6 +104,7 @@ function requireEnv(name) {
 function parseArgs(argv) {
   const options = {
     user: process.env.SEED_USER ?? null,
+    listUsers: false,
     setActive: process.env.SEED_SET_ACTIVE === "1",
   };
 
@@ -125,6 +126,11 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (arg === "--list-users") {
+      options.listUsers = true;
+      continue;
+    }
+
     if (arg === "--help" || arg === "-h") {
       options.help = true;
       continue;
@@ -140,6 +146,7 @@ function printHelp() {
   console.log(`
 Usage:
   npm run db:seed:garou -- --user <username|email|user-id> [--set-active]
+  npm run db:seed:garou -- --list-users
 
 Environment alternatives:
   SEED_USER=<username|email|user-id> npm run db:seed:garou
@@ -150,16 +157,39 @@ routine with preset_key "${PRESET_KEY}" does not already exist for the user.
 `);
 }
 
+function printUsers(users) {
+  if (users.length === 0) {
+    console.log("No users found.");
+    return;
+  }
+
+  console.table(
+    users.map((user) => ({
+      id: user.id,
+      username: user.username,
+      email: user.email ?? "",
+      created_at: user.created_at,
+    })),
+  );
+}
+
+async function listUsers(sql) {
+  return sql`
+    select id, username, email, created_at
+    from users
+    order by created_at asc
+  `;
+}
+
 async function findTargetUser(sql, userIdentifier) {
   if (userIdentifier) {
     const users = await sql`
-      select id, username, email
+      select id, username, email, created_at
       from users
       where id::text = ${userIdentifier}
         or lower(username) = lower(${userIdentifier})
         or lower(coalesce(email, '')) = lower(${userIdentifier})
       order by created_at asc
-      limit 2
     `;
 
     if (users.length === 0) {
@@ -167,17 +197,18 @@ async function findTargetUser(sql, userIdentifier) {
     }
 
     if (users.length > 1) {
-      throw new Error(`More than one user matched "${userIdentifier}". Use the user id instead.`);
+      console.error(`More than one user matched "${userIdentifier}". Pick one of these ids:`);
+      printUsers(users);
+      throw new Error("Run the seed again with --user <id>.");
     }
 
     return users[0];
   }
 
   const users = await sql`
-    select id, username, email
+    select id, username, email, created_at
     from users
     order by created_at asc
-    limit 2
   `;
 
   if (users.length === 0) {
@@ -185,7 +216,9 @@ async function findTargetUser(sql, userIdentifier) {
   }
 
   if (users.length > 1) {
-    throw new Error("More than one user exists. Pass --user <username|email|user-id>.");
+    console.error("More than one user exists. Pick one of these ids:");
+    printUsers(users);
+    throw new Error("Run the seed again with --user <id>.");
   }
 
   return users[0];
@@ -334,6 +367,11 @@ async function main() {
   });
 
   try {
+    if (options.listUsers) {
+      printUsers(await listUsers(sql));
+      return;
+    }
+
     const user = await findTargetUser(sql, options.user);
     const result = await seedPlan(sql, user, options);
     console.log(result.message);
