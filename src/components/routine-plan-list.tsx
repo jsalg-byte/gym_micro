@@ -97,7 +97,7 @@ export function RoutinePlanList({ routines, allExercises, weightUnit }: RoutineP
 
             {isExpanded ? (
               <div className="border-t border-line/50 p-5 pt-6">
-                <div className="grid gap-4 rounded-2xl border border-line bg-background p-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+                <div className="space-y-4 rounded-2xl border border-line bg-background p-4">
                   <form action={updateRoutineAction} className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
                     <input type="hidden" name="routineId" value={routine.id} />
                     <div className="space-y-1.5">
@@ -113,12 +113,12 @@ export function RoutinePlanList({ routines, allExercises, weightUnit }: RoutineP
                         className="w-full rounded-2xl border border-line bg-surface px-4 py-3 text-sm text-foreground outline-none ring-accent-pink/20 transition-all focus:border-accent-pink focus:ring-4"
                       />
                     </div>
-                    <button className="rounded-2xl bg-foreground px-5 py-3 text-xs font-black uppercase tracking-widest text-background transition-all hover:opacity-90 active:scale-95">
+                    <button className="h-[46px] rounded-2xl bg-foreground px-5 text-xs font-black uppercase tracking-widest text-background transition-all hover:opacity-90 active:scale-95">
                       Save Name
                     </button>
                   </form>
 
-                  <p className="text-sm font-medium text-muted md:text-right">
+                  <p className="border-t border-line/50 pt-4 text-sm font-medium leading-relaxed text-muted">
                     {routine.description || "No description provided."}
                   </p>
                 </div>
