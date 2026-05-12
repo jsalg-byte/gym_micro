@@ -13,6 +13,7 @@
     "db:generate": "drizzle-kit generate",
     "db:create": "node scripts/run-with-env.mjs node scripts/db-create.mjs",
     "db:migrate": "node scripts/run-with-env.mjs node ./node_modules/drizzle-kit/bin.cjs migrate",
+    "db:seed:garou": "node scripts/run-with-env.mjs node scripts/db-seed-garou-plan.mjs",
     "db:setup": "npm run db:create && npm run db:migrate",
     "db:studio": "node scripts/run-with-env.mjs node ./node_modules/drizzle-kit/bin.cjs studio"
   },
