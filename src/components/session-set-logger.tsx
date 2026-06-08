@@ -4,17 +4,20 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   addWorkoutSetAction,
   createExerciseForSessionAction,
-  setExerciseGifOverrideAction,
 } from "@/server/actions";
+import { ExerciseDemoSourceForm } from "@/components/exercise-demo-source-form";
+import { ExerciseMedia } from "@/components/exercise-media";
 import { FlyoverSelect } from "@/components/flyover-select";
-import type { ExerciseGifCandidate } from "@/lib/exercise-gifs";
+import type { ExerciseDemoReview } from "@/lib/exercise-gifs";
 import { weightUnitLabel, type WeightUnit } from "@/lib/weight-unit";
 
 type ExerciseOption = {
   id: string;
   name: string;
-  gifUrl: string;
-  gifCandidates: ExerciseGifCandidate[];
+  category: string;
+  muscleGroup: string | null;
+  gifUrl: string | null;
+  demo: ExerciseDemoReview;
   prefillReps: number | null;
   prefillWeight: string | null;
 };
@@ -29,8 +32,20 @@ type SessionSetLoggerProps = {
 const ACTIVE_EXERCISE_STORAGE_PREFIX = "gym-micro:session-active-exercise";
 const ACTIVE_EXERCISE_EVENT = "gym-micro:session-active-exercise-change";
 
-function isVideoUrl(url: string) {
-  return /\.(mp4|webm|mov|m4v|m3u8)(\?.*)?$/i.test(url);
+function getDemoStatus(demo: ExerciseDemoReview) {
+  if (demo.media.localPath) {
+    return "Downloaded";
+  }
+
+  if (demo.seed?.approved && demo.seed.youtubeUrl) {
+    return "Source saved";
+  }
+
+  if (demo.media.status === "none" || demo.seed?.mediaType === "none") {
+    return "No demo needed";
+  }
+
+  return "Needs source";
 }
 
 export function SessionSetLogger({
@@ -45,9 +60,6 @@ export function SessionSetLogger({
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
   const [isDemoHidden, setIsDemoHidden] = useState(false);
-  const [forceImageFallback, setForceImageFallback] = useState(false);
-  const [isMediaUnavailable, setIsMediaUnavailable] = useState(false);
-  const [showGifFixModal, setShowGifFixModal] = useState(false);
 
   const selectedExercise = useMemo(
     () => exerciseOptions.find((exercise) => exercise.id === selectedExerciseId) ?? null,
@@ -103,17 +115,11 @@ export function SessionSetLogger({
       setReps("");
       setWeight("");
       setIsDemoHidden(false);
-      setForceImageFallback(false);
-      setIsMediaUnavailable(false);
-      setShowGifFixModal(false);
       return;
     }
 
     setReps(selectedExercise.prefillReps ? String(selectedExercise.prefillReps) : "");
     setWeight(selectedExercise.prefillWeight ?? "");
-    setForceImageFallback(false);
-    setIsMediaUnavailable(false);
-    setShowGifFixModal(false);
   }, [selectedExercise]);
 
   useEffect(() => {
@@ -125,79 +131,89 @@ export function SessionSetLogger({
 
   return (
     <div className="space-y-3">
+      <div className="block text-sm text-slate-700">
+        <span>Exercise</span>
+        <FlyoverSelect
+          name="exerciseIdPicker"
+          required
+          value={selectedExerciseId}
+          onValueChange={setSelectedExerciseId}
+          label="Exercise"
+          panelTitle="Choose exercise"
+          options={exerciseOptions.map((exercise) => ({
+            value: exercise.id,
+            label: exercise.name,
+          }))}
+          searchable
+          className="mt-1"
+          triggerClassName="rounded-lg py-2"
+        />
+      </div>
+
+      {selectedExercise ? (
+        <div className="rounded-lg border border-cyan-200 bg-cyan-50 p-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-cyan-900">Exercise Demo</p>
+              <p className="mt-0.5 text-[11px] font-medium text-cyan-900/70">
+                {getDemoStatus(selectedExercise.demo)}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsDemoHidden((current) => !current)}
+              className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded border border-cyan-400 bg-cyan-100 text-base font-black leading-none text-cyan-900 hover:bg-cyan-200"
+              aria-label={isDemoHidden ? "Show demo" : "Hide demo"}
+            >
+              {isDemoHidden ? "+" : "−"}
+            </button>
+          </div>
+          {isDemoHidden ? null : (
+            <div className="mt-2 space-y-3">
+              <ExerciseMedia
+                src={selectedExercise.gifUrl}
+                name={selectedExercise.name}
+                autoPlay
+                className="mt-2 border border-cyan-200 bg-white object-contain"
+              />
+
+              <ExerciseDemoSourceForm
+                exerciseId={selectedExercise.id}
+                slug={selectedExercise.demo.media.slug}
+                exerciseName={selectedExercise.name}
+                category={selectedExercise.category}
+                muscleGroup={selectedExercise.muscleGroup}
+                youtubeUrl={selectedExercise.demo.seed?.youtubeUrl ?? selectedExercise.demo.media.sourceUrl}
+                start={selectedExercise.demo.seed?.start}
+                duration={selectedExercise.demo.seed?.duration}
+                variant="compact"
+              />
+
+              <div className="flex flex-wrap gap-2">
+                {selectedExercise.demo.queries.map((query) => (
+                  <a
+                    key={`${selectedExercise.id}-${query.label}-${query.query}`}
+                    href={query.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-full border border-cyan-200 bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-cyan-900 hover:border-cyan-500"
+                  >
+                    {query.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : null}
+
       <form
         action={addWorkoutSetAction}
         className="space-y-3"
         onSubmit={() => persistActiveExercise(selectedExerciseId)}
       >
         <input type="hidden" name="sessionId" value={sessionId} />
-        <div className="block text-sm text-slate-700">
-          <span>Exercise</span>
-          <FlyoverSelect
-            name="exerciseId"
-            required
-            value={selectedExerciseId}
-            onValueChange={setSelectedExerciseId}
-            label="Exercise"
-            panelTitle="Choose exercise"
-            options={exerciseOptions.map((exercise) => ({
-              value: exercise.id,
-              label: exercise.name,
-            }))}
-            searchable
-            className="mt-1"
-            triggerClassName="rounded-lg py-2"
-          />
-        </div>
-
-        {selectedExercise ? (
-          <div className="rounded-lg border border-cyan-200 bg-cyan-50 p-2">
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-cyan-900">Exercise Demo</p>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowGifFixModal(true)}
-                  className="text-[11px] font-semibold text-cyan-900 underline underline-offset-2 hover:text-cyan-700"
-                >
-                  Wrong demo?
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsDemoHidden((current) => !current)}
-                  className="inline-flex h-6 w-6 items-center justify-center rounded border border-cyan-400 bg-cyan-100 text-base font-black leading-none text-cyan-900 hover:bg-cyan-200"
-                  aria-label={isDemoHidden ? "Show demo" : "Hide demo"}
-                >
-                  {isDemoHidden ? "+" : "−"}
-                </button>
-              </div>
-            </div>
-            {isDemoHidden ? null : isMediaUnavailable ? (
-              <p className="mt-2 rounded-md border border-cyan-200 bg-white p-2 text-xs text-slate-600">
-                Demo unavailable for this exercise right now.
-              </p>
-            ) : isVideoUrl(selectedExercise.gifUrl) && !forceImageFallback ? (
-              <video
-                src={selectedExercise.gifUrl}
-                className="mt-2 w-full rounded-md border border-cyan-200 object-contain"
-                autoPlay
-                loop
-                muted
-                playsInline
-                controls
-                onError={() => setForceImageFallback(true)}
-              />
-            ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={selectedExercise.gifUrl}
-                alt={`${selectedExercise.name} demo`}
-                className="mt-2 w-full rounded-md border border-cyan-200 object-contain"
-                onError={() => setIsMediaUnavailable(true)}
-              />
-            )}
-          </div>
-        ) : null}
+        <input type="hidden" name="exerciseId" value={selectedExerciseId} />
 
         <label className="block text-sm text-slate-700">
           Reps
@@ -301,65 +317,6 @@ export function SessionSetLogger({
         </form>
       </details>
 
-      {showGifFixModal && selectedExercise ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setShowGifFixModal(false)}>
-          <div
-            className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-4"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h3 className="text-base font-black text-slate-900">Fix Demo Match</h3>
-                <p className="text-xs text-slate-600">
-                  Is this one of the exercises below? Pick one to remember it for {selectedExercise.name}.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowGifFixModal(false)}
-                className="rounded-md border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100"
-              >
-                Close
-              </button>
-            </div>
-
-            {selectedExercise.gifCandidates.length === 0 ? (
-              <p className="mt-3 text-sm text-slate-500">No fuzzy matches found right now. Please try again later.</p>
-            ) : (
-              <ul className="mt-3 space-y-2">
-                {selectedExercise.gifCandidates.map((candidate) => (
-                  <li key={candidate.exerciseId} className="rounded-lg border border-slate-200 bg-slate-50 p-2">
-                    <div className="grid gap-2 sm:grid-cols-[120px_minmax(0,1fr)_auto] sm:items-center">
-                      {
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={candidate.gifUrl}
-                          alt={`${candidate.name} demo`}
-                          className="w-full rounded border border-slate-200 object-contain"
-                        />
-                      }
-                      <div>
-                        <p className="text-sm font-semibold text-slate-900">{candidate.name}</p>
-                        <p className="text-xs text-slate-600">Match score: {candidate.score.toFixed(1)}</p>
-                      </div>
-                      <form action={setExerciseGifOverrideAction}>
-                        <input type="hidden" name="sessionId" value={sessionId} />
-                        <input type="hidden" name="exerciseId" value={selectedExercise.id} />
-                        <input type="hidden" name="gifUrl" value={candidate.gifUrl} />
-                        <input type="hidden" name="sourceExerciseId" value={candidate.exerciseId} />
-                        <input type="hidden" name="sourceName" value={candidate.name} />
-                        <button className="rounded-md border border-cyan-300 bg-cyan-50 px-2 py-1 text-xs font-semibold text-cyan-900 hover:bg-cyan-100">
-                          Use This Demo
-                        </button>
-                      </form>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }

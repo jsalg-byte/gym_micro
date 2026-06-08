@@ -11,7 +11,7 @@ import { userPreferences } from "@/db/schema";
 import { isAdminIdentity } from "@/lib/admin";
 import { authOptions } from "@/lib/auth";
 import { ensureExerciseLibrarySeeded } from "@/lib/exercise-seed";
-import { normalizeThemeOverrides, themeOverridesToStyle } from "@/lib/theme";
+import { normalizeThemeOverrides, themeOverridesToCss } from "@/lib/theme";
 import { trackUserIp } from "@/lib/user-ip";
 
 export default async function AppLayout({
@@ -38,13 +38,14 @@ export default async function AppLayout({
     .where(eq(userPreferences.userId, session.user.id))
     .limit(1)
     .then((rows) => rows[0] ?? null);
-  const themeStyle = themeOverridesToStyle(normalizeThemeOverrides(pref?.themeOverrides));
+  const themeOverrideCss = themeOverridesToCss(normalizeThemeOverrides(pref?.themeOverrides));
 
   await trackUserIp(session.user.id, await headers());
   await ensureExerciseLibrarySeeded();
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300" style={themeStyle}>
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      {themeOverrideCss ? <style>{themeOverrideCss}</style> : null}
       <div className="mx-auto max-w-7xl px-4 py-6 md:px-8">
         <header className="mb-6 rounded-3xl border border-line bg-surface/50 p-4 backdrop-blur-md">
           <div className="flex flex-wrap items-center justify-between gap-4">

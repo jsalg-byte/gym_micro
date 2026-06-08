@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { createExerciseAction } from "@/server/actions";
+import { ExerciseDemoSourceForm } from "@/components/exercise-demo-source-form";
+import { ExerciseMedia } from "@/components/exercise-media";
 import { FlyoverSelect } from "@/components/flyover-select";
+import type { ExerciseDemoReview } from "@/lib/exercise-gifs";
 
 type Exercise = {
   id: string;
@@ -11,15 +14,45 @@ type Exercise = {
   muscleGroup: string | null;
   createdByUserId: string | null;
   createdAt: Date;
+  demo: ExerciseDemoReview;
 };
 
 type ExercisesClientProps = {
   initialItems: Exercise[];
 };
 
+function getDemoStatus(demo: ExerciseDemoReview) {
+  if (demo.media.localPath) {
+    return {
+      label: "Downloaded",
+      className: "border border-accent-cyan/30 bg-accent-cyan/15 text-accent-cyan",
+    };
+  }
+
+  if (demo.seed?.approved && demo.seed.youtubeUrl) {
+    return {
+      label: "Source Saved",
+      className: "border border-accent-yellow/30 bg-accent-yellow/15 text-accent-yellow",
+    };
+  }
+
+  if (demo.media.status === "none" || demo.seed?.mediaType === "none") {
+    return {
+      label: "No Demo Needed",
+      className: "border border-line bg-background text-muted",
+    };
+  }
+
+  return {
+    label: "Needs Source",
+    className: "border border-accent-pink/30 bg-accent-pink/15 text-accent-pink",
+  };
+}
+
 export function ExercisesClient({ initialItems }: ExercisesClientProps) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeMuscleGroup, setActiveMuscleGroup] = useState("All");
+  const [expandedExerciseId, setExpandedExerciseId] = useState<string | null>(null);
 
   const toTitleCase = (str: string) => str.replace(/\b\w/g, (l) => l.toUpperCase());
 
@@ -46,6 +79,16 @@ export function ExercisesClient({ initialItems }: ExercisesClientProps) {
       return catMatch && muscleMatch;
     });
   }, [initialItems, activeCategory, activeMuscleGroup]);
+
+  const itemColumns = useMemo(() => {
+    return filteredItems.reduce<[Exercise[], Exercise[]]>(
+      (columns, item, index) => {
+        columns[index % 2].push(item);
+        return columns;
+      },
+      [[], []],
+    );
+  }, [filteredItems]);
 
   return (
     <main className="grid gap-8 lg:grid-cols-[340px_minmax(0,1fr)] pb-12 transition-colors duration-300 min-w-0 w-full">
@@ -160,34 +203,105 @@ export function ExercisesClient({ initialItems }: ExercisesClientProps) {
         </header>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          {filteredItems.map((exercise) => (
-            <article key={exercise.id} className="group flex items-center justify-between gap-4 rounded-3xl border border-line bg-surface p-5 transition-all hover:border-foreground/20 hover:shadow-xl min-w-0">
-              <div className="flex flex-col gap-1 min-w-0">
-                <span className="text-[10px] font-black uppercase tracking-widest text-accent-cyan bg-accent-cyan/10 w-fit px-2 py-0.5 rounded-lg border border-accent-cyan/20">
-                  {toTitleCase(exercise.category)}
-                </span>
-                <h3 className="text-lg font-black text-foreground group-hover:text-accent-pink transition-colors truncate">
-                  {toTitleCase(exercise.name)}
-                </h3>
-                {exercise.muscleGroup && (
-                  <p className="text-xs font-medium text-muted">
-                    Focus: <span className="text-foreground/70 font-bold">{toTitleCase(exercise.muscleGroup)}</span>
-                  </p>
-                )}
-              </div>
+          {itemColumns.map((column, columnIndex) => (
+            <div key={columnIndex} className="space-y-4 min-w-0">
+              {column.map((exercise) => {
+                const isExpanded = expandedExerciseId === exercise.id;
+                const demoStatus = getDemoStatus(exercise.demo);
 
-              <div className="flex items-center gap-2 shrink-0">
-                <button className="p-3 rounded-2xl bg-background border border-line text-muted opacity-0 group-hover:opacity-100 transition-all hover:text-foreground hover:scale-105">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </button>
-              </div>
-            </article>
+                return (
+                  <article
+                    key={exercise.id}
+                    className="group rounded-3xl border border-line bg-surface p-5 transition-all hover:border-foreground/20 hover:shadow-xl min-w-0"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex flex-col gap-1 min-w-0">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-accent-cyan bg-accent-cyan/10 w-fit px-2 py-0.5 rounded-lg border border-accent-cyan/20">
+                          {toTitleCase(exercise.category)}
+                        </span>
+                        <h3 className="text-lg font-black text-foreground group-hover:text-accent-pink transition-colors truncate">
+                          {toTitleCase(exercise.name)}
+                        </h3>
+                        {exercise.muscleGroup && (
+                          <p className="text-xs font-medium text-muted">
+                            Focus: <span className="text-foreground/70 font-bold">{toTitleCase(exercise.muscleGroup)}</span>
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => setExpandedExerciseId(isExpanded ? null : exercise.id)}
+                          aria-expanded={isExpanded}
+                          aria-label={isExpanded ? `Hide ${exercise.name} demo` : `Show ${exercise.name} demo`}
+                          className="p-3 rounded-2xl bg-background border border-line text-muted transition-all hover:text-foreground hover:scale-105"
+                        >
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d={isExpanded ? "M20 12H4" : "M12 4v16m8-8H4"}
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    {isExpanded ? (
+                      <div className="mt-5 space-y-5 border-t border-line pt-5">
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-muted">Demo</p>
+                          <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${demoStatus.className}`}>
+                            {demoStatus.label}
+                          </span>
+                        </div>
+
+                        <ExerciseMedia
+                          src={exercise.demo.media.localPath}
+                          name={exercise.name}
+                          controls={!!exercise.demo.media.localPath}
+                          className="border border-line bg-background object-contain"
+                        />
+
+                        <ExerciseDemoSourceForm
+                          exerciseId={exercise.id}
+                          slug={exercise.demo.media.slug}
+                          exerciseName={exercise.name}
+                          category={exercise.category}
+                          muscleGroup={exercise.muscleGroup}
+                          youtubeUrl={exercise.demo.seed?.youtubeUrl ?? exercise.demo.media.sourceUrl}
+                          start={exercise.demo.seed?.start}
+                          duration={exercise.demo.seed?.duration}
+                        />
+
+                        <div className="space-y-2">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-muted ml-1">Candidate Searches</p>
+                          <div className="flex flex-wrap gap-2">
+                            {exercise.demo.queries.map((query) => (
+                              <a
+                                key={`${exercise.id}-${query.label}-${query.query}`}
+                                href={query.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="rounded-full border border-line bg-background px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted transition-colors hover:border-accent-pink hover:text-accent-pink"
+                              >
+                                {query.label}
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+                  </article>
+                );
+              })}
+            </div>
           ))}
 
           {filteredItems.length === 0 && (
-            <div className="sm:col-span-2 rounded-3xl border border-dashed border-line p-16 text-center">
+            <div className="rounded-3xl border border-dashed border-line p-16 text-center">
               <p className="text-sm font-medium text-muted italic">No exercises match these filters.</p>
             </div>
           )}

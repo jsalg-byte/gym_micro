@@ -1,7 +1,12 @@
 import { z } from "zod";
 
+const optionalUrl = z.preprocess(
+  (value) => (value === "" ? undefined : value),
+  z.string().url().optional(),
+);
+
 const envSchema = z.object({
-  NEXTAUTH_URL: z.string().url().optional(),
+  NEXTAUTH_URL: optionalUrl,
   NEXTAUTH_SECRET: z.string().min(16).optional(),
   DATABASE_URL: z.string().optional(),
   REDIS_URL: z.string().optional(),
@@ -14,6 +19,9 @@ const envSchema = z.object({
   S3_ACCESS_KEY_ID: z.string().optional(),
   S3_SECRET_ACCESS_KEY: z.string().optional(),
   S3_FORCE_PATH_STYLE: z.string().optional(),
+  S3_PUBLIC_BASE_URL: optionalUrl,
+  EXERCISE_DEMO_STORAGE_DRIVER: z.enum(["local", "s3", "r2"]).optional(),
+  EXERCISE_DEMO_PUBLIC_BASE_URL: optionalUrl,
 });
 
 export const env = envSchema.parse(process.env);

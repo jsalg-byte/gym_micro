@@ -1,13 +1,13 @@
 import { eq } from "drizzle-orm";
-import { cookies } from "next/headers";
 import { FlyoverSelect } from "@/components/flyover-select";
 import { getDb } from "@/db/client";
 import { userPreferences } from "@/db/schema";
 import { requireUserId } from "@/lib/session";
 import {
-  getThemeTokenDefault,
+  getThemeTokenValue,
   normalizeThemeOverrides,
   themeTokenDefinitions,
+  type ThemeMode,
 } from "@/lib/theme";
 import { normalizeWeightUnit } from "@/lib/weight-unit";
 import {
@@ -32,8 +32,22 @@ export default async function SettingsPage() {
 
   const weightUnit = normalizeWeightUnit(pref?.weightUnit);
   const themeOverrides = normalizeThemeOverrides(pref?.themeOverrides);
-  const cookieStore = await cookies();
-  const themeMode = cookieStore.get("theme")?.value === "dark" ? "dark" : "light";
+  const themeModes: Array<{
+    mode: ThemeMode;
+    title: string;
+    description: string;
+  }> = [
+    {
+      mode: "light",
+      title: "Light Mode",
+      description: "Colors used when the app is in light mode.",
+    },
+    {
+      mode: "dark",
+      title: "Dark Mode",
+      description: "Colors used when the app is in dark mode.",
+    },
+  ];
 
   return (
     <main className="max-w-3xl space-y-4">
@@ -74,7 +88,7 @@ export default async function SettingsPage() {
           <div>
             <h2 className="text-sm font-black uppercase tracking-wide text-slate-700">Theme Tokens</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Override the CSS tokens that drive the app colors.
+              Override the CSS tokens that drive the app colors separately for light and dark mode.
             </p>
           </div>
           <form action={resetThemeOverridesAction}>
@@ -85,29 +99,45 @@ export default async function SettingsPage() {
         </div>
 
         <form action={updateThemeOverridesAction} className="mt-4 space-y-4">
-          <div className="grid gap-3 sm:grid-cols-2">
-            {themeTokenDefinitions.map((token) => {
-              const value = themeOverrides[token.key] ?? getThemeTokenDefault(token, themeMode);
+          {themeModes.map(({ mode, title, description }) => (
+            <section key={mode} className="rounded-2xl border border-line bg-background p-3">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <div>
+                  <h3 className="text-xs font-black uppercase tracking-widest text-foreground">{title}</h3>
+                  <p className="mt-1 text-xs font-medium text-muted">{description}</p>
+                </div>
+                <span className="rounded-full border border-line bg-surface px-3 py-1 text-[10px] font-black uppercase tracking-widest text-muted">
+                  {mode}
+                </span>
+              </div>
 
-              return (
-                <label
-                  key={token.key}
-                  className="flex items-center gap-3 rounded-2xl border border-line bg-background p-3"
-                >
-                  <input
-                    type="color"
-                    name={token.key}
-                    defaultValue={value}
-                    className="h-11 w-14 shrink-0 cursor-pointer rounded-xl border border-line bg-surface p-1"
-                  />
-                  <span className="min-w-0">
-                    <span className="block text-sm font-black text-foreground">{token.label}</span>
-                    <span className="block truncate text-[11px] font-semibold text-muted">{token.cssVar}</span>
-                  </span>
-                </label>
-              );
-            })}
-          </div>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                {themeTokenDefinitions.map((token) => {
+                  const value = getThemeTokenValue(themeOverrides, token, mode);
+
+                  return (
+                    <label
+                      key={`${mode}.${token.key}`}
+                      className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-3"
+                    >
+                      <input
+                        type="color"
+                        name={`${mode}.${token.key}`}
+                        defaultValue={value}
+                        className="h-11 w-14 shrink-0 cursor-pointer rounded-xl border border-line bg-background p-1"
+                      />
+                      <span className="min-w-0">
+                        <span className="block text-sm font-black text-foreground">{token.label}</span>
+                        <span className="block truncate text-[11px] font-semibold text-muted">
+                          {token.cssVar} · {mode}
+                        </span>
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
 
           <div className="flex flex-wrap items-center gap-2">
             <button className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">

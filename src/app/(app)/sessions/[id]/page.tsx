@@ -12,7 +12,11 @@ import {
   workoutSessions,
   workoutSets,
 } from "@/db/schema";
-import { resolveExerciseGif } from "@/lib/exercise-gifs";
+import {
+  getExerciseDemoReview,
+  resolveExerciseDemoPlayback,
+  type ExerciseDemoReview,
+} from "@/lib/exercise-gifs";
 import { requireUserId } from "@/lib/session";
 import { formatEasternDateTime } from "@/lib/timezone";
 import { normalizeWeightUnit } from "@/lib/weight-unit";
@@ -27,6 +31,53 @@ import { SessionSetLogger } from "@/components/session-set-logger";
 import { LoggedSetGroups } from "@/components/logged-set-groups";
 import { DeleteSessionButton } from "@/components/delete-session-button";
 import { FlyoverSelect } from "@/components/flyover-select";
+
+type DemoSourceOverride = {
+  gifUrl: string;
+  sourceExerciseId: string | null;
+  sourceName: string | null;
+};
+
+function parseDemoSourceMeta(sourceName: string | null) {
+  if (!sourceName) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(sourceName) as {
+      start?: string;
+      duration?: number;
+    };
+  } catch {
+    return null;
+  }
+}
+
+function applyDemoSourceOverride(
+  demo: ExerciseDemoReview,
+  exerciseName: string,
+  override?: DemoSourceOverride,
+): ExerciseDemoReview {
+  if (!override) {
+    return demo;
+  }
+
+  const meta = parseDemoSourceMeta(override.sourceName);
+  return {
+    ...demo,
+    seed: {
+      ...(demo.seed ?? {
+        name: exerciseName,
+        slug: override.sourceExerciseId ?? demo.media.slug,
+      }),
+      youtubeUrl: override.gifUrl,
+      approved: true,
+      start: meta?.start,
+      duration: meta?.duration,
+      mediaType: "video",
+    },
+  };
+}
 
 export default async function SessionDetailPage({
   params,
@@ -66,6 +117,8 @@ export default async function SessionDetailPage({
           .select({
             id: exercises.id,
             name: exercises.name,
+            category: exercises.category,
+            muscleGroup: exercises.muscleGroup,
             targetReps: routineDayExercises.targetReps,
             targetWeight: routineDayExercises.targetWeight,
           })
@@ -77,6 +130,8 @@ export default async function SessionDetailPage({
           .select({
             id: exercises.id,
             name: exercises.name,
+            category: exercises.category,
+            muscleGroup: exercises.muscleGroup,
             targetReps: routineDayExercises.targetReps,
             targetWeight: routineDayExercises.targetWeight,
           })
@@ -123,13 +178,14 @@ export default async function SessionDetailPage({
           )
           .orderBy(desc(workoutSets.createdAt))
       : [];
-
-  const gifOverrides =
+  const demoSourceOverrides =
     exerciseIds.length > 0
       ? await db
           .select({
             exerciseId: exerciseGifOverrides.exerciseId,
             gifUrl: exerciseGifOverrides.gifUrl,
+            sourceExerciseId: exerciseGifOverrides.sourceExerciseId,
+            sourceName: exerciseGifOverrides.sourceName,
           })
           .from(exerciseGifOverrides)
           .where(
@@ -140,7 +196,9 @@ export default async function SessionDetailPage({
           )
       : [];
 
-  const gifOverrideByExerciseId = new Map(gifOverrides.map((row) => [row.exerciseId, row.gifUrl]));
+  const demoSourceOverrideByExerciseId = new Map(
+    demoSourceOverrides.map((override) => [override.exerciseId, override]),
+  );
 
   const recentByExercise = new Map<
     string,
@@ -162,12 +220,19 @@ export default async function SessionDetailPage({
   const exerciseOptions = await Promise.all(
     dayPlannedExercises.map(async (exercise) => {
       const recent = recentByExercise.get(exercise.id);
-      const gifResolution = await resolveExerciseGif(exercise.name);
+      const demo = applyDemoSourceOverride(
+        getExerciseDemoReview(exercise.name),
+        exercise.name,
+        demoSourceOverrideByExerciseId.get(exercise.id),
+      );
+      const playableDemo = await resolveExerciseDemoPlayback(demo);
       return {
         id: exercise.id,
         name: exercise.name,
-        gifUrl: gifOverrideByExerciseId.get(exercise.id) ?? gifResolution.gifUrl,
-        gifCandidates: gifResolution.candidates,
+        category: exercise.category,
+        muscleGroup: exercise.muscleGroup,
+        gifUrl: playableDemo.media.localPath,
+        demo: playableDemo,
         prefillReps: recent?.reps ?? exercise.targetReps ?? null,
         prefillWeight:
           recent?.weight ?? (exercise.targetWeight !== null ? String(exercise.targetWeight) : null),

@@ -1,0 +1,2410 @@
+{
+  "barbell-back-squat": {
+    "name": "Barbell Back Squat",
+    "slug": "barbell-back-squat",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect barbell back squat",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+barbell+back+squat"
+      },
+      {
+        "label": "form",
+        "query": "barbell back squat exercise form",
+        "url": "https://www.youtube.com/results?search_query=barbell+back+squat+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "barbell back squat proper form",
+        "url": "https://www.youtube.com/results?search_query=barbell+back+squat+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "barbell back squat demo",
+        "url": "https://www.youtube.com/results?search_query=barbell+back+squat+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "barbell back squat shorts",
+        "url": "https://www.youtube.com/results?search_query=barbell+back+squat+shorts"
+      }
+    ]
+  },
+  "barbell-bench-press": {
+    "name": "Barbell Bench Press",
+    "slug": "barbell-bench-press",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect barbell bench press",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+barbell+bench+press"
+      },
+      {
+        "label": "form",
+        "query": "barbell bench press exercise form",
+        "url": "https://www.youtube.com/results?search_query=barbell+bench+press+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "barbell bench press proper form",
+        "url": "https://www.youtube.com/results?search_query=barbell+bench+press+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "barbell bench press demo",
+        "url": "https://www.youtube.com/results?search_query=barbell+bench+press+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "barbell bench press shorts",
+        "url": "https://www.youtube.com/results?search_query=barbell+bench+press+shorts"
+      }
+    ]
+  },
+  "barbell-curl": {
+    "name": "Barbell Curl",
+    "slug": "barbell-curl",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect barbell curl",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+barbell+curl"
+      },
+      {
+        "label": "form",
+        "query": "barbell curl exercise form",
+        "url": "https://www.youtube.com/results?search_query=barbell+curl+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "barbell curl proper form",
+        "url": "https://www.youtube.com/results?search_query=barbell+curl+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "barbell curl demo",
+        "url": "https://www.youtube.com/results?search_query=barbell+curl+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "barbell curl shorts",
+        "url": "https://www.youtube.com/results?search_query=barbell+curl+shorts"
+      }
+    ]
+  },
+  "barbell-forearm-curl": {
+    "name": "Barbell Forearm Curl",
+    "slug": "barbell-forearm-curl",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect barbell forearm curl",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+barbell+forearm+curl"
+      },
+      {
+        "label": "form",
+        "query": "barbell forearm curl exercise form",
+        "url": "https://www.youtube.com/results?search_query=barbell+forearm+curl+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "barbell forearm curl proper form",
+        "url": "https://www.youtube.com/results?search_query=barbell+forearm+curl+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "barbell forearm curl demo",
+        "url": "https://www.youtube.com/results?search_query=barbell+forearm+curl+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "barbell forearm curl shorts",
+        "url": "https://www.youtube.com/results?search_query=barbell+forearm+curl+shorts"
+      }
+    ]
+  },
+  "barbell-overhead-press": {
+    "name": "Barbell Overhead Press",
+    "slug": "barbell-overhead-press",
+    "aliasOf": "standing-overhead-press",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect barbell overhead press",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+barbell+overhead+press"
+      },
+      {
+        "label": "form",
+        "query": "barbell overhead press exercise form",
+        "url": "https://www.youtube.com/results?search_query=barbell+overhead+press+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "barbell overhead press proper form",
+        "url": "https://www.youtube.com/results?search_query=barbell+overhead+press+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "barbell overhead press demo",
+        "url": "https://www.youtube.com/results?search_query=barbell+overhead+press+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "barbell overhead press shorts",
+        "url": "https://www.youtube.com/results?search_query=barbell+overhead+press+shorts"
+      }
+    ]
+  },
+  "barbell-row": {
+    "name": "Barbell Row",
+    "slug": "barbell-row",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect barbell row",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+barbell+row"
+      },
+      {
+        "label": "form",
+        "query": "barbell row exercise form",
+        "url": "https://www.youtube.com/results?search_query=barbell+row+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "barbell row proper form",
+        "url": "https://www.youtube.com/results?search_query=barbell+row+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "barbell row demo",
+        "url": "https://www.youtube.com/results?search_query=barbell+row+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "barbell row shorts",
+        "url": "https://www.youtube.com/results?search_query=barbell+row+shorts"
+      }
+    ]
+  },
+  "barbell-rows-underhand": {
+    "name": "Barbell Rows (Underhand)",
+    "slug": "barbell-rows-underhand",
+    "aliasOf": "barbell-row",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect underhand barbell row",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+underhand+barbell+row"
+      },
+      {
+        "label": "form",
+        "query": "barbell rows (underhand) exercise form",
+        "url": "https://www.youtube.com/results?search_query=barbell+rows+(underhand)+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "barbell rows (underhand) proper form",
+        "url": "https://www.youtube.com/results?search_query=barbell+rows+(underhand)+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "barbell rows (underhand) demo",
+        "url": "https://www.youtube.com/results?search_query=barbell+rows+(underhand)+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "barbell rows (underhand) shorts",
+        "url": "https://www.youtube.com/results?search_query=barbell+rows+(underhand)+shorts"
+      }
+    ]
+  },
+  "barbell-shrugs": {
+    "name": "Barbell Shrugs",
+    "slug": "barbell-shrugs",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect barbell shrugs",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+barbell+shrugs"
+      },
+      {
+        "label": "form",
+        "query": "barbell shrugs exercise form",
+        "url": "https://www.youtube.com/results?search_query=barbell+shrugs+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "barbell shrugs proper form",
+        "url": "https://www.youtube.com/results?search_query=barbell+shrugs+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "barbell shrugs demo",
+        "url": "https://www.youtube.com/results?search_query=barbell+shrugs+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "barbell shrugs shorts",
+        "url": "https://www.youtube.com/results?search_query=barbell+shrugs+shorts"
+      }
+    ]
+  },
+  "barbell-upright-rows": {
+    "name": "Barbell Upright Rows",
+    "slug": "barbell-upright-rows",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect barbell upright rows",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+barbell+upright+rows"
+      },
+      {
+        "label": "form",
+        "query": "barbell upright rows exercise form",
+        "url": "https://www.youtube.com/results?search_query=barbell+upright+rows+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "barbell upright rows proper form",
+        "url": "https://www.youtube.com/results?search_query=barbell+upright+rows+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "barbell upright rows demo",
+        "url": "https://www.youtube.com/results?search_query=barbell+upright+rows+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "barbell upright rows shorts",
+        "url": "https://www.youtube.com/results?search_query=barbell+upright+rows+shorts"
+      }
+    ]
+  },
+  "bench-dip": {
+    "name": "Bench Dip",
+    "slug": "bench-dip",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect bench dip",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+bench+dip"
+      },
+      {
+        "label": "form",
+        "query": "bench dip exercise form",
+        "url": "https://www.youtube.com/results?search_query=bench+dip+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "bench dip proper form",
+        "url": "https://www.youtube.com/results?search_query=bench+dip+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "bench dip demo",
+        "url": "https://www.youtube.com/results?search_query=bench+dip+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "bench dip shorts",
+        "url": "https://www.youtube.com/results?search_query=bench+dip+shorts"
+      }
+    ]
+  },
+  "bench-leg-raise": {
+    "name": "Bench Leg Raise",
+    "slug": "bench-leg-raise",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect bench leg raise",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+bench+leg+raise"
+      },
+      {
+        "label": "form",
+        "query": "bench leg raise exercise form",
+        "url": "https://www.youtube.com/results?search_query=bench+leg+raise+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "bench leg raise proper form",
+        "url": "https://www.youtube.com/results?search_query=bench+leg+raise+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "bench leg raise demo",
+        "url": "https://www.youtube.com/results?search_query=bench+leg+raise+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "bench leg raise shorts",
+        "url": "https://www.youtube.com/results?search_query=bench+leg+raise+shorts"
+      }
+    ]
+  },
+  "bicep-curls": {
+    "name": "Bicep Curls",
+    "slug": "bicep-curls",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect bicep curls",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+bicep+curls"
+      },
+      {
+        "label": "form",
+        "query": "bicep curls exercise form",
+        "url": "https://www.youtube.com/results?search_query=bicep+curls+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "bicep curls proper form",
+        "url": "https://www.youtube.com/results?search_query=bicep+curls+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "bicep curls demo",
+        "url": "https://www.youtube.com/results?search_query=bicep+curls+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "bicep curls shorts",
+        "url": "https://www.youtube.com/results?search_query=bicep+curls+shorts"
+      }
+    ]
+  },
+  "bicycle-crunch": {
+    "name": "Bicycle Crunch",
+    "slug": "bicycle-crunch",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect bicycle crunch",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+bicycle+crunch"
+      },
+      {
+        "label": "form",
+        "query": "bicycle crunch exercise form",
+        "url": "https://www.youtube.com/results?search_query=bicycle+crunch+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "bicycle crunch proper form",
+        "url": "https://www.youtube.com/results?search_query=bicycle+crunch+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "bicycle crunch demo",
+        "url": "https://www.youtube.com/results?search_query=bicycle+crunch+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "bicycle crunch shorts",
+        "url": "https://www.youtube.com/results?search_query=bicycle+crunch+shorts"
+      }
+    ]
+  },
+  "bulgarian-split-squat-using-bench": {
+    "name": "Bulgarian Split Squat Using Bench",
+    "slug": "bulgarian-split-squat-using-bench",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect bulgarian split squat using bench",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+bulgarian+split+squat+using+bench"
+      },
+      {
+        "label": "form",
+        "query": "bulgarian split squat using bench exercise form",
+        "url": "https://www.youtube.com/results?search_query=bulgarian+split+squat+using+bench+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "bulgarian split squat using bench proper form",
+        "url": "https://www.youtube.com/results?search_query=bulgarian+split+squat+using+bench+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "bulgarian split squat using bench demo",
+        "url": "https://www.youtube.com/results?search_query=bulgarian+split+squat+using+bench+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "bulgarian split squat using bench shorts",
+        "url": "https://www.youtube.com/results?search_query=bulgarian+split+squat+using+bench+shorts"
+      }
+    ]
+  },
+  "cable-seated-row": {
+    "name": "Cable Seated Row",
+    "slug": "cable-seated-row",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect cable seated row",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+cable+seated+row"
+      },
+      {
+        "label": "form",
+        "query": "cable seated row exercise form",
+        "url": "https://www.youtube.com/results?search_query=cable+seated+row+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "cable seated row proper form",
+        "url": "https://www.youtube.com/results?search_query=cable+seated+row+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "cable seated row demo",
+        "url": "https://www.youtube.com/results?search_query=cable+seated+row+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "cable seated row shorts",
+        "url": "https://www.youtube.com/results?search_query=cable+seated+row+shorts"
+      }
+    ]
+  },
+  "cable-triceps-pressdown": {
+    "name": "Cable Triceps Pressdown",
+    "slug": "cable-triceps-pressdown",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect cable triceps pressdown",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+cable+triceps+pressdown"
+      },
+      {
+        "label": "form",
+        "query": "cable triceps pressdown exercise form",
+        "url": "https://www.youtube.com/results?search_query=cable+triceps+pressdown+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "cable triceps pressdown proper form",
+        "url": "https://www.youtube.com/results?search_query=cable+triceps+pressdown+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "cable triceps pressdown demo",
+        "url": "https://www.youtube.com/results?search_query=cable+triceps+pressdown+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "cable triceps pressdown shorts",
+        "url": "https://www.youtube.com/results?search_query=cable+triceps+pressdown+shorts"
+      }
+    ]
+  },
+  "calf-raise": {
+    "name": "Calf Raise",
+    "slug": "calf-raise",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect calf raise",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+calf+raise"
+      },
+      {
+        "label": "form",
+        "query": "calf raise exercise form",
+        "url": "https://www.youtube.com/results?search_query=calf+raise+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "calf raise proper form",
+        "url": "https://www.youtube.com/results?search_query=calf+raise+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "calf raise demo",
+        "url": "https://www.youtube.com/results?search_query=calf+raise+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "calf raise shorts",
+        "url": "https://www.youtube.com/results?search_query=calf+raise+shorts"
+      }
+    ]
+  },
+  "calf-raises": {
+    "name": "Calf Raises",
+    "slug": "calf-raises",
+    "aliasOf": "calf-raise",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect calf raises",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+calf+raises"
+      },
+      {
+        "label": "form",
+        "query": "calf raises exercise form",
+        "url": "https://www.youtube.com/results?search_query=calf+raises+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "calf raises proper form",
+        "url": "https://www.youtube.com/results?search_query=calf+raises+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "calf raises demo",
+        "url": "https://www.youtube.com/results?search_query=calf+raises+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "calf raises shorts",
+        "url": "https://www.youtube.com/results?search_query=calf+raises+shorts"
+      }
+    ]
+  },
+  "chest-supported-dumbbell-row-on-bench": {
+    "name": "Chest-Supported Dumbbell Row on Bench",
+    "slug": "chest-supported-dumbbell-row-on-bench",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect chest supported dumbbell row on bench",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+chest+supported+dumbbell+row+on+bench"
+      },
+      {
+        "label": "form",
+        "query": "chest-supported dumbbell row on bench exercise form",
+        "url": "https://www.youtube.com/results?search_query=chest-supported+dumbbell+row+on+bench+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "chest-supported dumbbell row on bench proper form",
+        "url": "https://www.youtube.com/results?search_query=chest-supported+dumbbell+row+on+bench+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "chest-supported dumbbell row on bench demo",
+        "url": "https://www.youtube.com/results?search_query=chest-supported+dumbbell+row+on+bench+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "chest-supported dumbbell row on bench shorts",
+        "url": "https://www.youtube.com/results?search_query=chest-supported+dumbbell+row+on+bench+shorts"
+      }
+    ]
+  },
+  "chin-up": {
+    "name": "Chin-Up",
+    "slug": "chin-up",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect chin-up",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+chin-up"
+      },
+      {
+        "label": "form",
+        "query": "chin-up exercise form",
+        "url": "https://www.youtube.com/results?search_query=chin-up+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "chin-up proper form",
+        "url": "https://www.youtube.com/results?search_query=chin-up+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "chin-up demo",
+        "url": "https://www.youtube.com/results?search_query=chin-up+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "chin-up shorts",
+        "url": "https://www.youtube.com/results?search_query=chin-up+shorts"
+      }
+    ]
+  },
+  "clean-and-press": {
+    "name": "Clean & Press",
+    "slug": "clean-and-press",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect clean and press",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+clean+and+press"
+      },
+      {
+        "label": "form",
+        "query": "clean & press exercise form",
+        "url": "https://www.youtube.com/results?search_query=clean+%26+press+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "clean & press proper form",
+        "url": "https://www.youtube.com/results?search_query=clean+%26+press+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "clean & press demo",
+        "url": "https://www.youtube.com/results?search_query=clean+%26+press+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "clean & press shorts",
+        "url": "https://www.youtube.com/results?search_query=clean+%26+press+shorts"
+      }
+    ]
+  },
+  "close-grip-bench-press": {
+    "name": "Close-Grip Bench Press",
+    "slug": "close-grip-bench-press",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect close-grip bench press",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+close-grip+bench+press"
+      },
+      {
+        "label": "form",
+        "query": "close-grip bench press exercise form",
+        "url": "https://www.youtube.com/results?search_query=close-grip+bench+press+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "close-grip bench press proper form",
+        "url": "https://www.youtube.com/results?search_query=close-grip+bench+press+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "close-grip bench press demo",
+        "url": "https://www.youtube.com/results?search_query=close-grip+bench+press+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "close-grip bench press shorts",
+        "url": "https://www.youtube.com/results?search_query=close-grip+bench+press+shorts"
+      }
+    ]
+  },
+  "deadlift": {
+    "name": "Deadlift",
+    "slug": "deadlift",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect deadlift",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+deadlift"
+      },
+      {
+        "label": "form",
+        "query": "deadlift exercise form",
+        "url": "https://www.youtube.com/results?search_query=deadlift+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "deadlift proper form",
+        "url": "https://www.youtube.com/results?search_query=deadlift+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "deadlift demo",
+        "url": "https://www.youtube.com/results?search_query=deadlift+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "deadlift shorts",
+        "url": "https://www.youtube.com/results?search_query=deadlift+shorts"
+      }
+    ]
+  },
+  "dumbbell-fly": {
+    "name": "Dumbbell Fly",
+    "slug": "dumbbell-fly",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect dumbbell fly",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+dumbbell+fly"
+      },
+      {
+        "label": "form",
+        "query": "dumbbell fly exercise form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+fly+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "dumbbell fly proper form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+fly+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "dumbbell fly demo",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+fly+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "dumbbell fly shorts",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+fly+shorts"
+      }
+    ]
+  },
+  "dumbbell-goblet-squats": {
+    "name": "Dumbbell Goblet Squats",
+    "slug": "dumbbell-goblet-squats",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect dumbbell goblet squats",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+dumbbell+goblet+squats"
+      },
+      {
+        "label": "form",
+        "query": "dumbbell goblet squats exercise form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+goblet+squats+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "dumbbell goblet squats proper form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+goblet+squats+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "dumbbell goblet squats demo",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+goblet+squats+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "dumbbell goblet squats shorts",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+goblet+squats+shorts"
+      }
+    ]
+  },
+  "dumbbell-hammer-curls": {
+    "name": "Dumbbell Hammer Curls",
+    "slug": "dumbbell-hammer-curls",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect dumbbell hammer curls",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+dumbbell+hammer+curls"
+      },
+      {
+        "label": "form",
+        "query": "dumbbell hammer curls exercise form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+hammer+curls+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "dumbbell hammer curls proper form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+hammer+curls+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "dumbbell hammer curls demo",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+hammer+curls+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "dumbbell hammer curls shorts",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+hammer+curls+shorts"
+      }
+    ]
+  },
+  "dumbbell-lunges": {
+    "name": "Dumbbell Lunges",
+    "slug": "dumbbell-lunges",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect dumbbell lunges",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+dumbbell+lunges"
+      },
+      {
+        "label": "form",
+        "query": "dumbbell lunges exercise form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+lunges+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "dumbbell lunges proper form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+lunges+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "dumbbell lunges demo",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+lunges+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "dumbbell lunges shorts",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+lunges+shorts"
+      }
+    ]
+  },
+  "dumbbell-one-arm-rows": {
+    "name": "Dumbbell One-Arm Rows",
+    "slug": "dumbbell-one-arm-rows",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect dumbbell one-arm rows",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+dumbbell+one-arm+rows"
+      },
+      {
+        "label": "form",
+        "query": "dumbbell one-arm rows exercise form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+one-arm+rows+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "dumbbell one-arm rows proper form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+one-arm+rows+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "dumbbell one-arm rows demo",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+one-arm+rows+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "dumbbell one-arm rows shorts",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+one-arm+rows+shorts"
+      }
+    ]
+  },
+  "dumbbell-pullovers": {
+    "name": "Dumbbell Pullovers",
+    "slug": "dumbbell-pullovers",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect dumbbell pullovers",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+dumbbell+pullovers"
+      },
+      {
+        "label": "form",
+        "query": "dumbbell pullovers exercise form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+pullovers+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "dumbbell pullovers proper form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+pullovers+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "dumbbell pullovers demo",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+pullovers+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "dumbbell pullovers shorts",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+pullovers+shorts"
+      }
+    ]
+  },
+  "dumbbell-rear-delt-flies": {
+    "name": "Dumbbell Rear Delt Flies",
+    "slug": "dumbbell-rear-delt-flies",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect dumbbell rear delt flies",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+dumbbell+rear+delt+flies"
+      },
+      {
+        "label": "form",
+        "query": "dumbbell rear delt flies exercise form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+rear+delt+flies+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "dumbbell rear delt flies proper form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+rear+delt+flies+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "dumbbell rear delt flies demo",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+rear+delt+flies+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "dumbbell rear delt flies shorts",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+rear+delt+flies+shorts"
+      }
+    ]
+  },
+  "dumbbell-or-barbell-shrug": {
+    "name": "Dumbbell or Barbell Shrug",
+    "slug": "dumbbell-or-barbell-shrug",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect dumbbell or barbell shrug",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+dumbbell+or+barbell+shrug"
+      },
+      {
+        "label": "form",
+        "query": "dumbbell or barbell shrug exercise form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+or+barbell+shrug+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "dumbbell or barbell shrug proper form",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+or+barbell+shrug+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "dumbbell or barbell shrug demo",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+or+barbell+shrug+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "dumbbell or barbell shrug shorts",
+        "url": "https://www.youtube.com/results?search_query=dumbbell+or+barbell+shrug+shorts"
+      }
+    ]
+  },
+  "ez-bar-curl": {
+    "name": "EZ-Bar Curl",
+    "slug": "ez-bar-curl",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect ez-bar curl",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+ez-bar+curl"
+      },
+      {
+        "label": "form",
+        "query": "ez-bar curl exercise form",
+        "url": "https://www.youtube.com/results?search_query=ez-bar+curl+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "ez-bar curl proper form",
+        "url": "https://www.youtube.com/results?search_query=ez-bar+curl+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "ez-bar curl demo",
+        "url": "https://www.youtube.com/results?search_query=ez-bar+curl+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "ez-bar curl shorts",
+        "url": "https://www.youtube.com/results?search_query=ez-bar+curl+shorts"
+      }
+    ]
+  },
+  "face-pull": {
+    "name": "Face Pull",
+    "slug": "face-pull",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect face pull",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+face+pull"
+      },
+      {
+        "label": "form",
+        "query": "face pull exercise form",
+        "url": "https://www.youtube.com/results?search_query=face+pull+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "face pull proper form",
+        "url": "https://www.youtube.com/results?search_query=face+pull+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "face pull demo",
+        "url": "https://www.youtube.com/results?search_query=face+pull+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "face pull shorts",
+        "url": "https://www.youtube.com/results?search_query=face+pull+shorts"
+      }
+    ]
+  },
+  "front-squat": {
+    "name": "Front Squat",
+    "slug": "front-squat",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect front squat",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+front+squat"
+      },
+      {
+        "label": "form",
+        "query": "front squat exercise form",
+        "url": "https://www.youtube.com/results?search_query=front+squat+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "front squat proper form",
+        "url": "https://www.youtube.com/results?search_query=front+squat+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "front squat demo",
+        "url": "https://www.youtube.com/results?search_query=front+squat+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "front squat shorts",
+        "url": "https://www.youtube.com/results?search_query=front+squat+shorts"
+      }
+    ]
+  },
+  "hammer-curl": {
+    "name": "Hammer Curl",
+    "slug": "hammer-curl",
+    "aliasOf": "dumbbell-hammer-curls",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect hammer curl",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+hammer+curl"
+      },
+      {
+        "label": "form",
+        "query": "hammer curl exercise form",
+        "url": "https://www.youtube.com/results?search_query=hammer+curl+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "hammer curl proper form",
+        "url": "https://www.youtube.com/results?search_query=hammer+curl+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "hammer curl demo",
+        "url": "https://www.youtube.com/results?search_query=hammer+curl+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "hammer curl shorts",
+        "url": "https://www.youtube.com/results?search_query=hammer+curl+shorts"
+      }
+    ]
+  },
+  "hanging-knee-raise": {
+    "name": "Hanging Knee Raise",
+    "slug": "hanging-knee-raise",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect hanging knee raise",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+hanging+knee+raise"
+      },
+      {
+        "label": "form",
+        "query": "hanging knee raise exercise form",
+        "url": "https://www.youtube.com/results?search_query=hanging+knee+raise+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "hanging knee raise proper form",
+        "url": "https://www.youtube.com/results?search_query=hanging+knee+raise+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "hanging knee raise demo",
+        "url": "https://www.youtube.com/results?search_query=hanging+knee+raise+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "hanging knee raise shorts",
+        "url": "https://www.youtube.com/results?search_query=hanging+knee+raise+shorts"
+      }
+    ]
+  },
+  "hip-flexor-stretch": {
+    "name": "Hip Flexor Stretch",
+    "slug": "hip-flexor-stretch",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect hip flexor stretch",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+hip+flexor+stretch"
+      },
+      {
+        "label": "form",
+        "query": "hip flexor stretch exercise form",
+        "url": "https://www.youtube.com/results?search_query=hip+flexor+stretch+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "hip flexor stretch proper form",
+        "url": "https://www.youtube.com/results?search_query=hip+flexor+stretch+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "hip flexor stretch demo",
+        "url": "https://www.youtube.com/results?search_query=hip+flexor+stretch+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "hip flexor stretch shorts",
+        "url": "https://www.youtube.com/results?search_query=hip+flexor+stretch+shorts"
+      }
+    ]
+  },
+  "incline-barbell-bench-press": {
+    "name": "Incline Barbell Bench Press",
+    "slug": "incline-barbell-bench-press",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect incline barbell bench press",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+incline+barbell+bench+press"
+      },
+      {
+        "label": "form",
+        "query": "incline barbell bench press exercise form",
+        "url": "https://www.youtube.com/results?search_query=incline+barbell+bench+press+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "incline barbell bench press proper form",
+        "url": "https://www.youtube.com/results?search_query=incline+barbell+bench+press+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "incline barbell bench press demo",
+        "url": "https://www.youtube.com/results?search_query=incline+barbell+bench+press+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "incline barbell bench press shorts",
+        "url": "https://www.youtube.com/results?search_query=incline+barbell+bench+press+shorts"
+      }
+    ]
+  },
+  "incline-dumbbell-press": {
+    "name": "Incline Dumbbell Press",
+    "slug": "incline-dumbbell-press",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect incline dumbbell press",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+incline+dumbbell+press"
+      },
+      {
+        "label": "form",
+        "query": "incline dumbbell press exercise form",
+        "url": "https://www.youtube.com/results?search_query=incline+dumbbell+press+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "incline dumbbell press proper form",
+        "url": "https://www.youtube.com/results?search_query=incline+dumbbell+press+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "incline dumbbell press demo",
+        "url": "https://www.youtube.com/results?search_query=incline+dumbbell+press+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "incline dumbbell press shorts",
+        "url": "https://www.youtube.com/results?search_query=incline+dumbbell+press+shorts"
+      }
+    ]
+  },
+  "incline-treadmill-walk": {
+    "name": "Incline Treadmill Walk",
+    "slug": "incline-treadmill-walk",
+    "mediaType": "none",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect incline treadmill walk",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+incline+treadmill+walk"
+      },
+      {
+        "label": "form",
+        "query": "incline treadmill walk exercise form",
+        "url": "https://www.youtube.com/results?search_query=incline+treadmill+walk+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "incline treadmill walk proper form",
+        "url": "https://www.youtube.com/results?search_query=incline+treadmill+walk+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "incline treadmill walk demo",
+        "url": "https://www.youtube.com/results?search_query=incline+treadmill+walk+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "incline treadmill walk shorts",
+        "url": "https://www.youtube.com/results?search_query=incline+treadmill+walk+shorts"
+      }
+    ]
+  },
+  "incline-or-feet-elevated-push-up": {
+    "name": "Incline or Feet-Elevated Push-Up",
+    "slug": "incline-or-feet-elevated-push-up",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect incline or feet-elevated push-up",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+incline+or+feet-elevated+push-up"
+      },
+      {
+        "label": "form",
+        "query": "incline or feet-elevated push-up exercise form",
+        "url": "https://www.youtube.com/results?search_query=incline+or+feet-elevated+push-up+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "incline or feet-elevated push-up proper form",
+        "url": "https://www.youtube.com/results?search_query=incline+or+feet-elevated+push-up+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "incline or feet-elevated push-up demo",
+        "url": "https://www.youtube.com/results?search_query=incline+or+feet-elevated+push-up+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "incline or feet-elevated push-up shorts",
+        "url": "https://www.youtube.com/results?search_query=incline+or+feet-elevated+push-up+shorts"
+      }
+    ]
+  },
+  "jump-rope": {
+    "name": "Jump Rope",
+    "slug": "jump-rope",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect jump rope",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+jump+rope"
+      },
+      {
+        "label": "form",
+        "query": "jump rope exercise form",
+        "url": "https://www.youtube.com/results?search_query=jump+rope+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "jump rope proper form",
+        "url": "https://www.youtube.com/results?search_query=jump+rope+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "jump rope demo",
+        "url": "https://www.youtube.com/results?search_query=jump+rope+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "jump rope shorts",
+        "url": "https://www.youtube.com/results?search_query=jump+rope+shorts"
+      }
+    ]
+  },
+  "lat-pulldown": {
+    "name": "Lat Pulldown",
+    "slug": "lat-pulldown",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect lat pulldown",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+lat+pulldown"
+      },
+      {
+        "label": "form",
+        "query": "lat pulldown exercise form",
+        "url": "https://www.youtube.com/results?search_query=lat+pulldown+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "lat pulldown proper form",
+        "url": "https://www.youtube.com/results?search_query=lat+pulldown+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "lat pulldown demo",
+        "url": "https://www.youtube.com/results?search_query=lat+pulldown+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "lat pulldown shorts",
+        "url": "https://www.youtube.com/results?search_query=lat+pulldown+shorts"
+      }
+    ]
+  },
+  "lateral-raise": {
+    "name": "Lateral Raise",
+    "slug": "lateral-raise",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect lateral raise",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+lateral+raise"
+      },
+      {
+        "label": "form",
+        "query": "lateral raise exercise form",
+        "url": "https://www.youtube.com/results?search_query=lateral+raise+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "lateral raise proper form",
+        "url": "https://www.youtube.com/results?search_query=lateral+raise+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "lateral raise demo",
+        "url": "https://www.youtube.com/results?search_query=lateral+raise+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "lateral raise shorts",
+        "url": "https://www.youtube.com/results?search_query=lateral+raise+shorts"
+      }
+    ]
+  },
+  "leg-press": {
+    "name": "Leg Press",
+    "slug": "leg-press",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect leg press",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+leg+press"
+      },
+      {
+        "label": "form",
+        "query": "leg press exercise form",
+        "url": "https://www.youtube.com/results?search_query=leg+press+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "leg press proper form",
+        "url": "https://www.youtube.com/results?search_query=leg+press+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "leg press demo",
+        "url": "https://www.youtube.com/results?search_query=leg+press+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "leg press shorts",
+        "url": "https://www.youtube.com/results?search_query=leg+press+shorts"
+      }
+    ]
+  },
+  "leg-raises": {
+    "name": "Leg Raises",
+    "slug": "leg-raises",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect leg raises",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+leg+raises"
+      },
+      {
+        "label": "form",
+        "query": "leg raises exercise form",
+        "url": "https://www.youtube.com/results?search_query=leg+raises+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "leg raises proper form",
+        "url": "https://www.youtube.com/results?search_query=leg+raises+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "leg raises demo",
+        "url": "https://www.youtube.com/results?search_query=leg+raises+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "leg raises shorts",
+        "url": "https://www.youtube.com/results?search_query=leg+raises+shorts"
+      }
+    ]
+  },
+  "light-bag-work": {
+    "name": "Light Bag Work",
+    "slug": "light-bag-work",
+    "mediaType": "none",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect light bag work",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+light+bag+work"
+      },
+      {
+        "label": "form",
+        "query": "light bag work exercise form",
+        "url": "https://www.youtube.com/results?search_query=light+bag+work+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "light bag work proper form",
+        "url": "https://www.youtube.com/results?search_query=light+bag+work+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "light bag work demo",
+        "url": "https://www.youtube.com/results?search_query=light+bag+work+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "light bag work shorts",
+        "url": "https://www.youtube.com/results?search_query=light+bag+work+shorts"
+      }
+    ]
+  },
+  "one-arm-dumbbell-bench-row": {
+    "name": "One-Arm Dumbbell Bench Row",
+    "slug": "one-arm-dumbbell-bench-row",
+    "aliasOf": "dumbbell-one-arm-rows",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect one-arm dumbbell bench row",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+one-arm+dumbbell+bench+row"
+      },
+      {
+        "label": "form",
+        "query": "one-arm dumbbell bench row exercise form",
+        "url": "https://www.youtube.com/results?search_query=one-arm+dumbbell+bench+row+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "one-arm dumbbell bench row proper form",
+        "url": "https://www.youtube.com/results?search_query=one-arm+dumbbell+bench+row+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "one-arm dumbbell bench row demo",
+        "url": "https://www.youtube.com/results?search_query=one-arm+dumbbell+bench+row+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "one-arm dumbbell bench row shorts",
+        "url": "https://www.youtube.com/results?search_query=one-arm+dumbbell+bench+row+shorts"
+      }
+    ]
+  },
+  "optional-abs": {
+    "name": "Optional Abs",
+    "slug": "optional-abs",
+    "mediaType": "none",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect optional abs",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+optional+abs"
+      },
+      {
+        "label": "form",
+        "query": "optional abs exercise form",
+        "url": "https://www.youtube.com/results?search_query=optional+abs+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "optional abs proper form",
+        "url": "https://www.youtube.com/results?search_query=optional+abs+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "optional abs demo",
+        "url": "https://www.youtube.com/results?search_query=optional+abs+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "optional abs shorts",
+        "url": "https://www.youtube.com/results?search_query=optional+abs+shorts"
+      }
+    ]
+  },
+  "overhead-triceps-extension": {
+    "name": "Overhead Triceps Extension",
+    "slug": "overhead-triceps-extension",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect overhead triceps extension",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+overhead+triceps+extension"
+      },
+      {
+        "label": "form",
+        "query": "overhead triceps extension exercise form",
+        "url": "https://www.youtube.com/results?search_query=overhead+triceps+extension+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "overhead triceps extension proper form",
+        "url": "https://www.youtube.com/results?search_query=overhead+triceps+extension+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "overhead triceps extension demo",
+        "url": "https://www.youtube.com/results?search_query=overhead+triceps+extension+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "overhead triceps extension shorts",
+        "url": "https://www.youtube.com/results?search_query=overhead+triceps+extension+shorts"
+      }
+    ]
+  },
+  "pike-push-up": {
+    "name": "Pike Push-Up",
+    "slug": "pike-push-up",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect pike push-up",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+pike+push-up"
+      },
+      {
+        "label": "form",
+        "query": "pike push-up exercise form",
+        "url": "https://www.youtube.com/results?search_query=pike+push-up+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "pike push-up proper form",
+        "url": "https://www.youtube.com/results?search_query=pike+push-up+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "pike push-up demo",
+        "url": "https://www.youtube.com/results?search_query=pike+push-up+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "pike push-up shorts",
+        "url": "https://www.youtube.com/results?search_query=pike+push-up+shorts"
+      }
+    ]
+  },
+  "plank": {
+    "name": "Plank",
+    "slug": "plank",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect plank",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+plank"
+      },
+      {
+        "label": "form",
+        "query": "plank exercise form",
+        "url": "https://www.youtube.com/results?search_query=plank+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "plank proper form",
+        "url": "https://www.youtube.com/results?search_query=plank+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "plank demo",
+        "url": "https://www.youtube.com/results?search_query=plank+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "plank shorts",
+        "url": "https://www.youtube.com/results?search_query=plank+shorts"
+      }
+    ]
+  },
+  "pull-up": {
+    "name": "Pull-Up",
+    "slug": "pull-up",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect pull-up",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+pull-up"
+      },
+      {
+        "label": "form",
+        "query": "pull-up exercise form",
+        "url": "https://www.youtube.com/results?search_query=pull-up+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "pull-up proper form",
+        "url": "https://www.youtube.com/results?search_query=pull-up+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "pull-up demo",
+        "url": "https://www.youtube.com/results?search_query=pull-up+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "pull-up shorts",
+        "url": "https://www.youtube.com/results?search_query=pull-up+shorts"
+      }
+    ]
+  },
+  "punching-bag-3-minute-rounds": {
+    "name": "Punching Bag 3-Minute Rounds",
+    "slug": "punching-bag-3-minute-rounds",
+    "mediaType": "none",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect punching bag 3-minute rounds",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+punching+bag+3-minute+rounds"
+      },
+      {
+        "label": "form",
+        "query": "punching bag 3-minute rounds exercise form",
+        "url": "https://www.youtube.com/results?search_query=punching+bag+3-minute+rounds+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "punching bag 3-minute rounds proper form",
+        "url": "https://www.youtube.com/results?search_query=punching+bag+3-minute+rounds+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "punching bag 3-minute rounds demo",
+        "url": "https://www.youtube.com/results?search_query=punching+bag+3-minute+rounds+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "punching bag 3-minute rounds shorts",
+        "url": "https://www.youtube.com/results?search_query=punching+bag+3-minute+rounds+shorts"
+      }
+    ]
+  },
+  "push-up": {
+    "name": "Push Up",
+    "slug": "push-up",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect push up",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+push+up"
+      },
+      {
+        "label": "form",
+        "query": "push up exercise form",
+        "url": "https://www.youtube.com/results?search_query=push+up+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "push up proper form",
+        "url": "https://www.youtube.com/results?search_query=push+up+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "push up demo",
+        "url": "https://www.youtube.com/results?search_query=push+up+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "push up shorts",
+        "url": "https://www.youtube.com/results?search_query=push+up+shorts"
+      }
+    ]
+  },
+  "push-up-burnout": {
+    "name": "Push-Up Burnout",
+    "slug": "push-up-burnout",
+    "aliasOf": "push-up",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect push-up burnout",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+push-up+burnout"
+      },
+      {
+        "label": "form",
+        "query": "push-up burnout exercise form",
+        "url": "https://www.youtube.com/results?search_query=push-up+burnout+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "push-up burnout proper form",
+        "url": "https://www.youtube.com/results?search_query=push-up+burnout+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "push-up burnout demo",
+        "url": "https://www.youtube.com/results?search_query=push-up+burnout+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "push-up burnout shorts",
+        "url": "https://www.youtube.com/results?search_query=push-up+burnout+shorts"
+      }
+    ]
+  },
+  "rear-delt-raise-on-bench": {
+    "name": "Rear Delt Raise on Bench",
+    "slug": "rear-delt-raise-on-bench",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect rear delt raise on bench",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+rear+delt+raise+on+bench"
+      },
+      {
+        "label": "form",
+        "query": "rear delt raise on bench exercise form",
+        "url": "https://www.youtube.com/results?search_query=rear+delt+raise+on+bench+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "rear delt raise on bench proper form",
+        "url": "https://www.youtube.com/results?search_query=rear+delt+raise+on+bench+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "rear delt raise on bench demo",
+        "url": "https://www.youtube.com/results?search_query=rear+delt+raise+on+bench+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "rear delt raise on bench shorts",
+        "url": "https://www.youtube.com/results?search_query=rear+delt+raise+on+bench+shorts"
+      }
+    ]
+  },
+  "resistance-band-lat-pulldowns": {
+    "name": "Resistance Band Lat Pulldowns",
+    "slug": "resistance-band-lat-pulldowns",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect resistance band lat pulldowns",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+resistance+band+lat+pulldowns"
+      },
+      {
+        "label": "form",
+        "query": "resistance band lat pulldowns exercise form",
+        "url": "https://www.youtube.com/results?search_query=resistance+band+lat+pulldowns+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "resistance band lat pulldowns proper form",
+        "url": "https://www.youtube.com/results?search_query=resistance+band+lat+pulldowns+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "resistance band lat pulldowns demo",
+        "url": "https://www.youtube.com/results?search_query=resistance+band+lat+pulldowns+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "resistance band lat pulldowns shorts",
+        "url": "https://www.youtube.com/results?search_query=resistance+band+lat+pulldowns+shorts"
+      }
+    ]
+  },
+  "resistance-band-rows": {
+    "name": "Resistance Band Rows",
+    "slug": "resistance-band-rows",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect resistance band rows",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+resistance+band+rows"
+      },
+      {
+        "label": "form",
+        "query": "resistance band rows exercise form",
+        "url": "https://www.youtube.com/results?search_query=resistance+band+rows+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "resistance band rows proper form",
+        "url": "https://www.youtube.com/results?search_query=resistance+band+rows+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "resistance band rows demo",
+        "url": "https://www.youtube.com/results?search_query=resistance+band+rows+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "resistance band rows shorts",
+        "url": "https://www.youtube.com/results?search_query=resistance+band+rows+shorts"
+      }
+    ]
+  },
+  "romanian-deadlift": {
+    "name": "Romanian Deadlift",
+    "slug": "romanian-deadlift",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect romanian deadlift",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+romanian+deadlift"
+      },
+      {
+        "label": "form",
+        "query": "romanian deadlift exercise form",
+        "url": "https://www.youtube.com/results?search_query=romanian+deadlift+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "romanian deadlift proper form",
+        "url": "https://www.youtube.com/results?search_query=romanian+deadlift+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "romanian deadlift demo",
+        "url": "https://www.youtube.com/results?search_query=romanian+deadlift+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "romanian deadlift shorts",
+        "url": "https://www.youtube.com/results?search_query=romanian+deadlift+shorts"
+      }
+    ]
+  },
+  "rowing-machine": {
+    "name": "Rowing Machine",
+    "slug": "rowing-machine",
+    "mediaType": "none",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect rowing machine",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+rowing+machine"
+      },
+      {
+        "label": "form",
+        "query": "rowing machine exercise form",
+        "url": "https://www.youtube.com/results?search_query=rowing+machine+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "rowing machine proper form",
+        "url": "https://www.youtube.com/results?search_query=rowing+machine+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "rowing machine demo",
+        "url": "https://www.youtube.com/results?search_query=rowing+machine+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "rowing machine shorts",
+        "url": "https://www.youtube.com/results?search_query=rowing+machine+shorts"
+      }
+    ]
+  },
+  "seated-dumbbell-shoulder-press": {
+    "name": "Seated Dumbbell Shoulder Press",
+    "slug": "seated-dumbbell-shoulder-press",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect seated dumbbell shoulder press",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+seated+dumbbell+shoulder+press"
+      },
+      {
+        "label": "form",
+        "query": "seated dumbbell shoulder press exercise form",
+        "url": "https://www.youtube.com/results?search_query=seated+dumbbell+shoulder+press+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "seated dumbbell shoulder press proper form",
+        "url": "https://www.youtube.com/results?search_query=seated+dumbbell+shoulder+press+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "seated dumbbell shoulder press demo",
+        "url": "https://www.youtube.com/results?search_query=seated+dumbbell+shoulder+press+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "seated dumbbell shoulder press shorts",
+        "url": "https://www.youtube.com/results?search_query=seated+dumbbell+shoulder+press+shorts"
+      }
+    ]
+  },
+  "shoulder-press": {
+    "name": "Shoulder Press",
+    "slug": "shoulder-press",
+    "aliasOf": "standing-overhead-press",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect shoulder press",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+shoulder+press"
+      },
+      {
+        "label": "form",
+        "query": "shoulder press exercise form",
+        "url": "https://www.youtube.com/results?search_query=shoulder+press+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "shoulder press proper form",
+        "url": "https://www.youtube.com/results?search_query=shoulder+press+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "shoulder press demo",
+        "url": "https://www.youtube.com/results?search_query=shoulder+press+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "shoulder press shorts",
+        "url": "https://www.youtube.com/results?search_query=shoulder+press+shorts"
+      }
+    ]
+  },
+  "single-dumbbell-lateral-raise": {
+    "name": "Single Dumbbell Lateral Raise",
+    "slug": "single-dumbbell-lateral-raise",
+    "aliasOf": "lateral-raise",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect single dumbbell lateral raise",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+single+dumbbell+lateral+raise"
+      },
+      {
+        "label": "form",
+        "query": "single dumbbell lateral raise exercise form",
+        "url": "https://www.youtube.com/results?search_query=single+dumbbell+lateral+raise+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "single dumbbell lateral raise proper form",
+        "url": "https://www.youtube.com/results?search_query=single+dumbbell+lateral+raise+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "single dumbbell lateral raise demo",
+        "url": "https://www.youtube.com/results?search_query=single+dumbbell+lateral+raise+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "single dumbbell lateral raise shorts",
+        "url": "https://www.youtube.com/results?search_query=single+dumbbell+lateral+raise+shorts"
+      }
+    ]
+  },
+  "standing-overhead-press": {
+    "name": "Standing Overhead Press",
+    "slug": "standing-overhead-press",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect standing overhead press",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+standing+overhead+press"
+      },
+      {
+        "label": "form",
+        "query": "standing overhead press exercise form",
+        "url": "https://www.youtube.com/results?search_query=standing+overhead+press+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "standing overhead press proper form",
+        "url": "https://www.youtube.com/results?search_query=standing+overhead+press+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "standing overhead press demo",
+        "url": "https://www.youtube.com/results?search_query=standing+overhead+press+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "standing overhead press shorts",
+        "url": "https://www.youtube.com/results?search_query=standing+overhead+press+shorts"
+      }
+    ]
+  },
+  "stationary-bike": {
+    "name": "Stationary Bike",
+    "slug": "stationary-bike",
+    "mediaType": "none",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect stationary bike",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+stationary+bike"
+      },
+      {
+        "label": "form",
+        "query": "stationary bike exercise form",
+        "url": "https://www.youtube.com/results?search_query=stationary+bike+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "stationary bike proper form",
+        "url": "https://www.youtube.com/results?search_query=stationary+bike+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "stationary bike demo",
+        "url": "https://www.youtube.com/results?search_query=stationary+bike+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "stationary bike shorts",
+        "url": "https://www.youtube.com/results?search_query=stationary+bike+shorts"
+      }
+    ]
+  },
+  "step-up-onto-bench": {
+    "name": "Step-Up Onto Bench",
+    "slug": "step-up-onto-bench",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect step-up onto bench",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+step-up+onto+bench"
+      },
+      {
+        "label": "form",
+        "query": "step-up onto bench exercise form",
+        "url": "https://www.youtube.com/results?search_query=step-up+onto+bench+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "step-up onto bench proper form",
+        "url": "https://www.youtube.com/results?search_query=step-up+onto+bench+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "step-up onto bench demo",
+        "url": "https://www.youtube.com/results?search_query=step-up+onto+bench+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "step-up onto bench shorts",
+        "url": "https://www.youtube.com/results?search_query=step-up+onto+bench+shorts"
+      }
+    ]
+  },
+  "stretching": {
+    "name": "Stretching",
+    "slug": "stretching",
+    "mediaType": "none",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect stretching",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+stretching"
+      },
+      {
+        "label": "form",
+        "query": "stretching exercise form",
+        "url": "https://www.youtube.com/results?search_query=stretching+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "stretching proper form",
+        "url": "https://www.youtube.com/results?search_query=stretching+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "stretching demo",
+        "url": "https://www.youtube.com/results?search_query=stretching+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "stretching shorts",
+        "url": "https://www.youtube.com/results?search_query=stretching+shorts"
+      }
+    ]
+  },
+  "the-up-down": {
+    "name": "The up down",
+    "slug": "the-up-down",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect the up down",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+the+up+down"
+      },
+      {
+        "label": "form",
+        "query": "the up down exercise form",
+        "url": "https://www.youtube.com/results?search_query=the+up+down+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "the up down proper form",
+        "url": "https://www.youtube.com/results?search_query=the+up+down+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "the up down demo",
+        "url": "https://www.youtube.com/results?search_query=the+up+down+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "the up down shorts",
+        "url": "https://www.youtube.com/results?search_query=the+up+down+shorts"
+      }
+    ]
+  },
+  "thoracic-rotation": {
+    "name": "Thoracic Rotation",
+    "slug": "thoracic-rotation",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect thoracic rotation",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+thoracic+rotation"
+      },
+      {
+        "label": "form",
+        "query": "thoracic rotation exercise form",
+        "url": "https://www.youtube.com/results?search_query=thoracic+rotation+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "thoracic rotation proper form",
+        "url": "https://www.youtube.com/results?search_query=thoracic+rotation+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "thoracic rotation demo",
+        "url": "https://www.youtube.com/results?search_query=thoracic+rotation+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "thoracic rotation shorts",
+        "url": "https://www.youtube.com/results?search_query=thoracic+rotation+shorts"
+      }
+    ]
+  },
+  "treadmill-1-1-run-walk-intervals": {
+    "name": "Treadmill 1:1 Run/Walk Intervals",
+    "slug": "treadmill-1-1-run-walk-intervals",
+    "mediaType": "none",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect treadmill 1:1 run/walk intervals",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+treadmill+1%3A1+run%2Fwalk+intervals"
+      },
+      {
+        "label": "form",
+        "query": "treadmill 1:1 run/walk intervals exercise form",
+        "url": "https://www.youtube.com/results?search_query=treadmill+1%3A1+run%2Fwalk+intervals+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "treadmill 1:1 run/walk intervals proper form",
+        "url": "https://www.youtube.com/results?search_query=treadmill+1%3A1+run%2Fwalk+intervals+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "treadmill 1:1 run/walk intervals demo",
+        "url": "https://www.youtube.com/results?search_query=treadmill+1%3A1+run%2Fwalk+intervals+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "treadmill 1:1 run/walk intervals shorts",
+        "url": "https://www.youtube.com/results?search_query=treadmill+1%3A1+run%2Fwalk+intervals+shorts"
+      }
+    ]
+  },
+  "treadmill-run": {
+    "name": "Treadmill Run",
+    "slug": "treadmill-run",
+    "mediaType": "none",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect treadmill run",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+treadmill+run"
+      },
+      {
+        "label": "form",
+        "query": "treadmill run exercise form",
+        "url": "https://www.youtube.com/results?search_query=treadmill+run+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "treadmill run proper form",
+        "url": "https://www.youtube.com/results?search_query=treadmill+run+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "treadmill run demo",
+        "url": "https://www.youtube.com/results?search_query=treadmill+run+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "treadmill run shorts",
+        "url": "https://www.youtube.com/results?search_query=treadmill+run+shorts"
+      }
+    ]
+  },
+  "treadmill-walk": {
+    "name": "Treadmill Walk",
+    "slug": "treadmill-walk",
+    "mediaType": "none",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect treadmill walk",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+treadmill+walk"
+      },
+      {
+        "label": "form",
+        "query": "treadmill walk exercise form",
+        "url": "https://www.youtube.com/results?search_query=treadmill+walk+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "treadmill walk proper form",
+        "url": "https://www.youtube.com/results?search_query=treadmill+walk+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "treadmill walk demo",
+        "url": "https://www.youtube.com/results?search_query=treadmill+walk+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "treadmill walk shorts",
+        "url": "https://www.youtube.com/results?search_query=treadmill+walk+shorts"
+      }
+    ]
+  },
+  "walking-lunge": {
+    "name": "Walking Lunge",
+    "slug": "walking-lunge",
+    "mediaType": "video",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect walking lunge",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+walking+lunge"
+      },
+      {
+        "label": "form",
+        "query": "walking lunge exercise form",
+        "url": "https://www.youtube.com/results?search_query=walking+lunge+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "walking lunge proper form",
+        "url": "https://www.youtube.com/results?search_query=walking+lunge+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "walking lunge demo",
+        "url": "https://www.youtube.com/results?search_query=walking+lunge+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "walking lunge shorts",
+        "url": "https://www.youtube.com/results?search_query=walking+lunge+shorts"
+      }
+    ]
+  },
+  "worlds-greatest-stretch": {
+    "name": "World's Greatest Stretch",
+    "slug": "worlds-greatest-stretch",
+    "mediaType": "none",
+    "queries": [
+      {
+        "label": "preferred",
+        "query": "the perfect world's greatest stretch",
+        "url": "https://www.youtube.com/results?search_query=the+perfect+world's+greatest+stretch"
+      },
+      {
+        "label": "form",
+        "query": "world's greatest stretch exercise form",
+        "url": "https://www.youtube.com/results?search_query=world's+greatest+stretch+exercise+form"
+      },
+      {
+        "label": "proper-form",
+        "query": "world's greatest stretch proper form",
+        "url": "https://www.youtube.com/results?search_query=world's+greatest+stretch+proper+form"
+      },
+      {
+        "label": "demo",
+        "query": "world's greatest stretch demo",
+        "url": "https://www.youtube.com/results?search_query=world's+greatest+stretch+demo"
+      },
+      {
+        "label": "shorts",
+        "query": "world's greatest stretch shorts",
+        "url": "https://www.youtube.com/results?search_query=world's+greatest+stretch+shorts"
+      }
+    ]
+  }
+}

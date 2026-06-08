@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local exercise media pipeline
+public/exercises/videos/*
+!public/exercises/videos/.gitkeep
+.tmp/exercise-downloads/*
+data/exercise-media-failures.generated.json

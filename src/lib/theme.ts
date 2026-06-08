@@ -89,17 +89,18 @@ export const themeTokenDefinitions = [
 
 export type ThemeTokenKey = (typeof themeTokenDefinitions)[number]["key"];
 export type ThemeMode = "light" | "dark";
-export type ThemeTokenOverrides = Partial<Record<ThemeTokenKey, string>>;
+export type ThemeTokenPalette = Partial<Record<ThemeTokenKey, string>>;
+export type ThemeTokenOverrides = Partial<Record<ThemeMode, ThemeTokenPalette>>;
 
 const themeTokenKeys = new Set<string>(themeTokenDefinitions.map((token) => token.key));
 const hexColorPattern = /^#[0-9a-fA-F]{6}$/;
 
-export function normalizeThemeOverrides(value: unknown): ThemeTokenOverrides {
+function normalizeThemeTokenPalette(value: unknown): ThemeTokenPalette {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return {};
   }
 
-  const normalized: ThemeTokenOverrides = {};
+  const normalized: ThemeTokenPalette = {};
   for (const [key, rawColor] of Object.entries(value)) {
     if (!themeTokenKeys.has(key) || typeof rawColor !== "string") {
       continue;
@@ -114,11 +115,35 @@ export function normalizeThemeOverrides(value: unknown): ThemeTokenOverrides {
   return normalized;
 }
 
-export function themeOverridesToStyle(overrides: ThemeTokenOverrides): CSSProperties {
+export function normalizeThemeOverrides(value: unknown): ThemeTokenOverrides {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+
+  const raw = value as Record<string, unknown>;
+  const legacyPalette = normalizeThemeTokenPalette(raw);
+  if (Object.keys(legacyPalette).length > 0) {
+    return {
+      light: legacyPalette,
+      dark: legacyPalette,
+    };
+  }
+
+  return {
+    light: normalizeThemeTokenPalette(raw.light),
+    dark: normalizeThemeTokenPalette(raw.dark),
+  };
+}
+
+export function themeOverridesToStyle(
+  overrides: ThemeTokenOverrides,
+  themeMode: ThemeMode,
+): CSSProperties {
   const style = {} as CSSProperties & Record<string, string>;
+  const palette = overrides[themeMode] ?? {};
 
   for (const token of themeTokenDefinitions) {
-    const color = overrides[token.key];
+    const color = palette[token.key];
     if (color) {
       style[token.cssVar] = color;
     }
@@ -127,9 +152,33 @@ export function themeOverridesToStyle(overrides: ThemeTokenOverrides): CSSProper
   return style;
 }
 
+export function themeOverridesToCss(overrides: ThemeTokenOverrides) {
+  const lightStyle = themeOverridesToStyle(overrides, "light") as Record<string, string>;
+  const darkStyle = themeOverridesToStyle(overrides, "dark") as Record<string, string>;
+
+  const serialize = (selector: string, style: Record<string, string>) => {
+    const declarations = Object.entries(style)
+      .map(([property, value]) => `${property}:${value};`)
+      .join("");
+    return declarations ? `${selector}{${declarations}}` : "";
+  };
+
+  return [serialize(":root", lightStyle), serialize(":root.dark", darkStyle)]
+    .filter(Boolean)
+    .join("\n");
+}
+
 export function getThemeTokenDefault(
   token: (typeof themeTokenDefinitions)[number],
   themeMode: ThemeMode,
 ) {
   return themeMode === "dark" ? token.darkDefault : token.lightDefault;
+}
+
+export function getThemeTokenValue(
+  overrides: ThemeTokenOverrides,
+  token: (typeof themeTokenDefinitions)[number],
+  themeMode: ThemeMode,
+) {
+  return overrides[themeMode]?.[token.key] ?? getThemeTokenDefault(token, themeMode);
 }
