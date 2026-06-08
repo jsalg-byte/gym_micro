@@ -171,14 +171,22 @@ function getYtDlpInvocation(): CommandInvocation {
     };
   }
 
-  const pythonModule = {
-    command: "python3",
-    args: ["-m", "yt_dlp"],
-    label: "python3 -m yt_dlp",
-  };
+  const pythonCandidates = [
+    process.env.YTDLP_PYTHON,
+    resolve(process.cwd(), ".venv-ytdlp/bin/python"),
+    "python3",
+  ].filter(Boolean) as string[];
 
-  if (checkCommand(pythonModule, ["--version"]).status === 0) {
-    return pythonModule;
+  for (const pythonCommand of pythonCandidates) {
+    const pythonModule = {
+      command: pythonCommand,
+      args: ["-m", "yt_dlp"],
+      label: `${pythonCommand} -m yt_dlp`,
+    };
+
+    if (checkCommand(pythonModule, ["--version"]).status === 0) {
+      return pythonModule;
+    }
   }
 
   return {
@@ -186,6 +194,14 @@ function getYtDlpInvocation(): CommandInvocation {
     args: [],
     label: "yt-dlp",
   };
+}
+
+function getInstallHint() {
+  if (existsSync(resolve(process.cwd(), "nixpacks.toml"))) {
+    return "Coolify should install yt-dlp through the .venv-ytdlp Nixpacks step.";
+  }
+
+  return "Install them on macOS with: brew install yt-dlp ffmpeg";
 }
 
 function preflight() {
@@ -199,8 +215,7 @@ function preflight() {
 
   if (missing.length > 0) {
     console.error(`Missing required tools: ${missing.map(([command]) => command).join(", ")}`);
-    console.error("Install them on macOS with:");
-    console.error("brew install yt-dlp ffmpeg");
+    console.error(getInstallHint());
     process.exit(1);
   }
 
