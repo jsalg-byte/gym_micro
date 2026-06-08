@@ -235,6 +235,7 @@ async function downloadedManifestEntry(params: {
   mediaType: MediaType;
   finalPath: string;
   previousEntry?: ManifestEntry;
+  reuseExistingUpload?: boolean;
 }) {
   const storageDriver = demoStorageDriver();
 
@@ -255,7 +256,7 @@ async function downloadedManifestEntry(params: {
 
   const canonicalKey = demoObjectKey(params.exercise.slug);
   const previousObjectKey = params.previousEntry?.objectKey;
-  const upload = previousObjectKey === canonicalKey
+  const upload = params.reuseExistingUpload && previousObjectKey === canonicalKey
     ? { key: previousObjectKey, url: publicDemoUrl(previousObjectKey) }
     : await uploadDemoToObjectStorage(params.finalPath, params.exercise.slug);
 
@@ -352,6 +353,7 @@ async function main() {
         mediaType,
         finalPath,
         previousEntry: previousManifest[exercise.slug],
+        reuseExistingUpload: true,
       });
       stats.skippedExisting += 1;
       continue;
