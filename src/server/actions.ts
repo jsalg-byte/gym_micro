@@ -322,7 +322,7 @@ function startExerciseDemoDownloadJob(slug: string) {
   };
 
   const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
-  const child = spawn(npmCommand, ["run", "exercise:download:force"], {
+  const child = spawn(npmCommand, ["run", "exercise:download:force", "--", "--slug", slug], {
     cwd: process.cwd(),
     detached: true,
     env: process.env,

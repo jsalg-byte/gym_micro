@@ -67,6 +67,21 @@ function writeJsonFile(filePath: string, value: unknown) {
   writeFileSync(fullPath, `${JSON.stringify(value, null, 2)}\n`);
 }
 
+function readArgValue(name: string) {
+  const prefix = `${name}=`;
+  for (let index = 0; index < process.argv.length; index += 1) {
+    const arg = process.argv[index];
+    if (arg === name) {
+      return process.argv[index + 1] ?? null;
+    }
+    if (arg?.startsWith(prefix)) {
+      return arg.slice(prefix.length);
+    }
+  }
+
+  return null;
+}
+
 function required(value: string | undefined, key: string) {
   if (!value) {
     throw new Error(`${key} is required`);
@@ -276,6 +291,7 @@ async function downloadedManifestEntry(params: {
 
 async function main() {
   const force = process.argv.includes("--force");
+  const targetSlug = readArgValue("--slug");
   const localSources = readOptionalJsonFile<Record<string, ExerciseSeed>>(LOCAL_SOURCES_PATH, {});
   const seededExercises = readJsonFile<ExerciseSeed[]>(SEED_PATH);
   const previousManifest = readOptionalJsonFile<Record<string, ManifestEntry>>(MANIFEST_PATH, {});
@@ -305,13 +321,32 @@ async function main() {
   mkdirSync(resolve(process.cwd(), VIDEO_DIR), { recursive: true });
   mkdirSync(resolve(process.cwd(), TEMP_DIR), { recursive: true });
 
-  const downloadable = exercises.filter(isDownloadable);
+  if (targetSlug && !exercises.some((exercise) => exercise.slug === targetSlug)) {
+    console.error(`Exercise demo target not found: ${targetSlug}`);
+    process.exit(1);
+  }
+
+  const downloadable = exercises.filter((exercise) => {
+    if (targetSlug && exercise.slug !== targetSlug) {
+      return false;
+    }
+
+    return isDownloadable(exercise);
+  });
   if (downloadable.length > 0) {
     preflight();
   }
 
   for (const exercise of exercises) {
     const mediaType = exercise.mediaType ?? "video";
+
+    if (targetSlug && exercise.slug !== targetSlug) {
+      const previousEntry = previousManifest[exercise.slug];
+      if (previousEntry) {
+        manifest[exercise.slug] = previousEntry;
+        continue;
+      }
+    }
 
     if (mediaType === "none") {
       manifest[exercise.slug] = {
@@ -459,6 +494,10 @@ async function main() {
   console.log(`Failed: ${stats.failed}`);
   console.log(`Manifest written: ${MANIFEST_PATH}`);
   if (failures.length > 0) {
+    console.log("Failure details:");
+    for (const failure of failures) {
+      console.log(`- ${failure.slug}: ${failure.error}`);
+    }
     console.log(`Failures written: ${FAILURES_PATH}`);
     process.exitCode = 1;
   }
