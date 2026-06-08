@@ -1,7 +1,7 @@
 "use server";
 
 import { spawn } from "node:child_process";
-import { appendFileSync, closeSync, mkdirSync, openSync } from "node:fs";
+import { createWriteStream, mkdirSync, type WriteStream } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { and, asc, desc, eq, or } from "drizzle-orm";
@@ -245,6 +245,7 @@ export type ExerciseDemoSourceActionState = {
 
 const EXERCISE_LOCAL_SOURCES_PATH = "data/exercise-demo-sources.local.json";
 const EXERCISE_DOWNLOAD_LOG_DIR = ".tmp/exercise-downloads/logs";
+const EXERCISE_DOWNLOAD_LOG_TAIL_CHARS = 12000;
 const runningExerciseDownloadJobs = new Set<string>();
 
 function normalizeExerciseName(input: string) {
@@ -285,26 +286,39 @@ function startExerciseDemoDownloadJob(slug: string) {
   runningExerciseDownloadJobs.add(slug);
   const logDir = resolve(process.cwd(), EXERCISE_DOWNLOAD_LOG_DIR);
   const logPath = resolve(logDir, `${slug}.log`);
-  let logFile: number | null = null;
+  let logStream: WriteStream | null = null;
+  const outputTail: string[] = [];
+  let outputTailLength = 0;
+
+  const appendOutput = (chunk: Buffer | string) => {
+    const text = chunk.toString();
+    logStream?.write(text);
+    outputTail.push(text);
+    outputTailLength += text.length;
+
+    while (outputTailLength > EXERCISE_DOWNLOAD_LOG_TAIL_CHARS && outputTail.length > 1) {
+      outputTailLength -= outputTail.shift()?.length ?? 0;
+    }
+  };
+
+  const getOutputTail = () => outputTail.join("").slice(-EXERCISE_DOWNLOAD_LOG_TAIL_CHARS).trim();
+
   try {
     mkdirSync(logDir, { recursive: true });
-    appendFileSync(logPath, `\n[${new Date().toISOString()}] Starting exercise demo download for ${slug}\n`);
-    logFile = openSync(logPath, "a");
+    logStream = createWriteStream(logPath, { flags: "a" });
+    appendOutput(`\n[${new Date().toISOString()}] Starting exercise demo download for ${slug}\n`);
+    console.info("Exercise demo download job started:", { slug, logPath });
   } catch (error) {
     console.error("Failed to prepare exercise demo download log:", error);
   }
 
-  const closeLogFile = () => {
-    if (logFile === null) {
+  const closeLogStream = () => {
+    if (logStream === null) {
       return;
     }
 
-    try {
-      closeSync(logFile);
-    } catch {
-      // Best effort cleanup only.
-    }
-    logFile = null;
+    logStream.end();
+    logStream = null;
   };
 
   const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
@@ -312,20 +326,35 @@ function startExerciseDemoDownloadJob(slug: string) {
     cwd: process.cwd(),
     detached: true,
     env: process.env,
-    stdio: logFile === null ? "ignore" : ["ignore", logFile, logFile],
+    stdio: ["ignore", "pipe", "pipe"],
   });
+
+  child.stdout?.on("data", appendOutput);
+  child.stderr?.on("data", appendOutput);
 
   child.once("error", (error) => {
     runningExerciseDownloadJobs.delete(slug);
-    closeLogFile();
-    console.error("Failed to start exercise demo download job:", { error, logPath });
+    closeLogStream();
+    console.error("Failed to start exercise demo download job:", {
+      error,
+      logPath,
+      output: getOutputTail(),
+    });
   });
   child.once("exit", (code, signal) => {
     runningExerciseDownloadJobs.delete(slug);
-    closeLogFile();
+    closeLogStream();
     if (code !== 0) {
-      console.error("Exercise demo download job failed:", { code, signal, logPath });
+      console.error("Exercise demo download job failed:", {
+        code,
+        signal,
+        logPath,
+        output: getOutputTail(),
+      });
+      return;
     }
+
+    console.info("Exercise demo download job finished:", { slug, logPath });
   });
   child.unref();
 
