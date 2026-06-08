@@ -1,6 +1,7 @@
 "use server";
 
 import { spawn } from "node:child_process";
+import { appendFileSync, closeSync, mkdirSync, openSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { and, asc, desc, eq, or } from "drizzle-orm";
@@ -243,6 +244,7 @@ export type ExerciseDemoSourceActionState = {
 };
 
 const EXERCISE_LOCAL_SOURCES_PATH = "data/exercise-demo-sources.local.json";
+const EXERCISE_DOWNLOAD_LOG_DIR = ".tmp/exercise-downloads/logs";
 const runningExerciseDownloadJobs = new Set<string>();
 
 function normalizeExerciseName(input: string) {
@@ -281,22 +283,48 @@ function startExerciseDemoDownloadJob(slug: string) {
   }
 
   runningExerciseDownloadJobs.add(slug);
+  const logDir = resolve(process.cwd(), EXERCISE_DOWNLOAD_LOG_DIR);
+  const logPath = resolve(logDir, `${slug}.log`);
+  let logFile: number | null = null;
+  try {
+    mkdirSync(logDir, { recursive: true });
+    appendFileSync(logPath, `\n[${new Date().toISOString()}] Starting exercise demo download for ${slug}\n`);
+    logFile = openSync(logPath, "a");
+  } catch (error) {
+    console.error("Failed to prepare exercise demo download log:", error);
+  }
+
+  const closeLogFile = () => {
+    if (logFile === null) {
+      return;
+    }
+
+    try {
+      closeSync(logFile);
+    } catch {
+      // Best effort cleanup only.
+    }
+    logFile = null;
+  };
+
   const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
   const child = spawn(npmCommand, ["run", "exercise:download:force"], {
     cwd: process.cwd(),
     detached: true,
     env: process.env,
-    stdio: "ignore",
+    stdio: logFile === null ? "ignore" : ["ignore", logFile, logFile],
   });
 
   child.once("error", (error) => {
     runningExerciseDownloadJobs.delete(slug);
-    console.error("Failed to start exercise demo download job:", error);
+    closeLogFile();
+    console.error("Failed to start exercise demo download job:", { error, logPath });
   });
   child.once("exit", (code, signal) => {
     runningExerciseDownloadJobs.delete(slug);
+    closeLogFile();
     if (code !== 0) {
-      console.error("Exercise demo download job failed:", { code, signal });
+      console.error("Exercise demo download job failed:", { code, signal, logPath });
     }
   });
   child.unref();
