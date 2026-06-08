@@ -1,4 +1,10 @@
-import { DeleteObjectCommand, GetObjectCommand, S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  S3Client,
+  PutObjectCommand,
+  type PutObjectCommandInput,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "@/lib/env";
 
@@ -20,6 +26,37 @@ function createS3Client() {
     },
     forcePathStyle: env.S3_FORCE_PATH_STYLE === "true",
   });
+}
+
+function encodeObjectKey(key: string) {
+  return key.split("/").map(encodeURIComponent).join("/");
+}
+
+export function getPublicObjectUrl(params: { key: string; publicBaseUrl?: string | null }) {
+  const baseUrl = params.publicBaseUrl ?? env.EXERCISE_DEMO_PUBLIC_BASE_URL ?? env.S3_PUBLIC_BASE_URL;
+  if (!baseUrl) {
+    return null;
+  }
+
+  return `${baseUrl.replace(/\/+$/, "")}/${encodeObjectKey(params.key)}`;
+}
+
+export async function putObject(params: {
+  key: string;
+  body: PutObjectCommandInput["Body"];
+  contentType: string;
+}) {
+  const bucket = required(env.S3_BUCKET, "S3_BUCKET");
+  const client = createS3Client();
+
+  await client.send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: params.key,
+      Body: params.body,
+      ContentType: params.contentType,
+    }),
+  );
 }
 
 export async function createPresignedUploadUrl(params: {

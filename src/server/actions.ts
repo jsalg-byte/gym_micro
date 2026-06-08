@@ -1,5 +1,8 @@
 "use server";
 
+import { spawn } from "node:child_process";
+import { readFile, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
 import { and, asc, desc, eq, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -23,6 +26,7 @@ import { requireUserId } from "@/lib/session";
 import {
   normalizeThemeOverrides,
   themeTokenDefinitions,
+  type ThemeMode,
   type ThemeTokenOverrides,
 } from "@/lib/theme";
 
@@ -109,6 +113,7 @@ const themeColorSchema = z
   .trim()
   .regex(/^#[0-9a-fA-F]{6}$/)
   .transform((value) => value.toLowerCase());
+const themeModes = ["light", "dark"] as const satisfies readonly ThemeMode[];
 
 const setExerciseGifOverrideSchema = z.object({
   sessionId: z.string().uuid(),
@@ -116,6 +121,27 @@ const setExerciseGifOverrideSchema = z.object({
   gifUrl: z.string().url().max(500),
   sourceExerciseId: z.string().trim().max(64).optional(),
   sourceName: z.string().trim().max(160).optional(),
+});
+
+const exerciseDemoSourceSchema = z.object({
+  exerciseId: z.string().uuid(),
+  slug: z
+    .string()
+    .trim()
+    .min(2)
+    .max(120)
+    .regex(/^[a-z0-9-]+$/),
+  exerciseName: z.string().trim().min(2).max(120),
+  category: z.enum(["strength", "cardio", "mobility"]).default("strength"),
+  muscleGroup: z.string().trim().max(80).optional(),
+  youtubeUrl: z.string().trim().url().max(500),
+  start: z
+    .string()
+    .trim()
+    .max(24)
+    .regex(/^[0-9:.]*$/)
+    .optional(),
+  duration: z.number().int().min(1).optional(),
 });
 
 const sendFriendRequestSchema = z.object({
@@ -194,6 +220,89 @@ const mealLogSchema = z.object({
   quantity: z.number().positive().max(100),
   mealType: z.enum(["breakfast", "lunch", "dinner", "snack"]),
 });
+
+type ExerciseDemoSeedEntry = {
+  name: string;
+  slug: string;
+  category?: "strength" | "cardio" | "mobility";
+  muscleGroup?: string;
+  aliases?: string[];
+  aliasOf?: string;
+  searchQuery?: string;
+  youtubeUrl?: string;
+  approved?: boolean;
+  start?: string;
+  duration?: number;
+  mediaType?: "video" | "external" | "none";
+  qualityNotes?: string;
+};
+
+export type ExerciseDemoSourceActionState = {
+  ok: boolean | null;
+  message: string;
+};
+
+const EXERCISE_LOCAL_SOURCES_PATH = "data/exercise-demo-sources.local.json";
+const runningExerciseDownloadJobs = new Set<string>();
+
+function normalizeExerciseName(input: string) {
+  return input
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function slugifyExerciseName(input: string) {
+  return normalizeExerciseName(input).replace(/\s+/g, "-");
+}
+
+async function readExerciseDemoLocalSources() {
+  const sourcePath = resolve(process.cwd(), EXERCISE_LOCAL_SOURCES_PATH);
+  try {
+    const raw = await readFile(sourcePath, "utf8");
+    return JSON.parse(raw) as Record<string, ExerciseDemoSeedEntry>;
+  } catch {
+    return {};
+  }
+}
+
+async function writeExerciseDemoLocalSource(entry: ExerciseDemoSeedEntry) {
+  const sources = await readExerciseDemoLocalSources();
+  sources[entry.slug] = entry;
+  const sourcePath = resolve(process.cwd(), EXERCISE_LOCAL_SOURCES_PATH);
+  await writeFile(sourcePath, `${JSON.stringify(sources, null, 2)}\n`);
+}
+
+function startExerciseDemoDownloadJob(slug: string) {
+  if (runningExerciseDownloadJobs.has(slug)) {
+    return false;
+  }
+
+  runningExerciseDownloadJobs.add(slug);
+  const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+  const child = spawn(npmCommand, ["run", "exercise:download:force"], {
+    cwd: process.cwd(),
+    detached: true,
+    env: process.env,
+    stdio: "ignore",
+  });
+
+  child.once("error", (error) => {
+    runningExerciseDownloadJobs.delete(slug);
+    console.error("Failed to start exercise demo download job:", error);
+  });
+  child.once("exit", (code, signal) => {
+    runningExerciseDownloadJobs.delete(slug);
+    if (code !== 0) {
+      console.error("Exercise demo download job failed:", { code, signal });
+    }
+  });
+  child.unref();
+
+  return true;
+}
 
 export async function createRoutineAction(formData: FormData) {
   const userId = await requireUserId();
@@ -652,6 +761,117 @@ export async function createExerciseAction(formData: FormData) {
   revalidatePath("/sessions");
 }
 
+export async function updateExerciseDemoSourceAction(
+  _previousState: ExerciseDemoSourceActionState,
+  formData: FormData,
+): Promise<ExerciseDemoSourceActionState> {
+  const userId = await requireUserId();
+
+  const parsed = exerciseDemoSourceSchema.safeParse({
+    exerciseId: formData.get("exerciseId"),
+    slug: formData.get("slug") || slugifyExerciseName(String(formData.get("exerciseName") ?? "")),
+    exerciseName: formData.get("exerciseName"),
+    category: formData.get("category") || "strength",
+    muscleGroup: formData.get("muscleGroup") || undefined,
+    youtubeUrl: formData.get("youtubeUrl"),
+    start: formData.get("start") || undefined,
+    duration: formData.get("duration") ? Number(formData.get("duration")) : undefined,
+  });
+
+  if (!parsed.success) {
+    console.warn("Invalid exercise demo source payload", parsed.error.flatten());
+    return {
+      ok: false,
+      message: "That demo source could not be saved. Check the URL and try again.",
+    };
+  }
+
+  try {
+    const sourceMeta = {
+      name: parsed.data.exerciseName,
+      slug: parsed.data.slug,
+      category: parsed.data.category,
+      muscleGroup: parsed.data.muscleGroup,
+      start: parsed.data.start,
+      duration: parsed.data.duration,
+    };
+
+    const db = getDb();
+    const [exercise] = await db
+      .select({ id: exercises.id })
+      .from(exercises)
+      .where(eq(exercises.id, parsed.data.exerciseId))
+      .limit(1);
+
+    if (!exercise) {
+      console.warn("Exercise not found for demo source", parsed.data.exerciseId);
+      return {
+        ok: false,
+        message: "Exercise not found. Refresh this page and try again.",
+      };
+    }
+
+    await db
+      .insert(exerciseGifOverrides)
+      .values({
+        userId,
+        exerciseId: parsed.data.exerciseId,
+        gifUrl: parsed.data.youtubeUrl,
+        sourceExerciseId: parsed.data.slug,
+        sourceName: JSON.stringify(sourceMeta),
+        updatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: [exerciseGifOverrides.userId, exerciseGifOverrides.exerciseId],
+        set: {
+          gifUrl: parsed.data.youtubeUrl,
+          sourceExerciseId: parsed.data.slug,
+          sourceName: JSON.stringify(sourceMeta),
+          updatedAt: new Date(),
+        },
+      });
+
+    const localEntry: ExerciseDemoSeedEntry = {
+      name: parsed.data.exerciseName,
+      slug: parsed.data.slug,
+      category: parsed.data.category,
+      muscleGroup: parsed.data.muscleGroup,
+      youtubeUrl: parsed.data.youtubeUrl,
+      approved: true,
+      start: parsed.data.start,
+      duration: parsed.data.duration,
+      mediaType: "video",
+      qualityNotes: "",
+    };
+
+    let localSourceSaved = false;
+    try {
+      await writeExerciseDemoLocalSource(localEntry);
+      localSourceSaved = true;
+    } catch (error) {
+      console.warn("Could not mirror exercise demo source locally:", error);
+    }
+    const downloadStarted = localSourceSaved ? startExerciseDemoDownloadJob(parsed.data.slug) : false;
+
+    revalidatePath("/exercises");
+    revalidatePath("/sessions");
+    return {
+      ok: true,
+      message: localSourceSaved
+        ? downloadStarted
+          ? "Demo source saved. Preparing the demo video in the background."
+          : "Demo source saved. A video download is already running."
+        : "Demo source saved, but automatic download could not start. Check the server logs.",
+    };
+  } catch (error) {
+    console.error("Failed to save exercise demo source:", error);
+    return {
+      ok: false,
+      message: "Could not save demo source. Check the server logs for details.",
+    };
+  }
+}
+
 export async function createExerciseForSessionAction(formData: FormData) {
   const userId = await requireUserId();
   const parsed = createExerciseForSessionSchema.safeParse({
@@ -750,17 +970,22 @@ export async function updateWeightUnitAction(formData: FormData) {
 
 export async function updateThemeOverridesAction(formData: FormData) {
   const userId = await requireUserId();
-  const nextOverrides: ThemeTokenOverrides = {};
+  const nextOverrides: ThemeTokenOverrides = {
+    light: {},
+    dark: {},
+  };
 
-  for (const token of themeTokenDefinitions) {
-    const rawValue = formData.get(token.key);
-    const parsed = themeColorSchema.safeParse(rawValue);
+  for (const mode of themeModes) {
+    for (const token of themeTokenDefinitions) {
+      const rawValue = formData.get(`${mode}.${token.key}`);
+      const parsed = themeColorSchema.safeParse(rawValue);
 
-    if (!parsed.success) {
-      throw new Error("Invalid theme color payload");
+      if (!parsed.success) {
+        throw new Error("Invalid theme color payload");
+      }
+
+      nextOverrides[mode]![token.key] = parsed.data;
     }
-
-    nextOverrides[token.key] = parsed.data;
   }
 
   const db = getDb();

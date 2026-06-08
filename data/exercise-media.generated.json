@@ -1,0 +1,685 @@
+{
+  "barbell-back-squat": {
+    "name": "Barbell Back Squat",
+    "slug": "barbell-back-squat",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "barbell-bench-press": {
+    "name": "Barbell Bench Press",
+    "slug": "barbell-bench-press",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "barbell-curl": {
+    "name": "Barbell Curl",
+    "slug": "barbell-curl",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "barbell-forearm-curl": {
+    "name": "Barbell Forearm Curl",
+    "slug": "barbell-forearm-curl",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "barbell-overhead-press": {
+    "name": "Barbell Overhead Press",
+    "slug": "barbell-overhead-press",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": "alias",
+    "sourceUrl": null,
+    "aliasOf": "standing-overhead-press"
+  },
+  "barbell-row": {
+    "name": "Barbell Row",
+    "slug": "barbell-row",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "barbell-rows-underhand": {
+    "name": "Barbell Rows (Underhand)",
+    "slug": "barbell-rows-underhand",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": "alias",
+    "sourceUrl": null,
+    "aliasOf": "barbell-row"
+  },
+  "barbell-shrugs": {
+    "name": "Barbell Shrugs",
+    "slug": "barbell-shrugs",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "barbell-upright-rows": {
+    "name": "Barbell Upright Rows",
+    "slug": "barbell-upright-rows",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "bench-dip": {
+    "name": "Bench Dip",
+    "slug": "bench-dip",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "bench-leg-raise": {
+    "name": "Bench Leg Raise",
+    "slug": "bench-leg-raise",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "bicep-curls": {
+    "name": "Bicep Curls",
+    "slug": "bicep-curls",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "bicycle-crunch": {
+    "name": "Bicycle Crunch",
+    "slug": "bicycle-crunch",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "bulgarian-split-squat-using-bench": {
+    "name": "Bulgarian Split Squat Using Bench",
+    "slug": "bulgarian-split-squat-using-bench",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "cable-seated-row": {
+    "name": "Cable Seated Row",
+    "slug": "cable-seated-row",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "cable-triceps-pressdown": {
+    "name": "Cable Triceps Pressdown",
+    "slug": "cable-triceps-pressdown",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "calf-raise": {
+    "name": "Calf Raise",
+    "slug": "calf-raise",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "calf-raises": {
+    "name": "Calf Raises",
+    "slug": "calf-raises",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": "alias",
+    "sourceUrl": null,
+    "aliasOf": "calf-raise"
+  },
+  "chest-supported-dumbbell-row-on-bench": {
+    "name": "Chest-Supported Dumbbell Row on Bench",
+    "slug": "chest-supported-dumbbell-row-on-bench",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "chin-up": {
+    "name": "Chin-Up",
+    "slug": "chin-up",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "clean-and-press": {
+    "name": "Clean & Press",
+    "slug": "clean-and-press",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "close-grip-bench-press": {
+    "name": "Close-Grip Bench Press",
+    "slug": "close-grip-bench-press",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "deadlift": {
+    "name": "Deadlift",
+    "slug": "deadlift",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "dumbbell-fly": {
+    "name": "Dumbbell Fly",
+    "slug": "dumbbell-fly",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "dumbbell-goblet-squats": {
+    "name": "Dumbbell Goblet Squats",
+    "slug": "dumbbell-goblet-squats",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "dumbbell-hammer-curls": {
+    "name": "Dumbbell Hammer Curls",
+    "slug": "dumbbell-hammer-curls",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "dumbbell-lunges": {
+    "name": "Dumbbell Lunges",
+    "slug": "dumbbell-lunges",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "dumbbell-one-arm-rows": {
+    "name": "Dumbbell One-Arm Rows",
+    "slug": "dumbbell-one-arm-rows",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "dumbbell-pullovers": {
+    "name": "Dumbbell Pullovers",
+    "slug": "dumbbell-pullovers",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "dumbbell-rear-delt-flies": {
+    "name": "Dumbbell Rear Delt Flies",
+    "slug": "dumbbell-rear-delt-flies",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "dumbbell-or-barbell-shrug": {
+    "name": "Dumbbell or Barbell Shrug",
+    "slug": "dumbbell-or-barbell-shrug",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "ez-bar-curl": {
+    "name": "EZ-Bar Curl",
+    "slug": "ez-bar-curl",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "face-pull": {
+    "name": "Face Pull",
+    "slug": "face-pull",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "front-squat": {
+    "name": "Front Squat",
+    "slug": "front-squat",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "hammer-curl": {
+    "name": "Hammer Curl",
+    "slug": "hammer-curl",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": "alias",
+    "sourceUrl": null,
+    "aliasOf": "dumbbell-hammer-curls"
+  },
+  "hanging-knee-raise": {
+    "name": "Hanging Knee Raise",
+    "slug": "hanging-knee-raise",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "hip-flexor-stretch": {
+    "name": "Hip Flexor Stretch",
+    "slug": "hip-flexor-stretch",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "incline-barbell-bench-press": {
+    "name": "Incline Barbell Bench Press",
+    "slug": "incline-barbell-bench-press",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "incline-dumbbell-press": {
+    "name": "Incline Dumbbell Press",
+    "slug": "incline-dumbbell-press",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "incline-treadmill-walk": {
+    "name": "Incline Treadmill Walk",
+    "slug": "incline-treadmill-walk",
+    "status": "none",
+    "mediaType": "none",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "incline-or-feet-elevated-push-up": {
+    "name": "Incline or Feet-Elevated Push-Up",
+    "slug": "incline-or-feet-elevated-push-up",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "jump-rope": {
+    "name": "Jump Rope",
+    "slug": "jump-rope",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "lat-pulldown": {
+    "name": "Lat Pulldown",
+    "slug": "lat-pulldown",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "lateral-raise": {
+    "name": "Lateral Raise",
+    "slug": "lateral-raise",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "leg-press": {
+    "name": "Leg Press",
+    "slug": "leg-press",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "leg-raises": {
+    "name": "Leg Raises",
+    "slug": "leg-raises",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "light-bag-work": {
+    "name": "Light Bag Work",
+    "slug": "light-bag-work",
+    "status": "none",
+    "mediaType": "none",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "one-arm-dumbbell-bench-row": {
+    "name": "One-Arm Dumbbell Bench Row",
+    "slug": "one-arm-dumbbell-bench-row",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": "alias",
+    "sourceUrl": null,
+    "aliasOf": "dumbbell-one-arm-rows"
+  },
+  "optional-abs": {
+    "name": "Optional Abs",
+    "slug": "optional-abs",
+    "status": "none",
+    "mediaType": "none",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "overhead-triceps-extension": {
+    "name": "Overhead Triceps Extension",
+    "slug": "overhead-triceps-extension",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "pike-push-up": {
+    "name": "Pike Push-Up",
+    "slug": "pike-push-up",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "plank": {
+    "name": "Plank",
+    "slug": "plank",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "pull-up": {
+    "name": "Pull-Up",
+    "slug": "pull-up",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "punching-bag-3-minute-rounds": {
+    "name": "Punching Bag 3-Minute Rounds",
+    "slug": "punching-bag-3-minute-rounds",
+    "status": "none",
+    "mediaType": "none",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "push-up": {
+    "name": "Push Up",
+    "slug": "push-up",
+    "status": "downloaded",
+    "mediaType": "video",
+    "localPath": "/exercises/videos/push-up.mp4",
+    "source": "youtube",
+    "sourceUrl": "https://youtube.com/shorts/pKZ-lkKKMws?si=Ne5wcFrHosL-erAX"
+  },
+  "push-up-burnout": {
+    "name": "Push-Up Burnout",
+    "slug": "push-up-burnout",
+    "status": "downloaded",
+    "mediaType": "video",
+    "localPath": "/exercises/videos/push-up.mp4",
+    "source": "alias",
+    "sourceUrl": "https://youtube.com/shorts/pKZ-lkKKMws?si=Ne5wcFrHosL-erAX",
+    "aliasOf": "push-up"
+  },
+  "rear-delt-raise-on-bench": {
+    "name": "Rear Delt Raise on Bench",
+    "slug": "rear-delt-raise-on-bench",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "resistance-band-lat-pulldowns": {
+    "name": "Resistance Band Lat Pulldowns",
+    "slug": "resistance-band-lat-pulldowns",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "resistance-band-rows": {
+    "name": "Resistance Band Rows",
+    "slug": "resistance-band-rows",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "romanian-deadlift": {
+    "name": "Romanian Deadlift",
+    "slug": "romanian-deadlift",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "rowing-machine": {
+    "name": "Rowing Machine",
+    "slug": "rowing-machine",
+    "status": "none",
+    "mediaType": "none",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "seated-dumbbell-shoulder-press": {
+    "name": "Seated Dumbbell Shoulder Press",
+    "slug": "seated-dumbbell-shoulder-press",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "shoulder-press": {
+    "name": "Shoulder Press",
+    "slug": "shoulder-press",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": "alias",
+    "sourceUrl": null,
+    "aliasOf": "standing-overhead-press"
+  },
+  "single-dumbbell-lateral-raise": {
+    "name": "Single Dumbbell Lateral Raise",
+    "slug": "single-dumbbell-lateral-raise",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": "alias",
+    "sourceUrl": null,
+    "aliasOf": "lateral-raise"
+  },
+  "standing-overhead-press": {
+    "name": "Standing Overhead Press",
+    "slug": "standing-overhead-press",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "stationary-bike": {
+    "name": "Stationary Bike",
+    "slug": "stationary-bike",
+    "status": "none",
+    "mediaType": "none",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "step-up-onto-bench": {
+    "name": "Step-Up Onto Bench",
+    "slug": "step-up-onto-bench",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "stretching": {
+    "name": "Stretching",
+    "slug": "stretching",
+    "status": "none",
+    "mediaType": "none",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "the-up-down": {
+    "name": "The up down",
+    "slug": "the-up-down",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "thoracic-rotation": {
+    "name": "Thoracic Rotation",
+    "slug": "thoracic-rotation",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "treadmill-1-1-run-walk-intervals": {
+    "name": "Treadmill 1:1 Run/Walk Intervals",
+    "slug": "treadmill-1-1-run-walk-intervals",
+    "status": "none",
+    "mediaType": "none",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "treadmill-run": {
+    "name": "Treadmill Run",
+    "slug": "treadmill-run",
+    "status": "none",
+    "mediaType": "none",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "treadmill-walk": {
+    "name": "Treadmill Walk",
+    "slug": "treadmill-walk",
+    "status": "none",
+    "mediaType": "none",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "walking-lunge": {
+    "name": "Walking Lunge",
+    "slug": "walking-lunge",
+    "status": "pending",
+    "mediaType": "video",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  },
+  "worlds-greatest-stretch": {
+    "name": "World's Greatest Stretch",
+    "slug": "worlds-greatest-stretch",
+    "status": "none",
+    "mediaType": "none",
+    "localPath": null,
+    "source": null,
+    "sourceUrl": null
+  }
+}

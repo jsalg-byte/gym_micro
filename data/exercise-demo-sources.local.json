@@ -1,0 +1,13 @@
+{
+  "push-up": {
+    "name": "Push Up",
+    "slug": "push-up",
+    "category": "strength",
+    "muscleGroup": "Chest",
+    "youtubeUrl": "https://youtube.com/shorts/pKZ-lkKKMws?si=Ne5wcFrHosL-erAX",
+    "approved": true,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  }
+}

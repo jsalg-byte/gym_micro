@@ -11,23 +11,21 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-type ThemeTokenOverrides = Partial<
-  Record<
-    | "background"
-    | "foreground"
-    | "surface"
-    | "surfaceSoft"
-    | "surfaceRaised"
-    | "line"
-    | "lineStrong"
-    | "muted"
-    | "accent"
-    | "accentCyan"
-    | "accentYellow"
-    | "accentPurple",
-    string
-  >
->;
+type ThemeTokenKey =
+  | "background"
+  | "foreground"
+  | "surface"
+  | "surfaceSoft"
+  | "surfaceRaised"
+  | "line"
+  | "lineStrong"
+  | "muted"
+  | "accent"
+  | "accentCyan"
+  | "accentYellow"
+  | "accentPurple";
+
+type ThemeTokenOverrides = Partial<Record<"light" | "dark", Partial<Record<ThemeTokenKey, string>>>>;
 
 export const users = pgTable(
   "users",

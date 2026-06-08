@@ -1,0 +1,948 @@
+[
+  {
+    "name": "Barbell Back Squat",
+    "slug": "barbell-back-squat",
+    "aliases": [
+      "Back Squat",
+      "Barbell Squat"
+    ],
+    "searchQuery": "the perfect barbell back squat",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Barbell Bench Press",
+    "slug": "barbell-bench-press",
+    "aliases": [
+      "Bench Press"
+    ],
+    "searchQuery": "the perfect barbell bench press",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Barbell Curl",
+    "slug": "barbell-curl",
+    "aliases": [],
+    "searchQuery": "the perfect barbell curl",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Barbell Forearm Curl",
+    "slug": "barbell-forearm-curl",
+    "aliases": [
+      "Barbell Wrist Curl"
+    ],
+    "searchQuery": "the perfect barbell forearm curl",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Barbell Overhead Press",
+    "slug": "barbell-overhead-press",
+    "aliasOf": "standing-overhead-press",
+    "aliases": [
+      "Overhead Press",
+      "Military Press"
+    ],
+    "searchQuery": "the perfect barbell overhead press",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Barbell Row",
+    "slug": "barbell-row",
+    "aliases": [
+      "Bent Over Row"
+    ],
+    "searchQuery": "the perfect barbell row",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Barbell Rows (Underhand)",
+    "slug": "barbell-rows-underhand",
+    "aliasOf": "barbell-row",
+    "aliases": [
+      "Underhand Barbell Row"
+    ],
+    "searchQuery": "the perfect underhand barbell row",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Barbell Shrugs",
+    "slug": "barbell-shrugs",
+    "aliases": [
+      "Barbell Shrug"
+    ],
+    "searchQuery": "the perfect barbell shrugs",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Barbell Upright Rows",
+    "slug": "barbell-upright-rows",
+    "aliases": [
+      "Barbell Upright Row"
+    ],
+    "searchQuery": "the perfect barbell upright rows",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Bench Dip",
+    "slug": "bench-dip",
+    "aliases": [
+      "Bench Dips"
+    ],
+    "searchQuery": "the perfect bench dip",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Bench Leg Raise",
+    "slug": "bench-leg-raise",
+    "aliases": [
+      "Bench Leg Raises"
+    ],
+    "searchQuery": "the perfect bench leg raise",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Bicep Curls",
+    "slug": "bicep-curls",
+    "aliases": [
+      "Biceps Curl"
+    ],
+    "searchQuery": "the perfect bicep curls",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Bicycle Crunch",
+    "slug": "bicycle-crunch",
+    "aliases": [
+      "Bicycle Crunches"
+    ],
+    "searchQuery": "the perfect bicycle crunch",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Bulgarian Split Squat Using Bench",
+    "slug": "bulgarian-split-squat-using-bench",
+    "aliases": [
+      "Bulgarian Split Squat"
+    ],
+    "searchQuery": "the perfect bulgarian split squat using bench",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Cable Seated Row",
+    "slug": "cable-seated-row",
+    "aliases": [
+      "Seated Cable Row"
+    ],
+    "searchQuery": "the perfect cable seated row",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Cable Triceps Pressdown",
+    "slug": "cable-triceps-pressdown",
+    "aliases": [
+      "Triceps Pushdown",
+      "Cable Pushdown"
+    ],
+    "searchQuery": "the perfect cable triceps pressdown",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Calf Raise",
+    "slug": "calf-raise",
+    "aliases": [
+      "Standing Calf Raise"
+    ],
+    "searchQuery": "the perfect calf raise",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Calf Raises",
+    "slug": "calf-raises",
+    "aliasOf": "calf-raise",
+    "aliases": [
+      "Calf Raise"
+    ],
+    "searchQuery": "the perfect calf raises",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Chest-Supported Dumbbell Row on Bench",
+    "slug": "chest-supported-dumbbell-row-on-bench",
+    "aliases": [
+      "Chest Supported Dumbbell Row"
+    ],
+    "searchQuery": "the perfect chest supported dumbbell row on bench",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Chin-Up",
+    "slug": "chin-up",
+    "aliases": [
+      "Chin Up"
+    ],
+    "searchQuery": "the perfect chin-up",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Clean & Press",
+    "slug": "clean-and-press",
+    "aliases": [
+      "Clean and Press"
+    ],
+    "searchQuery": "the perfect clean and press",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Close-Grip Bench Press",
+    "slug": "close-grip-bench-press",
+    "aliases": [
+      "Close Grip Bench Press"
+    ],
+    "searchQuery": "the perfect close-grip bench press",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Deadlift",
+    "slug": "deadlift",
+    "aliases": [
+      "Barbell Deadlift"
+    ],
+    "searchQuery": "the perfect deadlift",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Dumbbell Fly",
+    "slug": "dumbbell-fly",
+    "aliases": [
+      "Dumbbell Flyes"
+    ],
+    "searchQuery": "the perfect dumbbell fly",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Dumbbell Goblet Squats",
+    "slug": "dumbbell-goblet-squats",
+    "aliases": [
+      "Goblet Squat"
+    ],
+    "searchQuery": "the perfect dumbbell goblet squats",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Dumbbell Hammer Curls",
+    "slug": "dumbbell-hammer-curls",
+    "aliases": [
+      "Hammer Curl",
+      "Hammer Curls"
+    ],
+    "searchQuery": "the perfect dumbbell hammer curls",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Dumbbell Lunges",
+    "slug": "dumbbell-lunges",
+    "aliases": [
+      "Dumbbell Lunge"
+    ],
+    "searchQuery": "the perfect dumbbell lunges",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Dumbbell One-Arm Rows",
+    "slug": "dumbbell-one-arm-rows",
+    "aliases": [
+      "One Arm Dumbbell Row"
+    ],
+    "searchQuery": "the perfect dumbbell one-arm rows",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Dumbbell Pullovers",
+    "slug": "dumbbell-pullovers",
+    "aliases": [
+      "Dumbbell Pullover"
+    ],
+    "searchQuery": "the perfect dumbbell pullovers",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Dumbbell Rear Delt Flies",
+    "slug": "dumbbell-rear-delt-flies",
+    "aliases": [
+      "Rear Delt Fly"
+    ],
+    "searchQuery": "the perfect dumbbell rear delt flies",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Dumbbell or Barbell Shrug",
+    "slug": "dumbbell-or-barbell-shrug",
+    "aliases": [
+      "Dumbbell Shrug",
+      "Barbell Shrug"
+    ],
+    "searchQuery": "the perfect dumbbell or barbell shrug",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "EZ-Bar Curl",
+    "slug": "ez-bar-curl",
+    "aliases": [
+      "EZ Bar Curl"
+    ],
+    "searchQuery": "the perfect ez-bar curl",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Face Pull",
+    "slug": "face-pull",
+    "aliases": [
+      "Cable Face Pull"
+    ],
+    "searchQuery": "the perfect face pull",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Front Squat",
+    "slug": "front-squat",
+    "aliases": [
+      "Barbell Front Squat"
+    ],
+    "searchQuery": "the perfect front squat",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Hammer Curl",
+    "slug": "hammer-curl",
+    "aliasOf": "dumbbell-hammer-curls",
+    "aliases": [
+      "Hammer Curls"
+    ],
+    "searchQuery": "the perfect hammer curl",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Hanging Knee Raise",
+    "slug": "hanging-knee-raise",
+    "aliases": [
+      "Hanging Knee Raises"
+    ],
+    "searchQuery": "the perfect hanging knee raise",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Hip Flexor Stretch",
+    "slug": "hip-flexor-stretch",
+    "aliases": [],
+    "searchQuery": "the perfect hip flexor stretch",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Incline Barbell Bench Press",
+    "slug": "incline-barbell-bench-press",
+    "aliases": [
+      "Incline Bench Press"
+    ],
+    "searchQuery": "the perfect incline barbell bench press",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Incline Dumbbell Press",
+    "slug": "incline-dumbbell-press",
+    "aliases": [
+      "Incline Dumbbell Bench Press"
+    ],
+    "searchQuery": "the perfect incline dumbbell press",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Incline Treadmill Walk",
+    "slug": "incline-treadmill-walk",
+    "aliases": [],
+    "searchQuery": "the perfect incline treadmill walk",
+    "youtubeUrl": "",
+    "approved": false,
+    "mediaType": "none",
+    "qualityNotes": "No demo video needed"
+  },
+  {
+    "name": "Incline or Feet-Elevated Push-Up",
+    "slug": "incline-or-feet-elevated-push-up",
+    "aliases": [
+      "Feet Elevated Push Up",
+      "Incline Push-Up"
+    ],
+    "searchQuery": "the perfect incline or feet-elevated push-up",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Jump Rope",
+    "slug": "jump-rope",
+    "aliases": [],
+    "searchQuery": "the perfect jump rope",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Lat Pulldown",
+    "slug": "lat-pulldown",
+    "aliases": [
+      "Lat Pulldowns"
+    ],
+    "searchQuery": "the perfect lat pulldown",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Lateral Raise",
+    "slug": "lateral-raise",
+    "aliases": [
+      "Dumbbell Lateral Raise"
+    ],
+    "searchQuery": "the perfect lateral raise",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Leg Press",
+    "slug": "leg-press",
+    "aliases": [],
+    "searchQuery": "the perfect leg press",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Leg Raises",
+    "slug": "leg-raises",
+    "aliases": [
+      "Leg Raise"
+    ],
+    "searchQuery": "the perfect leg raises",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Light Bag Work",
+    "slug": "light-bag-work",
+    "aliases": [],
+    "searchQuery": "the perfect light bag work",
+    "youtubeUrl": "",
+    "approved": false,
+    "mediaType": "none",
+    "qualityNotes": "No demo video needed"
+  },
+  {
+    "name": "One-Arm Dumbbell Bench Row",
+    "slug": "one-arm-dumbbell-bench-row",
+    "aliasOf": "dumbbell-one-arm-rows",
+    "aliases": [
+      "One Arm Dumbbell Row"
+    ],
+    "searchQuery": "the perfect one-arm dumbbell bench row",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Optional Abs",
+    "slug": "optional-abs",
+    "aliases": [],
+    "searchQuery": "the perfect optional abs",
+    "youtubeUrl": "",
+    "approved": false,
+    "mediaType": "none",
+    "qualityNotes": "No demo video needed"
+  },
+  {
+    "name": "Overhead Triceps Extension",
+    "slug": "overhead-triceps-extension",
+    "aliases": [
+      "Overhead Tricep Extension"
+    ],
+    "searchQuery": "the perfect overhead triceps extension",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Pike Push-Up",
+    "slug": "pike-push-up",
+    "aliases": [
+      "Pike Push Up"
+    ],
+    "searchQuery": "the perfect pike push-up",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Plank",
+    "slug": "plank",
+    "aliases": [],
+    "searchQuery": "the perfect plank",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Pull-Up",
+    "slug": "pull-up",
+    "aliases": [
+      "Pull Up"
+    ],
+    "searchQuery": "the perfect pull-up",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Punching Bag 3-Minute Rounds",
+    "slug": "punching-bag-3-minute-rounds",
+    "aliases": [],
+    "searchQuery": "the perfect punching bag 3-minute rounds",
+    "youtubeUrl": "",
+    "approved": false,
+    "mediaType": "none",
+    "qualityNotes": "No demo video needed"
+  },
+  {
+    "name": "Push Up",
+    "slug": "push-up",
+    "aliases": [
+      "Push-Up"
+    ],
+    "searchQuery": "the perfect push up",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Push-Up Burnout",
+    "slug": "push-up-burnout",
+    "aliasOf": "push-up",
+    "aliases": [
+      "Push Up Burnout"
+    ],
+    "searchQuery": "the perfect push-up burnout",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Rear Delt Raise on Bench",
+    "slug": "rear-delt-raise-on-bench",
+    "aliases": [
+      "Rear Delt Raise"
+    ],
+    "searchQuery": "the perfect rear delt raise on bench",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Resistance Band Lat Pulldowns",
+    "slug": "resistance-band-lat-pulldowns",
+    "aliases": [
+      "Band Lat Pulldown"
+    ],
+    "searchQuery": "the perfect resistance band lat pulldowns",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Resistance Band Rows",
+    "slug": "resistance-band-rows",
+    "aliases": [
+      "Band Row"
+    ],
+    "searchQuery": "the perfect resistance band rows",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Romanian Deadlift",
+    "slug": "romanian-deadlift",
+    "aliases": [
+      "RDL"
+    ],
+    "searchQuery": "the perfect romanian deadlift",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Rowing Machine",
+    "slug": "rowing-machine",
+    "aliases": [],
+    "searchQuery": "the perfect rowing machine",
+    "youtubeUrl": "",
+    "approved": false,
+    "mediaType": "none",
+    "qualityNotes": "No demo video needed"
+  },
+  {
+    "name": "Seated Dumbbell Shoulder Press",
+    "slug": "seated-dumbbell-shoulder-press",
+    "aliases": [
+      "Dumbbell Shoulder Press"
+    ],
+    "searchQuery": "the perfect seated dumbbell shoulder press",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Shoulder Press",
+    "slug": "shoulder-press",
+    "aliasOf": "standing-overhead-press",
+    "aliases": [
+      "Overhead Press"
+    ],
+    "searchQuery": "the perfect shoulder press",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Single Dumbbell Lateral Raise",
+    "slug": "single-dumbbell-lateral-raise",
+    "aliasOf": "lateral-raise",
+    "aliases": [
+      "One Arm Lateral Raise"
+    ],
+    "searchQuery": "the perfect single dumbbell lateral raise",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Standing Overhead Press",
+    "slug": "standing-overhead-press",
+    "aliases": [
+      "Overhead Press",
+      "Barbell Overhead Press"
+    ],
+    "searchQuery": "the perfect standing overhead press",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Stationary Bike",
+    "slug": "stationary-bike",
+    "aliases": [],
+    "searchQuery": "the perfect stationary bike",
+    "youtubeUrl": "",
+    "approved": false,
+    "mediaType": "none",
+    "qualityNotes": "No demo video needed"
+  },
+  {
+    "name": "Step-Up Onto Bench",
+    "slug": "step-up-onto-bench",
+    "aliases": [
+      "Bench Step Up"
+    ],
+    "searchQuery": "the perfect step-up onto bench",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Stretching",
+    "slug": "stretching",
+    "aliases": [],
+    "searchQuery": "the perfect stretching",
+    "youtubeUrl": "",
+    "approved": false,
+    "mediaType": "none",
+    "qualityNotes": "No demo video needed"
+  },
+  {
+    "name": "The up down",
+    "slug": "the-up-down",
+    "aliases": [
+      "Up Down",
+      "Up-Down"
+    ],
+    "searchQuery": "the perfect the up down",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Thoracic Rotation",
+    "slug": "thoracic-rotation",
+    "aliases": [],
+    "searchQuery": "the perfect thoracic rotation",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "Treadmill 1:1 Run/Walk Intervals",
+    "slug": "treadmill-1-1-run-walk-intervals",
+    "aliases": [],
+    "searchQuery": "the perfect treadmill 1:1 run/walk intervals",
+    "youtubeUrl": "",
+    "approved": false,
+    "mediaType": "none",
+    "qualityNotes": "No demo video needed"
+  },
+  {
+    "name": "Treadmill Run",
+    "slug": "treadmill-run",
+    "aliases": [],
+    "searchQuery": "the perfect treadmill run",
+    "youtubeUrl": "",
+    "approved": false,
+    "mediaType": "none",
+    "qualityNotes": "No demo video needed"
+  },
+  {
+    "name": "Treadmill Walk",
+    "slug": "treadmill-walk",
+    "aliases": [],
+    "searchQuery": "the perfect treadmill walk",
+    "youtubeUrl": "",
+    "approved": false,
+    "mediaType": "none",
+    "qualityNotes": "No demo video needed"
+  },
+  {
+    "name": "Walking Lunge",
+    "slug": "walking-lunge",
+    "aliases": [
+      "Walking Lunges"
+    ],
+    "searchQuery": "the perfect walking lunge",
+    "youtubeUrl": "",
+    "approved": false,
+    "start": "00:00:00",
+    "mediaType": "video",
+    "qualityNotes": ""
+  },
+  {
+    "name": "World's Greatest Stretch",
+    "slug": "worlds-greatest-stretch",
+    "aliases": [],
+    "searchQuery": "the perfect world's greatest stretch",
+    "youtubeUrl": "",
+    "approved": false,
+    "mediaType": "none",
+    "qualityNotes": "No demo video needed"
+  }
+]
