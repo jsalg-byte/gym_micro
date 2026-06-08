@@ -1,10 +1,11 @@
-providers = ["...", "python"]
-
 [phases.setup]
-nixPkgs = ["...", "ffmpeg", "python312", "python312Packages.pip"]
+nixPkgs = ["...", "ffmpeg"]
+aptPkgs = ["...", "python3", "python3-venv", "python3-pip"]
 
 [phases.install]
 cmds = [
   "...",
-  "python3 -m pip install --user -U \"yt-dlp[default]\" yt-dlp-invidious bgutil-ytdlp-pot-provider"
+  "python3 -m venv .venv-ytdlp",
+  ".venv-ytdlp/bin/python -m pip install -U pip",
+  ".venv-ytdlp/bin/python -m pip install -U \"yt-dlp[default]\" yt-dlp-invidious bgutil-ytdlp-pot-provider"
 ]
