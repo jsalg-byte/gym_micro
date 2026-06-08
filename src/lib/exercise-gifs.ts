@@ -1,4 +1,5 @@
-import exerciseManifestJson from "../../data/exercise-media.generated.json";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import exerciseCandidatesJson from "../../data/exercise-candidates.generated.json";
 import exerciseSeedJson from "../../data/exercises.seed.json";
 import { createPresignedReadUrl, getPublicObjectUrl } from "@/lib/storage";
@@ -64,9 +65,20 @@ type ExerciseCandidateEntry = {
   queries?: ExerciseDemoQuery[];
 };
 
-const exerciseManifest = exerciseManifestJson as Record<string, ExerciseMediaManifestEntry>;
+const EXERCISE_MANIFEST_PATH = "data/exercise-media.generated.json";
 const exerciseCandidates = exerciseCandidatesJson as Record<string, ExerciseCandidateEntry>;
 const exerciseSeed = exerciseSeedJson as ExerciseDemoSeedEntry[];
+
+function readExerciseManifest() {
+  try {
+    return JSON.parse(
+      readFileSync(resolve(process.cwd(), EXERCISE_MANIFEST_PATH), "utf8"),
+    ) as Record<string, ExerciseMediaManifestEntry>;
+  } catch (error) {
+    console.warn("Could not read exercise media manifest:", error);
+    return {};
+  }
+}
 
 function normalizeText(input: string) {
   return input
@@ -122,6 +134,7 @@ function getPendingEntry(exerciseName: string): ExerciseMediaManifestEntry {
 }
 
 export function resolveExerciseMedia(exerciseName: string): ExerciseMediaManifestEntry {
+  const exerciseManifest = readExerciseManifest();
   const slug = slugByName.get(normalizeText(exerciseName)) ?? slugify(exerciseName);
   const entry = exerciseManifest[slug];
   if (!entry) {
