@@ -354,7 +354,11 @@ function startExerciseDemoDownloadJob(slug: string) {
       return;
     }
 
-    console.info("Exercise demo download job finished:", { slug, logPath });
+    console.info("Exercise demo download job finished:", {
+      slug,
+      logPath,
+      output: getOutputTail(),
+    });
   });
   child.unref();
 

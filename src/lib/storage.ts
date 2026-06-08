@@ -1,6 +1,7 @@
 import {
   DeleteObjectCommand,
   GetObjectCommand,
+  HeadObjectCommand,
   S3Client,
   PutObjectCommand,
   type PutObjectCommandInput,
@@ -99,6 +100,30 @@ export async function createPresignedReadUrl(params: {
   return getSignedUrl(client, command, {
     expiresIn: params.maxAgeSec ?? 1800,
   });
+}
+
+export async function objectExists(params: { key: string }) {
+  const bucket = required(env.S3_BUCKET, "S3_BUCKET");
+  const client = createS3Client();
+
+  try {
+    await client.send(
+      new HeadObjectCommand({
+        Bucket: bucket,
+        Key: params.key,
+      }),
+    );
+    return true;
+  } catch (error) {
+    const statusCode = typeof error === "object" && error !== null && "$metadata" in error
+      ? (error as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode
+      : undefined;
+    if (statusCode === 404) {
+      return false;
+    }
+
+    throw error;
+  }
 }
 
 export async function deleteObject(params: { key: string }) {
