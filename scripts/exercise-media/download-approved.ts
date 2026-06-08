@@ -49,6 +49,12 @@ const DEMO_OBJECT_PREFIX = "exercise-demos";
 const YTDLP_FORMAT = "bv*[height<=480]/b[height<=480]/bv*[height<=720]/b[height<=720]";
 const DEFAULT_YTDLP_PLAYER_CLIENTS = ["web", "mweb", "android"];
 
+type CommandInvocation = {
+  command: string;
+  args: string[];
+  label: string;
+};
+
 function readJsonFile<T>(filePath: string): T {
   return JSON.parse(readFileSync(resolve(process.cwd(), filePath), "utf8")) as T;
 }
@@ -152,13 +158,44 @@ function commandExists(command: string, args: string[]) {
   return result.status === 0;
 }
 
+function checkCommand(invocation: CommandInvocation, args: string[]) {
+  return spawnSync(invocation.command, [...invocation.args, ...args], { encoding: "utf8", stdio: "pipe" });
+}
+
+function getYtDlpInvocation(): CommandInvocation {
+  if (process.env.YTDLP_COMMAND) {
+    return {
+      command: process.env.YTDLP_COMMAND,
+      args: [],
+      label: process.env.YTDLP_COMMAND,
+    };
+  }
+
+  const pythonModule = {
+    command: "python3",
+    args: ["-m", "yt_dlp"],
+    label: "python3 -m yt_dlp",
+  };
+
+  if (checkCommand(pythonModule, ["--version"]).status === 0) {
+    return pythonModule;
+  }
+
+  return {
+    command: "yt-dlp",
+    args: [],
+    label: "yt-dlp",
+  };
+}
+
 function preflight() {
-  const checks: Array<[string, string[]]> = [
-    ["yt-dlp", ["--version"]],
-    ["ffmpeg", ["-version"]],
-    ["ffprobe", ["-version"]],
+  const ytDlp = getYtDlpInvocation();
+  const checks: Array<[string, () => boolean]> = [
+    [ytDlp.label, () => checkCommand(ytDlp, ["--version"]).status === 0],
+    ["ffmpeg", () => commandExists("ffmpeg", ["-version"])],
+    ["ffprobe", () => commandExists("ffprobe", ["-version"])],
   ];
-  const missing = checks.filter(([command, args]) => !commandExists(command, args));
+  const missing = checks.filter(([, check]) => !check());
 
   if (missing.length > 0) {
     console.error(`Missing required tools: ${missing.map(([command]) => command).join(", ")}`);
@@ -167,8 +204,9 @@ function preflight() {
     process.exit(1);
   }
 
-  const ytDlpVersion = spawnSync("yt-dlp", ["--version"], { encoding: "utf8", stdio: "pipe" }).stdout.trim();
+  const ytDlpVersion = checkCommand(ytDlp, ["--version"]).stdout.trim();
   if (ytDlpVersion) {
+    console.log(`yt-dlp command: ${ytDlp.label}`);
     console.log(`yt-dlp version: ${ytDlpVersion}`);
   }
 }
@@ -226,6 +264,7 @@ function getYtDlpAttempts() {
 }
 
 function runYtDlpAttempt(exercise: ExerciseSeed, attempt: { label: string; args: string[] }) {
+  const ytDlp = getYtDlpInvocation();
   const outputTemplate = resolve(process.cwd(), TEMP_DIR, `${exercise.slug}.%(ext)s`);
   const args = [
     ...attempt.args,
@@ -238,7 +277,7 @@ function runYtDlpAttempt(exercise: ExerciseSeed, attempt: { label: string; args:
     exercise.youtubeUrl as string,
   ];
 
-  const result = spawnSync("yt-dlp", args, { encoding: "utf8", stdio: "pipe" });
+  const result = spawnSync(ytDlp.command, [...ytDlp.args, ...args], { encoding: "utf8", stdio: "pipe" });
   return {
     ok: result.status === 0,
     error: result.status === 0
