@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import exerciseCandidatesJson from "../../data/exercise-candidates.generated.json";
 import exerciseSeedJson from "../../data/exercises.seed.json";
-import { createPresignedReadUrl, getPublicObjectUrl } from "@/lib/storage";
+import { createPresignedReadUrl, getPublicObjectUrl, objectExists } from "@/lib/storage";
 
 export type ExerciseGifCandidate = {
   exerciseId: string;
@@ -66,6 +66,7 @@ type ExerciseCandidateEntry = {
 };
 
 const EXERCISE_MANIFEST_PATH = "data/exercise-media.generated.json";
+const EXERCISE_DEMO_OBJECT_PREFIX = "exercise-demos";
 const exerciseCandidates = exerciseCandidatesJson as Record<string, ExerciseCandidateEntry>;
 const exerciseSeed = exerciseSeedJson as ExerciseDemoSeedEntry[];
 
@@ -91,6 +92,10 @@ function normalizeText(input: string) {
 
 function slugify(input: string) {
   return normalizeText(input).replace(/\s+/g, "-");
+}
+
+function demoObjectKey(slug: string) {
+  return `${EXERCISE_DEMO_OBJECT_PREFIX}/${slug}.mp4`;
 }
 
 function youtubeSearchUrl(query: string) {
@@ -171,17 +176,34 @@ export function getExerciseDemoReview(exerciseName: string): ExerciseDemoReview 
 }
 
 export async function resolveExerciseDemoPlayback(demo: ExerciseDemoReview): Promise<ExerciseDemoReview> {
-  if (demo.media.localPath || !demo.media.objectKey || demo.media.status !== "downloaded") {
+  if (demo.media.localPath) {
     return demo;
   }
 
-  const publicUrl = getPublicObjectUrl({ key: demo.media.objectKey });
+  let objectKey = demo.media.objectKey ?? null;
+  if (!objectKey && demo.seed?.approved && demo.seed.youtubeUrl && demo.media.mediaType === "video") {
+    const candidateKey = demoObjectKey(demo.media.slug);
+    try {
+      objectKey = (await objectExists({ key: candidateKey })) ? candidateKey : null;
+    } catch (error) {
+      console.warn("Could not check exercise demo object:", { key: candidateKey, error });
+    }
+  }
+
+  if (!objectKey || (demo.media.status !== "downloaded" && objectKey !== demoObjectKey(demo.media.slug))) {
+    return demo;
+  }
+
+  const publicUrl = getPublicObjectUrl({ key: objectKey });
   if (publicUrl) {
     return {
       ...demo,
       media: {
         ...demo.media,
+        status: "downloaded",
         localPath: publicUrl,
+        objectKey,
+        storage: demo.media.storage ?? "r2",
       },
     };
   }
@@ -191,10 +213,13 @@ export async function resolveExerciseDemoPlayback(demo: ExerciseDemoReview): Pro
       ...demo,
       media: {
         ...demo.media,
+        status: "downloaded",
         localPath: await createPresignedReadUrl({
-          key: demo.media.objectKey,
+          key: objectKey,
           maxAgeSec: 60 * 60 * 6,
         }),
+        objectKey,
+        storage: demo.media.storage ?? "r2",
       },
     };
   } catch (error) {

@@ -460,6 +460,7 @@ async function main() {
   console.log(`Manifest written: ${MANIFEST_PATH}`);
   if (failures.length > 0) {
     console.log(`Failures written: ${FAILURES_PATH}`);
+    process.exitCode = 1;
   }
 }
 
