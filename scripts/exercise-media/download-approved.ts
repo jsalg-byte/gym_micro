@@ -252,26 +252,32 @@ function getYtDlpCookieArgs() {
   return process.env.YTDLP_COOKIES ? ["--cookies", process.env.YTDLP_COOKIES] : [];
 }
 
+function getYtDlpJsRuntimeArgs() {
+  const runtime = process.env.YTDLP_JS_RUNTIMES ?? "node";
+  return runtime ? ["--js-runtimes", runtime] : [];
+}
+
 function getYtDlpAttempts() {
   const playerClients = getYtDlpPlayerClients();
   const cookieArgs = getYtDlpCookieArgs();
+  const jsRuntimeArgs = getYtDlpJsRuntimeArgs();
   const attempts: Array<{ label: string; args: string[] }> = [];
 
   if (cookieArgs.length > 0) {
-    attempts.push({ label: "cookies/default", args: cookieArgs });
+    attempts.push({ label: "cookies/default", args: [...jsRuntimeArgs, ...cookieArgs] });
     for (const client of playerClients) {
       attempts.push({
         label: `cookies/player_client=${client}`,
-        args: [...cookieArgs, "--extractor-args", `youtube:player_client=${client}`],
+        args: [...jsRuntimeArgs, ...cookieArgs, "--extractor-args", `youtube:player_client=${client}`],
       });
     }
   }
 
-  attempts.push({ label: "default", args: [] });
+  attempts.push({ label: "default", args: jsRuntimeArgs });
   for (const client of playerClients) {
     attempts.push({
       label: `player_client=${client}`,
-      args: ["--extractor-args", `youtube:player_client=${client}`],
+      args: [...jsRuntimeArgs, "--extractor-args", `youtube:player_client=${client}`],
     });
   }
 
