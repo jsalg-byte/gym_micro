@@ -1,2 +1,10 @@
+providers = ["...", "python"]
+
 [phases.setup]
-nixPkgs = ["...", "ffmpeg", "yt-dlp"]
+nixPkgs = ["...", "ffmpeg", "python312", "python312Packages.pip"]
+
+[phases.install]
+cmds = [
+  "...",
+  "python3 -m pip install --user -U \"yt-dlp[default]\" yt-dlp-invidious bgutil-ytdlp-pot-provider"
+]
