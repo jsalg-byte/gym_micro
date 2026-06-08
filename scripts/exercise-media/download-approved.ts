@@ -47,6 +47,7 @@ const VIDEO_DIR = "public/exercises/videos";
 const TEMP_DIR = ".tmp/exercise-downloads";
 const DEMO_OBJECT_PREFIX = "exercise-demos";
 const YTDLP_FORMAT = "bv*[height<=480]/b[height<=480]/bv*[height<=720]/b[height<=720]";
+const DEFAULT_YTDLP_PLAYER_CLIENTS = ["web", "mweb", "android"];
 
 function readJsonFile<T>(filePath: string): T {
   return JSON.parse(readFileSync(resolve(process.cwd(), filePath), "utf8")) as T;
@@ -165,6 +166,11 @@ function preflight() {
     console.error("brew install yt-dlp ffmpeg");
     process.exit(1);
   }
+
+  const ytDlpVersion = spawnSync("yt-dlp", ["--version"], { encoding: "utf8", stdio: "pipe" }).stdout.trim();
+  if (ytDlpVersion) {
+    console.log(`yt-dlp version: ${ytDlpVersion}`);
+  }
 }
 
 function isDownloadable(exercise: ExerciseSeed) {
@@ -182,9 +188,47 @@ function findDownloadedTemp(slug: string) {
   return null;
 }
 
-function runYtDlp(exercise: ExerciseSeed) {
+function getYtDlpPlayerClients() {
+  return (process.env.YTDLP_PLAYER_CLIENTS ?? DEFAULT_YTDLP_PLAYER_CLIENTS.join(","))
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+function getYtDlpCookieArgs() {
+  return process.env.YTDLP_COOKIES ? ["--cookies", process.env.YTDLP_COOKIES] : [];
+}
+
+function getYtDlpAttempts() {
+  const playerClients = getYtDlpPlayerClients();
+  const cookieArgs = getYtDlpCookieArgs();
+  const attempts: Array<{ label: string; args: string[] }> = [];
+
+  if (cookieArgs.length > 0) {
+    attempts.push({ label: "cookies/default", args: cookieArgs });
+    for (const client of playerClients) {
+      attempts.push({
+        label: `cookies/player_client=${client}`,
+        args: [...cookieArgs, "--extractor-args", `youtube:player_client=${client}`],
+      });
+    }
+  }
+
+  attempts.push({ label: "default", args: [] });
+  for (const client of playerClients) {
+    attempts.push({
+      label: `player_client=${client}`,
+      args: ["--extractor-args", `youtube:player_client=${client}`],
+    });
+  }
+
+  return attempts;
+}
+
+function runYtDlpAttempt(exercise: ExerciseSeed, attempt: { label: string; args: string[] }) {
   const outputTemplate = resolve(process.cwd(), TEMP_DIR, `${exercise.slug}.%(ext)s`);
   const args = [
+    ...attempt.args,
     "-f",
     YTDLP_FORMAT,
     "--merge-output-format",
@@ -194,14 +238,30 @@ function runYtDlp(exercise: ExerciseSeed) {
     exercise.youtubeUrl as string,
   ];
 
-  if (process.env.YTDLP_COOKIES) {
-    args.unshift("--cookies", process.env.YTDLP_COOKIES);
+  const result = spawnSync("yt-dlp", args, { encoding: "utf8", stdio: "pipe" });
+  return {
+    ok: result.status === 0,
+    error: result.status === 0
+      ? null
+      : `[${attempt.label}] exit ${result.status ?? 1}: ${result.stderr || result.stdout}`,
+  };
+}
+
+function runYtDlp(exercise: ExerciseSeed) {
+  const errors: string[] = [];
+  for (const attempt of getYtDlpAttempts()) {
+    const result = runYtDlpAttempt(exercise, attempt);
+    if (result.ok) {
+      if (errors.length > 0) {
+        console.log(`yt-dlp succeeded for ${exercise.slug} using ${attempt.label}`);
+      }
+      return;
+    }
+
+    errors.push(result.error ?? `[${attempt.label}] failed`);
   }
 
-  const result = spawnSync("yt-dlp", args, { encoding: "utf8", stdio: "pipe" });
-  if (result.status !== 0) {
-    throw new Error(`yt-dlp failed with exit code ${result.status ?? 1}: ${result.stderr || result.stdout}`);
-  }
+  throw new Error(`yt-dlp failed after ${errors.length} attempt(s):\n${errors.join("\n")}`);
 }
 
 function runFfmpeg(inputPath: string, exercise: ExerciseSeed, finalPath: string, force: boolean) {
