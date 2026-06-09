@@ -21,7 +21,7 @@ type ExerciseSeed = {
 type ManifestEntry = {
   name: string;
   slug: string;
-  status: "downloaded" | "pending" | "skipped" | "failed" | "none";
+  status: "downloaded" | "external" | "pending" | "skipped" | "failed" | "none";
   mediaType: MediaType;
   localPath: string | null;
   objectKey?: string | null;
@@ -409,6 +409,21 @@ async function downloadedManifestEntry(params: {
   };
 }
 
+function externalManifestEntry(exercise: ExerciseSeed): ManifestEntry {
+  return {
+    name: exercise.name,
+    slug: exercise.slug,
+    status: "external",
+    mediaType: "external",
+    localPath: exercise.youtubeUrl || null,
+    objectKey: null,
+    storage: null,
+    source: "youtube",
+    sourceUrl: exercise.youtubeUrl || null,
+    duration: exercise.duration,
+  };
+}
+
 async function main() {
   const force = process.argv.includes("--force");
   const targetSlug = readArgValue("--slug");
@@ -436,6 +451,7 @@ async function main() {
     skippedUnapproved: 0,
     skippedNone: 0,
     failed: 0,
+    external: 0,
   };
 
   mkdirSync(resolve(process.cwd(), VIDEO_DIR), { recursive: true });
@@ -557,25 +573,32 @@ async function main() {
       stats.downloaded += 1;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      manifest[exercise.slug] = {
-        name: exercise.name,
-        slug: exercise.slug,
-        status: "failed",
-        mediaType,
-        localPath: null,
-        objectKey: null,
-        storage: null,
-        source: "youtube",
-        sourceUrl: exercise.youtubeUrl || null,
-        duration: exercise.duration,
-      };
-      failures.push({
-        slug: exercise.slug,
-        name: exercise.name,
-        youtubeUrl: exercise.youtubeUrl ?? "",
-        error: message,
-      });
-      stats.failed += 1;
+      if (exercise.youtubeUrl) {
+        manifest[exercise.slug] = externalManifestEntry(exercise);
+        stats.external += 1;
+        console.log(`External fallback: ${exercise.slug}`);
+        console.log(message);
+      } else {
+        manifest[exercise.slug] = {
+          name: exercise.name,
+          slug: exercise.slug,
+          status: "failed",
+          mediaType,
+          localPath: null,
+          objectKey: null,
+          storage: null,
+          source: "youtube",
+          sourceUrl: exercise.youtubeUrl || null,
+          duration: exercise.duration,
+        };
+        failures.push({
+          slug: exercise.slug,
+          name: exercise.name,
+          youtubeUrl: exercise.youtubeUrl ?? "",
+          error: message,
+        });
+        stats.failed += 1;
+      }
     } finally {
       removeTempInput(tempInput);
     }
@@ -611,6 +634,7 @@ async function main() {
   console.log(`Skipped existing: ${stats.skippedExisting}`);
   console.log(`Skipped unapproved: ${stats.skippedUnapproved}`);
   console.log(`Skipped none: ${stats.skippedNone}`);
+  console.log(`External fallback: ${stats.external}`);
   console.log(`Failed: ${stats.failed}`);
   console.log(`Manifest written: ${MANIFEST_PATH}`);
   if (failures.length > 0) {
