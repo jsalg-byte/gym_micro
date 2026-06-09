@@ -33,6 +33,10 @@ const ACTIVE_EXERCISE_STORAGE_PREFIX = "gym-micro:session-active-exercise";
 const ACTIVE_EXERCISE_EVENT = "gym-micro:session-active-exercise-change";
 
 function getDemoStatus(demo: ExerciseDemoReview) {
+  if (demo.media.mediaType === "external" && demo.media.localPath) {
+    return "External";
+  }
+
   if (demo.media.localPath) {
     return "Downloaded";
   }
@@ -173,6 +177,7 @@ export function SessionSetLogger({
               <ExerciseMedia
                 src={selectedExercise.gifUrl}
                 name={selectedExercise.name}
+                mediaType={selectedExercise.demo.media.mediaType}
                 autoPlay
                 className="mt-2 border border-cyan-200 bg-white object-contain"
               />

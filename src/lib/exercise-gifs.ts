@@ -14,7 +14,7 @@ export type ExerciseGifCandidate = {
 export type ExerciseMediaManifestEntry = {
   name: string;
   slug: string;
-  status: "downloaded" | "pending" | "skipped" | "failed" | "none";
+  status: "downloaded" | "external" | "pending" | "skipped" | "failed" | "none";
   mediaType: "video" | "external" | "none";
   localPath: string | null;
   objectKey?: string | null;
@@ -180,6 +180,10 @@ export async function resolveExerciseDemoPlayback(demo: ExerciseDemoReview): Pro
     return demo;
   }
 
+  const externalSourceUrl = demo.seed?.approved && demo.seed.youtubeUrl
+    ? demo.seed.youtubeUrl
+    : demo.media.sourceUrl;
+
   let objectKey = demo.media.objectKey ?? null;
   if (!objectKey && demo.seed?.approved && demo.seed.youtubeUrl && demo.media.mediaType === "video") {
     const candidateKey = demoObjectKey(demo.media.slug);
@@ -191,6 +195,20 @@ export async function resolveExerciseDemoPlayback(demo: ExerciseDemoReview): Pro
   }
 
   if (!objectKey || (demo.media.status !== "downloaded" && objectKey !== demoObjectKey(demo.media.slug))) {
+    if (externalSourceUrl && demo.media.mediaType !== "none") {
+      return {
+        ...demo,
+        media: {
+          ...demo.media,
+          status: "external",
+          mediaType: "external",
+          localPath: externalSourceUrl,
+          source: "youtube",
+          sourceUrl: externalSourceUrl,
+        },
+      };
+    }
+
     return demo;
   }
 

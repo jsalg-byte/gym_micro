@@ -22,6 +22,13 @@ type ExercisesClientProps = {
 };
 
 function getDemoStatus(demo: ExerciseDemoReview) {
+  if (demo.media.mediaType === "external" && demo.media.localPath) {
+    return {
+      label: "External",
+      className: "border border-accent-cyan/30 bg-accent-cyan/15 text-accent-cyan",
+    };
+  }
+
   if (demo.media.localPath) {
     return {
       label: "Downloaded",
@@ -261,6 +268,7 @@ export function ExercisesClient({ initialItems }: ExercisesClientProps) {
                         <ExerciseMedia
                           src={exercise.demo.media.localPath}
                           name={exercise.name}
+                          mediaType={exercise.demo.media.mediaType}
                           controls={!!exercise.demo.media.localPath}
                           className="border border-line bg-background object-contain"
                         />
