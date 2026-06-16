@@ -4,6 +4,10 @@ const optionalUrl = z.preprocess(
   (value) => (value === "" ? undefined : value),
   z.string().url().optional(),
 );
+const optionalPublicBaseUrl = z.preprocess(
+  (value) => (typeof value === "string" && value.trim() === "" ? undefined : value),
+  z.string().trim().optional(),
+);
 
 const envSchema = z.object({
   NEXTAUTH_URL: optionalUrl,
@@ -19,9 +23,9 @@ const envSchema = z.object({
   S3_ACCESS_KEY_ID: z.string().optional(),
   S3_SECRET_ACCESS_KEY: z.string().optional(),
   S3_FORCE_PATH_STYLE: z.string().optional(),
-  S3_PUBLIC_BASE_URL: optionalUrl,
+  S3_PUBLIC_BASE_URL: optionalPublicBaseUrl,
   EXERCISE_DEMO_STORAGE_DRIVER: z.enum(["local", "s3", "r2"]).optional(),
-  EXERCISE_DEMO_PUBLIC_BASE_URL: optionalUrl,
+  EXERCISE_DEMO_PUBLIC_BASE_URL: optionalPublicBaseUrl,
 });
 
 export const env = envSchema.parse(process.env);

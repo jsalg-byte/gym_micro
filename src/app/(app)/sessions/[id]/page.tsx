@@ -53,6 +53,33 @@ function parseDemoSourceMeta(sourceName: string | null) {
   }
 }
 
+function slugifyDemoName(input: string) {
+  return input
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
+function getFallbackExerciseDemo(exerciseName: string): ExerciseDemoReview {
+  return {
+    media: {
+      name: exerciseName,
+      slug: slugifyDemoName(exerciseName),
+      status: "pending",
+      mediaType: "video",
+      localPath: null,
+      storage: null,
+      source: null,
+      sourceUrl: null,
+    },
+    seed: null,
+    queries: [],
+  };
+}
+
 function applyDemoSourceOverride(
   demo: ExerciseDemoReview,
   exerciseName: string,
@@ -77,6 +104,30 @@ function applyDemoSourceOverride(
       mediaType: "video",
     },
   };
+}
+
+async function resolveSessionExerciseDemo(
+  exercise: {
+    id: string;
+    name: string;
+  },
+  override?: DemoSourceOverride,
+) {
+  try {
+    const pendingDemo = applyDemoSourceOverride(
+      getExerciseDemoReview(exercise.name),
+      exercise.name,
+      override,
+    );
+    return await resolveExerciseDemoPlayback(pendingDemo);
+  } catch (error) {
+    console.warn("Could not resolve session exercise demo:", {
+      exerciseId: exercise.id,
+      exerciseName: exercise.name,
+      error,
+    });
+    return getFallbackExerciseDemo(exercise.name);
+  }
 }
 
 export default async function SessionDetailPage({
@@ -220,19 +271,17 @@ export default async function SessionDetailPage({
   const exerciseOptions = await Promise.all(
     dayPlannedExercises.map(async (exercise) => {
       const recent = recentByExercise.get(exercise.id);
-      const demo = applyDemoSourceOverride(
-        getExerciseDemoReview(exercise.name),
-        exercise.name,
+      const demo = await resolveSessionExerciseDemo(
+        exercise,
         demoSourceOverrideByExerciseId.get(exercise.id),
       );
-      const playableDemo = await resolveExerciseDemoPlayback(demo);
       return {
         id: exercise.id,
         name: exercise.name,
         category: exercise.category,
         muscleGroup: exercise.muscleGroup,
-        gifUrl: playableDemo.media.localPath,
-        demo: playableDemo,
+        gifUrl: demo.media.localPath,
+        demo,
         prefillReps: recent?.reps ?? exercise.targetReps ?? null,
         prefillWeight:
           recent?.weight ?? (exercise.targetWeight !== null ? String(exercise.targetWeight) : null),
