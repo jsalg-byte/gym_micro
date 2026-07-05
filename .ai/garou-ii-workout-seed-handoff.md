@@ -1,8 +1,13 @@
 # GAROU II Workout Seed Handoff
 
-Purpose: implement the provided transcribed workout plan as seeded data so it appears as a selectable workout plan in Gym-Micro after deployment.
+Purpose: document the implemented seed for the provided transcribed workout plan so it appears as a selectable workout plan in Gym-Micro after deployment.
 
-Do **not** treat this document as an implemented seed. No seed code was added here.
+Implemented seed files:
+
+- `scripts/db-seed-garou-ii-plan.mjs`
+- `package.json` script: `db:seed:garou-ii`
+
+The seed is non-destructive/idempotent at the script level and only writes data when run explicitly.
 
 ## Inspection sources
 
@@ -189,14 +194,12 @@ Verified behavior:
 
 This pattern is appropriate for GAROU II with a new script or a carefully generalized seed script.
 
-## Proposed implementation files
+## Implemented files
 
-Recommended path: create a new seed script instead of overwriting the existing Garou seed.
-
-Add later:
+A new seed script was created instead of overwriting the existing Garou seed.
 
 - `scripts/db-seed-garou-ii-plan.mjs`
-- `package.json` script, e.g. `"db:seed:garou-ii": "node scripts/run-with-env.mjs node scripts/db-seed-garou-ii-plan.mjs"`
+- `package.json` script: `"db:seed:garou-ii": "node scripts/run-with-env.mjs node scripts/db-seed-garou-ii-plan.mjs"`
 
 Do not edit frontend files unless product requirements change. Current routes already display and select per-user routines.
 
@@ -205,18 +208,18 @@ Optional, only if you want DB-enforced idempotency:
 - Add a migration and schema index for a unique partial constraint on `(user_id, preset_key)` where `preset_key is not null`.
 - This is not required to follow the existing seed convention and would be broader than a simple seed.
 
-## Proposed seed script shape
+## Implemented seed script shape
 
-Mirror `scripts/db-seed-garou-plan.mjs`:
+The implementation mirrors `scripts/db-seed-garou-plan.mjs`:
 
-1. Define constants:
+1. Defines constants:
    - `PRESET_KEY = "garou-ii-v1"`
    - `PLAN.name = "GAROU II"`
    - `PLAN.description = "6-day push/pull/lower/Garou workout plan transcribed from screenshots. Per-set reps were collapsed to a single target_reps value because routine_day_exercises supports only one target_reps field."`
-2. Represent days with explicit ordered arrays.
-3. Expand day 4 (`PUSH 2`) from day 1 and day 5 (`PULL 2`) from day 2 in code before inserting, or define both fully to avoid ambiguity.
-4. Store source reps arrays in script data for auditability, but insert only `target_reps` using the chosen mapping below.
-5. Use exact exercise names from the supplied plan unless the implementer deliberately confirms canonical alternatives from `npm run db:list:exercises -- --csv`.
+2. Represents days with explicit ordered arrays.
+3. Reuses day 1 exercise data for `PUSH 2` and day 2 exercise data for `PULL 2` while inserting distinct routine days.
+4. Stores source reps arrays and `timerSec` in script data for auditability, but inserts only `target_reps` because the current schema has no per-set reps or timer fields.
+5. Uses exact exercise names from the supplied plan.
 6. In `ensureExercises`:
    - collect unique exercise names,
    - query existing rows with exact `name = any(...)`, ordered by `created_at asc`,

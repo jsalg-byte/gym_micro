@@ -7,7 +7,7 @@
 
 ## Current task handoff: GAROU II seeded workout
 
-A handoff has been created for implementing a future seed that inserts the transcribed `GAROU II` workout plan as a selectable workout plan.
+The `GAROU II` seed has been implemented as a non-destructive per-user seed that inserts the transcribed workout plan as a selectable workout plan when explicitly run.
 
 Important verified facts:
 
@@ -20,7 +20,12 @@ Important verified facts:
 - Routine-day plans use `routine_days` and `routine_day_exercises` with `sort_order` for day/exercise ordering.
 - The current routine-day exercise schema supports only one nullable `target_reps` and no `timerSec` field; per-set rep arrays and timers require deliberate lossy mapping or schema/UI work.
 
-Do not implement the GAROU II seed unless separately requested. The recommended future implementation is a new script `scripts/db-seed-garou-ii-plan.mjs` plus a package script such as `db:seed:garou-ii`, following the existing `scripts/db-seed-garou-plan.mjs` pattern.
+Implemented files:
+
+- `scripts/db-seed-garou-ii-plan.mjs`
+- `package.json` script: `db:seed:garou-ii`
+
+The seed follows the existing `scripts/db-seed-garou-plan.mjs` pattern: `--user`, `--list-users`, `--set-active`, per-user `preset_key` duplicate prevention, exact-name exercise reuse, missing exercise creation, and optional active-plan assignment.
 
 ## Commands
 
@@ -34,13 +39,14 @@ npm run lint
 npm run build
 ```
 
-Existing seed command:
+Existing seed commands:
 
 ```bash
 npm run db:seed:garou
+npm run db:seed:garou-ii -- --help
 ```
 
-Proposed future GAROU II seed command, after implementation:
+GAROU II seed commands:
 
 ```bash
 npm run db:seed:garou-ii -- --list-users
