@@ -31,6 +31,7 @@ import { SessionSetLogger } from "@/components/session-set-logger";
 import { LoggedSetGroups } from "@/components/logged-set-groups";
 import { DeleteSessionButton } from "@/components/delete-session-button";
 import { FlyoverSelect } from "@/components/flyover-select";
+import { WorkoutJsonExport } from "@/components/workout-json-export";
 
 type DemoSourceOverride = {
   gifUrl: string;
@@ -151,6 +152,7 @@ export default async function SessionDetailPage({
       routineName: routines.name,
       dayName: routineDays.dayName,
       startedAt: workoutSessions.startedAt,
+      endedAt: workoutSessions.endedAt,
     })
     .from(workoutSessions)
     .leftJoin(routines, eq(workoutSessions.routineId, routines.id))
@@ -329,6 +331,52 @@ export default async function SessionDetailPage({
     sets: group.sets,
   }));
 
+  const workoutTitle = `${session.routineName ?? "Workout Plan"} / ${session.dayName ?? "Session"}`;
+  const workoutJsonExport =
+    session.status === "completed"
+      ? JSON.stringify(
+          {
+            type: "gym_micro_workout",
+            version: 1,
+            exportedAt: new Date().toISOString(),
+            session: {
+              id: session.id,
+              title: workoutTitle,
+              routineName: session.routineName,
+              dayName: session.dayName,
+              status: session.status,
+              startedAt: session.startedAt.toISOString(),
+              endedAt: session.endedAt?.toISOString() ?? null,
+              durationMinutes: session.endedAt
+                ? Math.max(
+                    0,
+                    Math.round((session.endedAt.getTime() - session.startedAt.getTime()) / 60000),
+                  )
+                : null,
+              weightUnit,
+            },
+            summary: {
+              exerciseCount: groupedSetList.length,
+              setCount: sets.length,
+            },
+            exercises: groupedSetList.map((group) => ({
+              id: group.exerciseId,
+              name: group.exerciseName,
+              sets: group.sets.map((set, index) => ({
+                setNumber: index + 1,
+                overallSetOrder: set.setOrder,
+                reps: set.reps,
+                weight: set.weight !== null ? Number(set.weight) : null,
+                weightUnit,
+                isWarmup: set.isWarmup,
+              })),
+            })),
+          },
+          null,
+          2,
+        )
+      : null;
+
   const canEditLoggedSets = editMode;
   const showEditToggle = sets.length > 0;
 
@@ -362,6 +410,8 @@ export default async function SessionDetailPage({
           </div>
         ) : null}
       </section>
+
+      {workoutJsonExport ? <WorkoutJsonExport exportText={workoutJsonExport} /> : null}
 
       <section className="grid gap-4 md:grid-cols-[320px_minmax(0,1fr)]">
         <article className="panel p-4">
