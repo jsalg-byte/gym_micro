@@ -27,6 +27,13 @@ Implemented files:
 
 The seed follows the existing `scripts/db-seed-garou-plan.mjs` pattern: `--user`, `--list-users`, `--set-active`, per-user `preset_key` duplicate prevention, exact-name exercise reuse, missing exercise creation, and optional active-plan assignment.
 
+Additional progress/session seed:
+
+- `scripts/db-seed-missing-progress-days.mjs`
+- `package.json` script: `db:seed:missing-progress-days`
+- Adds completed workout sessions and sets for missing progress-calendar days `2026-06-30` and `2026-07-02` when the target user has no workout session on that Eastern calendar day.
+- Links to `GAROU II / PUSH 1` and `GAROU II / PULL 1` when that routine exists for the user; otherwise inserts sessions without a routine link.
+
 ## Commands
 
 Common verification commands:
@@ -44,6 +51,7 @@ Existing seed commands:
 ```bash
 npm run db:seed:garou
 npm run db:seed:garou-ii -- --help
+npm run db:seed:missing-progress-days -- --help
 ```
 
 GAROU II seed commands:
@@ -52,4 +60,6 @@ GAROU II seed commands:
 npm run db:seed:garou-ii -- --list-users
 npm run db:seed:garou-ii -- --user <username|email|user-id>
 npm run db:seed:garou-ii -- --user <username|email|user-id> --set-active
+npm run db:seed:missing-progress-days -- --list-users
+npm run db:seed:missing-progress-days -- --user <username|email|user-id>
 ```
