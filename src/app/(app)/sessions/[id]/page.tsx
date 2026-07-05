@@ -18,7 +18,7 @@ import {
   type ExerciseDemoReview,
 } from "@/lib/exercise-gifs";
 import { requireUserId } from "@/lib/session";
-import { formatEasternDateTime } from "@/lib/timezone";
+import { formatEasternDateTime, formatEasternIsoDateTime } from "@/lib/timezone";
 import { normalizeWeightUnit } from "@/lib/weight-unit";
 import {
   cancelWorkoutSessionAction,
@@ -338,15 +338,16 @@ export default async function SessionDetailPage({
           {
             type: "gym_micro_workout",
             version: 1,
-            exportedAt: new Date().toISOString(),
+            exportedAt: formatEasternIsoDateTime(new Date()),
             session: {
               id: session.id,
               title: workoutTitle,
               routineName: session.routineName,
               dayName: session.dayName,
               status: session.status,
-              startedAt: session.startedAt.toISOString(),
-              endedAt: session.endedAt?.toISOString() ?? null,
+              timeZone: "America/New_York",
+              startedAt: formatEasternIsoDateTime(session.startedAt),
+              endedAt: session.endedAt ? formatEasternIsoDateTime(session.endedAt) : null,
               durationMinutes: session.endedAt
                 ? Math.max(
                     0,
