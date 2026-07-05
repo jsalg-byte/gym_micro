@@ -31,6 +31,7 @@ type SessionSetLoggerProps = {
 
 const ACTIVE_EXERCISE_STORAGE_PREFIX = "gym-micro:session-active-exercise";
 const ACTIVE_EXERCISE_EVENT = "gym-micro:session-active-exercise-change";
+const REST_TIMER_START_EVENT = "gym-micro:rest-timer-start";
 
 function getDemoStatus(demo: ExerciseDemoReview) {
   if (demo.media.mediaType === "external" && demo.media.localPath) {
@@ -64,6 +65,16 @@ export function SessionSetLogger({
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
   const [isDemoHidden, setIsDemoHidden] = useState(false);
+
+  function startRestTimer() {
+    window.dispatchEvent(
+      new CustomEvent(REST_TIMER_START_EVENT, {
+        detail: {
+          storageKey: `session:${sessionId}`,
+        },
+      }),
+    );
+  }
 
   const selectedExercise = useMemo(
     () => exerciseOptions.find((exercise) => exercise.id === selectedExerciseId) ?? null,
@@ -215,7 +226,10 @@ export function SessionSetLogger({
       <form
         action={addWorkoutSetAction}
         className="space-y-3"
-        onSubmit={() => persistActiveExercise(selectedExerciseId)}
+        onSubmit={() => {
+          persistActiveExercise(selectedExerciseId);
+          startRestTimer();
+        }}
       >
         <input type="hidden" name="sessionId" value={sessionId} />
         <input type="hidden" name="exerciseId" value={selectedExerciseId} />

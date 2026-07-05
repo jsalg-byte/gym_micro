@@ -1,9 +1,22 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const PRESET_SECONDS = [60, 120, 300];
 const STORAGE_PREFIX = "gym-micro:rest-timer";
+const LAST_DURATION_STORAGE_KEY = "gym-micro:rest-timer:last-duration-sec";
+const REST_TIMER_START_EVENT = "gym-micro:rest-timer-start";
+const DEFAULT_DURATION_SECONDS = 60;
+
+function normalizeDuration(seconds: number) {
+  return Math.max(10, Math.min(600, Math.round(seconds)));
+}
+
+function getStoredLastDuration() {
+  const raw = window.localStorage.getItem(LAST_DURATION_STORAGE_KEY);
+  const parsed = raw ? Number(raw) : NaN;
+  return Number.isFinite(parsed) ? normalizeDuration(parsed) : DEFAULT_DURATION_SECONDS;
+}
 
 function formatClock(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60)
@@ -28,15 +41,22 @@ type StoredTimer = {
 
 export function RestTimer({ storageKey = "default" }: RestTimerProps) {
   const fullStorageKey = `${STORAGE_PREFIX}:${storageKey}`;
-  const [durationSec, setDurationSec] = useState<number>(90);
-  const [remainingSec, setRemainingSec] = useState<number>(90);
+  const [durationSec, setDurationSec] = useState<number>(DEFAULT_DURATION_SECONDS);
+  const [remainingSec, setRemainingSec] = useState<number>(DEFAULT_DURATION_SECONDS);
   const [endAtMs, setEndAtMs] = useState<number | null>(null);
   const [running, setRunning] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    const lastDuration = getStoredLastDuration();
     const raw = window.localStorage.getItem(fullStorageKey);
     if (!raw) {
+      setDurationSec(lastDuration);
+      setRemainingSec(lastDuration);
+      setRunning(false);
+      setEndAtMs(null);
+      setHydrated(true);
       return;
     }
 
@@ -47,10 +67,15 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
         !Number.isFinite(parsed.remainingSec) ||
         typeof parsed.running !== "boolean"
       ) {
+        setDurationSec(lastDuration);
+        setRemainingSec(lastDuration);
+        setRunning(false);
+        setEndAtMs(null);
         return;
       }
 
-      setDurationSec(Math.max(10, Math.min(600, Math.round(parsed.durationSec))));
+      const storedDuration = normalizeDuration(parsed.durationSec || lastDuration);
+      setDurationSec(storedDuration);
       if (parsed.running && parsed.endAtMs && Number.isFinite(parsed.endAtMs)) {
         const nextRemaining = Math.max(0, Math.ceil((parsed.endAtMs - Date.now()) / 1000));
         setRemainingSec(nextRemaining);
@@ -63,10 +88,20 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
       }
     } catch {
       // Ignore corrupt local storage values.
+      setDurationSec(lastDuration);
+      setRemainingSec(lastDuration);
+      setRunning(false);
+      setEndAtMs(null);
+    } finally {
+      setHydrated(true);
     }
   }, [fullStorageKey]);
 
   useEffect(() => {
+    if (!hydrated) {
+      return;
+    }
+
     const payload: StoredTimer = {
       durationSec,
       remainingSec,
@@ -74,7 +109,7 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
       running,
     };
     window.localStorage.setItem(fullStorageKey, JSON.stringify(payload));
-  }, [durationSec, remainingSec, endAtMs, running, fullStorageKey]);
+  }, [durationSec, remainingSec, endAtMs, running, fullStorageKey, hydrated]);
 
   useEffect(() => {
     if (!running || !endAtMs) {
@@ -98,12 +133,38 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
   const done = remainingSec === 0;
   const clock = useMemo(() => formatClock(remainingSec), [remainingSec]);
 
+  const startTimer = useCallback((seconds = durationSec) => {
+    const normalizedSeconds = normalizeDuration(seconds);
+    setDurationSec(normalizedSeconds);
+    setRemainingSec(normalizedSeconds);
+    setEndAtMs(Date.now() + normalizedSeconds * 1000);
+    setRunning(true);
+  }, [durationSec]);
+
   function applyPreset(seconds: number) {
-    setDurationSec(seconds);
-    setRemainingSec(seconds);
+    const normalizedSeconds = normalizeDuration(seconds);
+    window.localStorage.setItem(LAST_DURATION_STORAGE_KEY, String(normalizedSeconds));
+    setDurationSec(normalizedSeconds);
+    setRemainingSec(normalizedSeconds);
     setEndAtMs(null);
     setRunning(false);
   }
+
+  useEffect(() => {
+    function onRestTimerStart(event: Event) {
+      const custom = event as CustomEvent<{ storageKey?: string }>;
+      if (custom.detail?.storageKey !== storageKey) {
+        return;
+      }
+
+      startTimer(durationSec);
+    }
+
+    window.addEventListener(REST_TIMER_START_EVENT, onRestTimerStart as EventListener);
+    return () => {
+      window.removeEventListener(REST_TIMER_START_EVENT, onRestTimerStart as EventListener);
+    };
+  }, [durationSec, startTimer, storageKey]);
 
   function resetTimer() {
     setRemainingSec(durationSec);
@@ -193,8 +254,10 @@ export function RestTimer({ storageKey = "default" }: RestTimerProps) {
                   if (!Number.isFinite(value) || value <= 0) {
                     return;
                   }
-                  setDurationSec(value);
-                  setRemainingSec(value);
+                  const normalizedValue = normalizeDuration(value);
+                  window.localStorage.setItem(LAST_DURATION_STORAGE_KEY, String(normalizedValue));
+                  setDurationSec(normalizedValue);
+                  setRemainingSec(normalizedValue);
                   setEndAtMs(null);
                   setRunning(false);
                 }}
