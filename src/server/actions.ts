@@ -1571,6 +1571,8 @@ export async function completeWorkoutSessionAction(formData: FormData) {
 
   revalidatePath("/sessions");
   revalidatePath(`/sessions/${sessionId}`);
+  revalidatePath(`/sessions/${sessionId}/complete`);
+  redirect(`/sessions/${sessionId}/complete`);
 }
 
 export async function cancelWorkoutSessionAction(formData: FormData) {

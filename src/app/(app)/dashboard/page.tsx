@@ -1,8 +1,18 @@
+import { and, desc, eq } from "drizzle-orm";
 import Link from "next/link";
+import { getDb } from "@/db/client";
+import { workoutSessions } from "@/db/schema";
 import { requireUserId } from "@/lib/session";
 
 export default async function DashboardPage() {
-  await requireUserId();
+  const userId = await requireUserId();
+  const db = getDb();
+  const [activeSession] = await db
+    .select({ id: workoutSessions.id })
+    .from(workoutSessions)
+    .where(and(eq(workoutSessions.userId, userId), eq(workoutSessions.status, "active")))
+    .orderBy(desc(workoutSessions.startedAt))
+    .limit(1);
 
   return (
     <main className="space-y-6">
@@ -13,12 +23,16 @@ export default async function DashboardPage() {
 
       <section className="grid grid-cols-1 gap-4 sm:max-w-sm">
         <Link
-          href="/sessions"
+          href={activeSession ? `/sessions/${activeSession.id}` : "/sessions"}
           className="group block rounded-3xl border border-line bg-surface p-8 text-center transition-all hover:border-accent-pink hover:shadow-[0_0_30px_rgba(255,92,92,0.1)] active:scale-[0.98]"
         >
           <p className="text-xs font-black uppercase tracking-widest text-muted group-hover:text-accent-pink transition-colors">Workout</p>
-          <p className="mt-2 text-2xl font-black text-foreground">Start Workout</p>
-          <p className="mt-2 text-sm font-medium text-muted">Go to Sessions and begin logging.</p>
+          <p className="mt-2 text-2xl font-black text-foreground">
+            {activeSession ? "Open Session" : "Start Workout"}
+          </p>
+          <p className="mt-2 text-sm font-medium text-muted">
+            {activeSession ? "Resume logging your active workout." : "Go to Sessions and begin logging."}
+          </p>
         </Link>
       </section>
     </main>
