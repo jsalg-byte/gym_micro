@@ -80,6 +80,7 @@ export default async function SessionsPage() {
                     label: routine.name,
                   }))}
                   required
+                  searchable={false}
                   className="flex-1"
                   triggerClassName="rounded-lg py-2"
                 />
