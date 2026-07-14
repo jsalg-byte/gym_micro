@@ -243,6 +243,25 @@ export type ExerciseDemoSourceActionState = {
   message: string;
 };
 
+type PersonalRecordSet = {
+  reps: number;
+  weight: string | null;
+};
+
+export type PersonalRecordResult = {
+  exerciseName: string;
+  kind: "estimated_1rm" | "reps";
+  current: PersonalRecordSet;
+  previous: PersonalRecordSet;
+};
+
+export type AddWorkoutSetActionState = {
+  ok: boolean | null;
+  message: string;
+  personalRecord: PersonalRecordResult | null;
+  submittedAt: number | null;
+};
+
 const EXERCISE_LOCAL_SOURCES_PATH = "data/exercise-demo-sources.local.json";
 const EXERCISE_DOWNLOAD_LOG_DIR = ".tmp/exercise-downloads/logs";
 const EXERCISE_DOWNLOAD_LOG_TAIL_CHARS = 12000;
@@ -259,6 +278,45 @@ function normalizeExerciseName(input: string) {
 
 function slugifyExerciseName(input: string) {
   return normalizeExerciseName(input).replace(/\s+/g, "-");
+}
+
+function getSetWeight(set: PersonalRecordSet) {
+  const weight = set.weight !== null ? Number(set.weight) : 0;
+  return Number.isFinite(weight) ? weight : 0;
+}
+
+function getEstimatedOneRepMax(set: PersonalRecordSet) {
+  return getSetWeight(set) * (1 + set.reps / 30);
+}
+
+function detectPersonalRecord(
+  current: PersonalRecordSet,
+  previousSets: PersonalRecordSet[],
+): Omit<PersonalRecordResult, "exerciseName"> | null {
+  const currentWeight = getSetWeight(current);
+  const isWeightedRecord = currentWeight > 0;
+  const comparableSets = previousSets.filter((set) =>
+    isWeightedRecord ? getSetWeight(set) > 0 : getSetWeight(set) <= 0,
+  );
+
+  if (comparableSets.length === 0) {
+    return null;
+  }
+
+  const scoreSet = isWeightedRecord ? getEstimatedOneRepMax : (set: PersonalRecordSet) => set.reps;
+  const previous = comparableSets.reduce((best, set) =>
+    scoreSet(set) > scoreSet(best) ? set : best,
+  );
+
+  if (scoreSet(current) <= scoreSet(previous)) {
+    return null;
+  }
+
+  return {
+    kind: isWeightedRecord ? "estimated_1rm" : "reps",
+    current,
+    previous,
+  };
 }
 
 async function readExerciseDemoLocalSources() {
@@ -1411,7 +1469,10 @@ export async function startWorkoutSessionAction(formData: FormData) {
   redirect(`/sessions/${createdSession.id}`);
 }
 
-export async function addWorkoutSetAction(formData: FormData) {
+export async function addWorkoutSetAction(
+  _previousState: AddWorkoutSetActionState,
+  formData: FormData,
+): Promise<AddWorkoutSetActionState> {
   const userId = await requireUserId();
 
   const parsed = setSchema.safeParse({
@@ -1423,28 +1484,75 @@ export async function addWorkoutSetAction(formData: FormData) {
   });
 
   if (!parsed.success) {
-    throw new Error("Invalid workout set payload");
+    return {
+      ok: false,
+      message: "Invalid workout set payload.",
+      personalRecord: null,
+      submittedAt: Date.now(),
+    };
   }
 
   const db = getDb();
-  const [session] = await db
-    .select()
-    .from(workoutSessions)
-    .where(
-      and(eq(workoutSessions.id, parsed.data.sessionId), eq(workoutSessions.userId, userId)),
-    )
-    .limit(1);
+  const [session, exercise] = await Promise.all([
+    db
+      .select()
+      .from(workoutSessions)
+      .where(
+        and(eq(workoutSessions.id, parsed.data.sessionId), eq(workoutSessions.userId, userId)),
+      )
+      .limit(1)
+      .then((rows) => rows[0] ?? null),
+    db
+      .select({ name: exercises.name })
+      .from(exercises)
+      .where(eq(exercises.id, parsed.data.exerciseId))
+      .limit(1)
+      .then((rows) => rows[0] ?? null),
+  ]);
 
   if (!session) {
-    throw new Error("Workout session not found");
+    return {
+      ok: false,
+      message: "Workout session not found.",
+      personalRecord: null,
+      submittedAt: Date.now(),
+    };
   }
 
-  const [lastSet] = await db
-    .select()
-    .from(workoutSets)
-    .where(eq(workoutSets.sessionId, parsed.data.sessionId))
-    .orderBy(desc(workoutSets.setOrder))
-    .limit(1);
+  if (!exercise) {
+    return {
+      ok: false,
+      message: "Exercise not found.",
+      personalRecord: null,
+      submittedAt: Date.now(),
+    };
+  }
+
+  const [lastSet, previousExerciseSets] = await Promise.all([
+    db
+      .select()
+      .from(workoutSets)
+      .where(eq(workoutSets.sessionId, parsed.data.sessionId))
+      .orderBy(desc(workoutSets.setOrder))
+      .limit(1)
+      .then((rows) => rows[0] ?? null),
+    parsed.data.isWarmup
+      ? Promise.resolve([])
+      : db
+          .select({
+            reps: workoutSets.reps,
+            weight: workoutSets.weight,
+          })
+          .from(workoutSets)
+          .innerJoin(workoutSessions, eq(workoutSets.sessionId, workoutSessions.id))
+          .where(
+            and(
+              eq(workoutSessions.userId, userId),
+              eq(workoutSets.exerciseId, parsed.data.exerciseId),
+              eq(workoutSets.isWarmup, false),
+            ),
+          ),
+  ]);
 
   await db.insert(workoutSets).values({
     sessionId: parsed.data.sessionId,
@@ -1457,6 +1565,31 @@ export async function addWorkoutSetAction(formData: FormData) {
 
   revalidatePath(`/sessions/${parsed.data.sessionId}`);
   revalidatePath("/sessions");
+
+  const personalRecord = parsed.data.isWarmup
+    ? null
+    : detectPersonalRecord(
+        {
+          reps: parsed.data.reps,
+          weight: parsed.data.weight !== undefined ? parsed.data.weight.toString() : null,
+        },
+        previousExerciseSets.map((set) => ({
+          reps: set.reps,
+          weight: set.weight !== null ? String(set.weight) : null,
+        })),
+      );
+
+  return {
+    ok: true,
+    message: "Workout set added.",
+    personalRecord: personalRecord
+      ? {
+          exerciseName: exercise.name,
+          ...personalRecord,
+        }
+      : null,
+    submittedAt: Date.now(),
+  };
 }
 
 export async function updateWorkoutSetAction(formData: FormData) {

@@ -1,9 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useActionState, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   addWorkoutSetAction,
   createExerciseForSessionAction,
+  type AddWorkoutSetActionState,
+  type PersonalRecordResult,
 } from "@/server/actions";
 import { ExerciseDemoSourceForm } from "@/components/exercise-demo-source-form";
 import { ExerciseMedia } from "@/components/exercise-media";
@@ -32,6 +34,12 @@ type SessionSetLoggerProps = {
 const ACTIVE_EXERCISE_STORAGE_PREFIX = "gym-micro:session-active-exercise";
 const ACTIVE_EXERCISE_EVENT = "gym-micro:session-active-exercise-change";
 const REST_TIMER_START_EVENT = "gym-micro:rest-timer-start";
+const INITIAL_ADD_SET_STATE: AddWorkoutSetActionState = {
+  ok: null,
+  message: "",
+  personalRecord: null,
+  submittedAt: null,
+};
 
 function getDemoStatus(demo: ExerciseDemoReview) {
   if (demo.media.mediaType === "external" && demo.media.localPath) {
@@ -65,6 +73,11 @@ export function SessionSetLogger({
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
   const [isDemoHidden, setIsDemoHidden] = useState(false);
+  const [addSetState, addSetFormAction, isAddingSet] = useActionState(
+    addWorkoutSetAction,
+    INITIAL_ADD_SET_STATE,
+  );
+  const [toast, setToast] = useState<AddWorkoutSetActionState | null>(null);
 
   function startRestTimer() {
     window.dispatchEvent(
@@ -144,8 +157,26 @@ export function SessionSetLogger({
     persistActiveExercise(selectedExerciseId);
   }, [selectedExerciseId, persistActiveExercise]);
 
+  useEffect(() => {
+    if (!addSetState.submittedAt || (!addSetState.personalRecord && addSetState.ok !== false)) {
+      return;
+    }
+
+    setToast(addSetState);
+    const timeout = window.setTimeout(() => setToast(null), 4800);
+    return () => window.clearTimeout(timeout);
+  }, [addSetState]);
+
   return (
     <div className="space-y-3">
+      {toast ? (
+        <PersonalRecordToast
+          state={toast}
+          weightUnit={weightUnit}
+          onDismiss={() => setToast(null)}
+        />
+      ) : null}
+
       <div className="block text-sm text-slate-700">
         <span>Exercise</span>
         <FlyoverSelect
@@ -224,7 +255,7 @@ export function SessionSetLogger({
       ) : null}
 
       <form
-        action={addWorkoutSetAction}
+        action={addSetFormAction}
         className="space-y-3"
         onSubmit={() => {
           persistActiveExercise(selectedExerciseId);
@@ -266,8 +297,11 @@ export function SessionSetLogger({
           Warmup set
         </label>
 
-        <button className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition active:translate-y-px active:bg-slate-950 hover:bg-slate-700">
-          Add Set
+        <button
+          disabled={isAddingSet}
+          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition active:translate-y-px active:bg-slate-950 hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isAddingSet ? "Adding..." : "Add Set"}
         </button>
       </form>
 
@@ -336,6 +370,66 @@ export function SessionSetLogger({
         </form>
       </details>
 
+    </div>
+  );
+}
+
+function formatSetRecord(record: PersonalRecordResult["current"], weightUnit: WeightUnit) {
+  const weight = record.weight !== null ? Number(record.weight) : 0;
+  const formattedWeight = Number.isFinite(weight) ? weight.toLocaleString() : 0;
+  return `${record.reps} reps @ ${formattedWeight} ${weightUnitLabel(weightUnit)}`;
+}
+
+function PersonalRecordToast({
+  state,
+  weightUnit,
+  onDismiss,
+}: {
+  state: AddWorkoutSetActionState;
+  weightUnit: WeightUnit;
+  onDismiss: () => void;
+}) {
+  const record = state.personalRecord;
+  const isError = state.ok === false;
+
+  return (
+    <div className="fixed inset-x-3 bottom-4 z-[90] flex justify-center sm:bottom-6">
+      <div
+        role="status"
+        className={`w-full max-w-md rounded-2xl border p-4 shadow-2xl ${
+          isError
+            ? "border-rose-200 bg-rose-50 text-rose-950"
+            : "border-emerald-200 bg-emerald-50 text-emerald-950"
+        }`}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs font-black uppercase tracking-widest">
+              {isError ? "Set not saved" : "New PR"}
+            </p>
+            {record ? (
+              <>
+                <p className="mt-1 text-sm font-black">
+                  {record.exerciseName} {record.kind === "estimated_1rm" ? "strength PR" : "rep PR"}
+                </p>
+                <p className="mt-1 text-xs font-semibold opacity-80">
+                  {formatSetRecord(record.current, weightUnit)} beat {formatSetRecord(record.previous, weightUnit)}.
+                </p>
+              </>
+            ) : (
+              <p className="mt-1 text-sm font-bold">{state.message}</p>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={onDismiss}
+            aria-label="Dismiss notification"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-current/15 bg-white/50 text-lg font-black leading-none hover:bg-white/75"
+          >
+            x
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
