@@ -159,7 +159,7 @@ export function SessionSetLogger({
             value: exercise.id,
             label: exercise.name,
           }))}
-          searchable
+          searchable={false}
           className="mt-1"
           triggerClassName="rounded-lg py-2"
         />
